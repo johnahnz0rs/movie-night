@@ -1,0 +1,25 @@
+{
+	"folders": [{
+		"path": "."
+	}],
+	"settings": {
+		"liveSassCompile.settings.formats": [{
+				"format": "nested",
+				"extensionName": ".css",
+				"savePath": "~/../"
+			},
+			{
+				"format": "compressed",
+				"extensionName": ".min.css",
+				"savePath": "~/../"
+			}
+		],
+		"liveSassCompile.settings.generateMap": false,
+		"liveSassCompile.settings.autoprefix": [
+			"last 2 versions",
+			"> 0.5%",
+			"ie > 8"
+		],
+		"editor.tabSize": 2
+	}
+}
