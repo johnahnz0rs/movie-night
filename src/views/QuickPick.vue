@@ -1,37 +1,55 @@
 <template>
-  <div>
-    <h1>quick pick</h1>
+
+  <!-- page heading -->
+  <div id="phase-selector">
+    <h1>quick pick: step {{ view }}</h1>
+    <div id="arrows">
+      <v-btn v-if="view > 1" @click="previousStep">⇦ Prev Step</v-btn>
+      <span v-else>&nbsp;</span>
+      <v-btn v-if="view < 3" @click="nextStep">Next Step ⇨</v-btn>
+    </div>
   </div>
 
+        <v-btn @click="devprint(nominatedMovies)">print nominatedMovies</v-btn>
   
-  <!-- phase 1: search for movies -->
-  <div v-if="view == 1" id="phase-1-search">
-    <h2>nominate movies</h2>
-
-    <div id="done-nominating">
-      <p @click="nextStep">Finished nominating X</p>
+  <!-- step 1: nominations -->
+  <div v-if="view == 1" id="step 1">
+    <div id="step-1-info">
+      <h2>nominate movies</h2>
+      <p>search for the movie you want to nominate and click "nominate" on your choice(s). when movie nominations are done, click "next step" above.</p>
     </div>
 
-    <div>
-      <v-text-field outlined v-model="searchTerm" placeholder="Search movies"></v-text-field>
-      <v-btn @click.prevent="getMovies">Search</v-btn>
+    <!-- step 1-A: search -->
+    <div id="search-fields">
+      <v-row>
+        <v-col cols="8" md="10"><v-text-field outlined v-model="searchTerm" placeholder="Search movies"></v-text-field></v-col>
+        <v-col cols="4" md="2"><v-btn @click.prevent="getMovies">Search</v-btn></v-col>
+      </v-row>
     </div>
 
+    <!-- step 1-B: nominate movies -->
     <div v-if="resultData">
       <div v-for="movie in resultData" :key="movie.id" class="movie-card">
         <!-- {{ movie }} -->
-        <p><span class="movie-title">{{ movie.title }}</span> ({{ movie.release_date.slice(0,4) }})</p>
-        <img class="inline-movie-data" :src="`https://image.tmdb.org/t/p/w154/${movie.poster_path}`">
-        <p class="inline-movie-data">{{ movie.overview.slice(0,300) }}...</p>
-        <!-- <span>release date: {{ movie.release_date.slice(0,4) }}</span> -->
-        <!-- <v-btn @click="clickedAMovie(movie.id)">Nominate this movie</v-btn> -->
-        <v-btn @click="clickedAMovie(movie)">Nominate this movie</v-btn>
+        <p><span class="movie-title">{{ movie.title }} </span><span v-if="movie.release_date">({{ movie.release_date.slice(0,4) }})</span></p>
+        <img v-if="movie.poster_path" class="inline-movie-data" :src="`https://image.tmdb.org/t/p/w154/${movie.poster_path}`">
+        <p v-if="movie.overview" class="inline-movie-data">{{ movie.overview.slice(0,300) }}...</p>
+        <v-btn @click="nominateMovie(movie)" :disabled="nominatedMovies.indexOf(movie) > -1 ? true : false">{{ nominatedMovies.indexOf(movie) > -1 ? "Nominated" : "Nominate this movie" }}</v-btn>
       </div>
     </div>
   </div>
 
 
-  <!-- phase 2: how many attendees? -->
+
+
+
+
+
+
+
+
+
+  <!-- steep 2: how many attendees? -->
   <div v-if="view == 2" id="phase-2-voters">
     <h2>how many attendees?</h2>
 
@@ -86,6 +104,9 @@ export default {
     };
   },
   methods: {
+    devprint(whatever) {
+      console.log(whatever);
+    },
     async getMovies() {
       console.log('getMovies', this.searchTerm);
       console.log(`https://api.themoviedb.org/3/search/movie?api_key=${this.tmbdApi}&query=${this.searchTerm}`)
@@ -94,7 +115,7 @@ export default {
       console.log(responseData);
       this.resultData = responseData.results;
     },
-    clickedAMovie(movie) {
+    nominateMovie(movie) {
       // console.log(`you clicked a movie, id: ${id}`);
       this.nominatedMovies.push(movie);
       console.log(this.nominatedMovies);
@@ -108,15 +129,26 @@ export default {
   },
 }
 </script>
-
-<style scoped>
-#done-nominating {
-  background-color: lightgreen;
+<style lang="scss" scoped>
+#phase-selector {
+  text-align: center;
+  #arrows {
+    display: flex;
+    justify-content: space-between;
+    button {
+      margin: 0 12px;
+    }
+  }
 }
-#done-nominating p {
-  /* margin-left: auto; */
-  text-align: right;
-  padding-right: 12px;
+
+#step-1 {
+  #step-1-info {
+    display: flex;
+    justify-content: space-between;
+  }
+  #search-fields {
+    // display: flex;
+  }
 }
 .movie-card {
   border: 1px solid black;
