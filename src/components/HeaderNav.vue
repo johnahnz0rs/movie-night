@@ -35,7 +35,8 @@ export default {
   name: 'HeaderNav',
   data() {
     return {
-      userAuth: true,
+      // userAuth: true,
+      userAuth: false,
     };
   },
 };
