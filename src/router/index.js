@@ -4,6 +4,7 @@ import AccountView from '../views/AccountView.vue';
 import CreateEvent from '../views/CreateEvent.vue';
 import UpcomingEvents from '../views/UpcomingEvents.vue';
 import PastEvents from '../views/PastEvents.vue';
+import QuickPick from '../views/QuickPick.vue';
 
 const routes = [
   {
@@ -30,6 +31,11 @@ const routes = [
     path: '/past-events',
     name: 'past',
     component: PastEvents
+  },
+  {
+    path: '/quick-pick',
+    name: 'quickpick',
+    component: QuickPick
   }
 ];
 

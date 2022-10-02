@@ -1,6 +1,9 @@
 <template>
   <div id="in-page-menu">
     <div class="in-page-item">
+      <router-link to="/quick-pick">Quick Pick</router-link>
+    </div>
+    <div class="in-page-item">
       <router-link to="/create-event">Create New Event</router-link>
     </div>
     <div class="in-page-item">
