@@ -159,7 +159,7 @@
     <div v-if="view == 3" id="step-3">
       <v-row id="voter-label">
         <v-col>
-          <h3>VOTER {{ Object.keys(votes).length + 1 }}</h3>
+          <h3>VOTER {{ totalVotes + 1 }}</h3>
         </v-col>
       </v-row>
       <div id="my-vote-buttons">
