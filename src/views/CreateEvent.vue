@@ -1,5 +1,15 @@
 <template>
   <h1>Create New Movie Night</h1>
+  <!-- phase 1: create event (date, location, time) -->
+    <!-- create a new node in dbase (use unique id in dbase/movie-nights/{id}) = { admin: userId, date: dateString, time: timeString, attendees: {listOfEmails}, voted: Bool } -->
+  <!-- phase 2: admin can add movie noms -->
+    <!-- dbase/movie-nights/{id}/nominations/{nomination_id} = { movieObject } -->
+    <!-- dbase/movie-nights/{id}/votes = { movieId: voteCount, movieId: voteCount, ... } -->
+
+
+
+
+
   <div id="create-new-form">
     <v-form @submit.prevent="submitNewMovieNight">
       <!-- phase 1: event details -->

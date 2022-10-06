@@ -2,9 +2,10 @@
   <div id="hero">
     <h2>Movie Night</h2>
     <p>get together with friends, turn on a movie, success, right?</p>
-    <p>WRONG. spend 2 hours arguing about what to watch then end up watching bojack horseman wtf</p>
+    <p>WRONG. spend 2 hours deciding what to watch then end up watching bojack horseman wtf</p>
     <p>cut the crap. put it to a vote.</p>
-    <v-btn><router-link to="/quick-pick">Get Started</router-link></v-btn>
+    <!-- <v-btn><router-link to="/quick-pick">Get Started</router-link></v-btn> -->
+    <v-btn><router-link to="/login">Login to Plan Your Movie Night</router-link></v-btn>
   </div>
   <div id="splash-img">
     <!-- <h1>homepage</h1>
