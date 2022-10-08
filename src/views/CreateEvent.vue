@@ -180,6 +180,8 @@
 </template>
 <script>
 // import firebase from 'firebase/compat/app';
+// $ curl 'https://api.rebrandly.com/v1/links/new?apikey=YOUR_API_KEY&destination=https://www.youtube.com/watch?v=3VmtibKpmXI&slashtag=video&domain\[id\]=8f104cc5b6ee4a4ba7897b06ac2ddcfb'
+// slashtag and title are optional
 export default {
   name: 'CreateEvent',
   data() {
@@ -214,14 +216,33 @@ export default {
       console.log("you submitted the form to create a new movie night");
       console.log()
     },
+    saveToLocalStorage() {
+      const movieNight = {
+        userId: this.userId,
+        eventName: this.eventName,
+        month: this.month,
+        day: this.day,
+        year: this.year,
+        hour: this.hour,
+        minute: this.minute,
+        meridian: this.meridian,
+        location: this.location,
+        friends: this.friends,
+        nomsPerFriend: this.nomsPerFriend + 1,
+      };
+      localStorage.setItem('movieNight', movieNight);
+      console.log(movieNight);
+    },
     nextPhase() {
+      this.saveToLocalStorage();
       this.view++;
     },
     prevPhase() {
+      this.saveToLocalStorage();
       this.view--;
     },
     anotherFriend() {
-      this.friends.push({ contact: '' });
+      this.friends.push({ contact: '' }); 
     },
     removeFriend(index) {
       console.log(index);
