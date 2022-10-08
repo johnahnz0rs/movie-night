@@ -5,7 +5,8 @@
     <p>WRONG. spend 2 hours deciding what to watch then end up watching bojack horseman wtf</p>
     <p>cut the crap. put it to a vote.</p>
     <!-- <v-btn><router-link to="/quick-pick">Get Started</router-link></v-btn> -->
-    <v-btn><router-link to="/login">Login to Plan Your Movie Night</router-link></v-btn>
+    <!-- <v-btn><router-link to="/login">Login to Plan Your Movie Night</router-link></v-btn> -->
+    <v-btn><router-link to="/auth">Login to Plan Your Movie Night</router-link></v-btn>
   </div>
   <div id="splash-img">
     <!-- <h1>homepage</h1>
@@ -20,18 +21,23 @@
     </ul>
   </div>
   
-  <!-- <img src="./assets/phillip-goldsberry-CtV2fhyHj6I-unsplash.jpg"> -->
-  <!-- <img id="hero-img" :src="heroImg"> -->
 </template>
 <script>
-// import heroImg from '../assets/phillip-goldsberry-CtV2fhyHj6I-unsplash.jpg';
+// import firebase from 'firebase/compat/app';
 export default {
   name: 'HomeView',
   data() {
     return {
-      // heroImg,
+      user: null,
     };
   },
+  // mounted() {
+  //   this.user = firebase.auth().currentUser;
+  //   if(this.user) {
+  //     console.log('HomeView: there is a user; redirect to /create')
+  //     this.$router.push('create');
+  //   }
+  // },
 };
 </script>
 <style lang="scss" scoped>

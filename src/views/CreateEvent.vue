@@ -104,10 +104,12 @@
   </div>
 </template>
 <script>
+// import firebase from 'firebase/compat/app';
 export default {
   name: 'CreateEvent',
   data() {
     return {
+      userId: null,
       formPhase: 1,
       eventName: '',
       month: '',
@@ -137,6 +139,26 @@ export default {
       this.formPhase--;
     }
   },
+  created() {
+    // this.user = firebase.auth().currentUser;
+
+    this.userId = localStorage.getItem('uId');
+    if(!this.userId) {
+      console.log('CreateEvent > created: lol no user uId');
+      this.$router.push('/auth');
+    } else {
+      console.log('CreateEvent > created: yes userId', this.userId);
+    }
+  },
+  // created() {
+  //   this.user = firebase.auth().currentUser;
+  //   if(this.user) {
+  //     console.log('CreateEvent: we got a user!', this.user);
+  //   } else {
+  //     console.log('CreateEvent: no user', this.user);
+  //     this.$router.push('/auth');
+  //   }
+  // },
 };
 </script>
 <style scoped>

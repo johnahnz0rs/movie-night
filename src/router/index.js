@@ -5,6 +5,7 @@ import CreateEvent from '../views/CreateEvent.vue';
 import UpcomingEvents from '../views/UpcomingEvents.vue';
 import PastEvents from '../views/PastEvents.vue';
 import QuickPick from '../views/QuickPick.vue';
+import AuthView from '../views/AuthView.vue';
 
 const routes = [
   {
@@ -18,7 +19,7 @@ const routes = [
     component: AccountView
   },
   {
-    path: '/create-event',
+    path: '/create',
     name: 'create',
     component: CreateEvent
   },
@@ -36,7 +37,12 @@ const routes = [
     path: '/quick-pick',
     name: 'quickpick',
     component: QuickPick
-  }
+  },
+  {
+    path: '/auth',
+    name: 'auth',
+    component: AuthView
+  },
 ];
 
 const router = createRouter({

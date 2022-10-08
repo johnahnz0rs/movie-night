@@ -1,6 +1,7 @@
 <template>
   <div id="page-quickpick">
 
+    <!-- <div id="firebaseui-auth-container"></div> -->
 
     <!-- page header --> 
     <!-- page header --> 
