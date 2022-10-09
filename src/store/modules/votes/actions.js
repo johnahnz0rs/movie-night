@@ -49,6 +49,7 @@ export default {
       const friendId = data.friends[i].id;
       // const dest = `http://localhost:8080/votes/${uId}/${dateTime}/${friendId}`;
       const dest = `https://nowthatscampin.com/votes/${uId}/${dateTime}/${friendId}`;
+      const requestBody = JSON.stringify({ destination: dest });
       // -H 'apikey: YOUR_API_KEY' \
       // -H 'Content-Type: application/json' \
       const newShortLinkResponse = await fetch('https://api.rebrandly.com/v1/links', {
@@ -57,16 +58,14 @@ export default {
           'Content-Type': 'application/json',
           'apikey': '905d9976a1d24548ab0930f5f56bc93d',
         },
-        body: {
-          'destination': dest,
-        }
+        body: requestBody
       });
 
       if(!newShortLinkResponse.ok){
         const error = new Error(newShortLinkResponse.message || 'something went wrong with newShortLinkResponse');
         throw error;
       } else {
-        console.log('all good', newShortLinkResponse.json());
+        console.log('all good', await newShortLinkResponse.json());
       }
       // const endpoint = `https://api.rebrandly.com/v1/links/new?apikey=905d9976a1d24548ab0930f5f56bc93d&destination=http://localhost:8080/votes/${uId}/${dateTime}/${friendId}`
       // console.log('endpoint', endpoint);
