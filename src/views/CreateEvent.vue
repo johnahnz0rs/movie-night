@@ -77,7 +77,7 @@
           <v-col cols="1">{{ index + 1 }}.</v-col>
           <v-col>
             <!-- <span>lol</span> -->
-            <v-text-field v-model="friends[index].id" placeholder="phone number" type="number"></v-text-field>
+            <v-text-field v-model="friends[index].id" label="friend's phone number" placeholder="10 digits only" type="tel"></v-text-field>
           </v-col>
           <v-col cols="2" @click="removeFriend(index)" class="remove-friend">remove</v-col>
         </v-row>
@@ -206,7 +206,7 @@ export default {
       return this.uId && this.month && this.day && this.year && this.hour && this.minute && this.meridian && this.location;
     },
     hasFriendsInList() {
-      return this.friends[0].id.toString().length && this.friends[0].id.toString().length;
+      return this.friends[0].id.toString().length && this.friends[1].id.toString().length;
     }
   },
   methods: {
@@ -229,9 +229,8 @@ export default {
         friends: this.friends,
         nomsPerFriend: this.nomsPerFriend + 1,
       };
-      // localStorage.setItem('movieNight', movieNight);
-      // this.$cookies.set('movieNight', JSON.parse(movieNight));
-      this.$cookies.set('movieNight', movieNight);
+      const cookieString = JSON.stringify(movieNight);
+      this.$cookies.set('movieNight', cookieString);
       console.log(movieNight);
     },
     theMovieNightIsNow() {
@@ -240,9 +239,17 @@ export default {
       this.month = this.months[today.getMonth()];
       this.day = today.getDate();
       this.year = today.getFullYear();
-      this.meridian = today.getHours() < 12 ? 'AM' : 'PM';
-      this.hour = today.getHours() > 12 ? today.getHours() - 12 : today.getHours();
+      if( today.getHours() > 12 ) {
+        this.hour = today.getHours() - 12;
+      } else if ( today.getHours() < 12 ) {
+        if ( today.getHours() == 0 ) {
+          this.hour = 12;
+        } else {
+          this.hour = today.getHours();
+        }
+      }
       this.minute = today.getMinutes() < 10 ? '0' + today.getMinutes() : today.getMinutes();
+      this.meridian = today.getHours() < 12 ? 'AM' : 'PM';
       this.location = 'Here, Now';
       this.updateMovieNightCookies();
       this.view++;
@@ -264,9 +271,32 @@ export default {
     },
     sendInvites() {
       console.log('sending invites!');
-      // save event data to localStorage
-      // save 
-    }
+      let cleanedFriends = [];
+      for( let i = 0; i < this.friends.length; i++ ) {
+        if( this.friends[i].id.length > 0 ) {
+          cleanedFriends.push(this.friends[i]);
+        }
+      }
+      const movieNight = {
+        uId: this.uId,
+        eventName: this.eventName,
+        month: this.month,
+        day: this.day,
+        year: this.year,
+        hour: this.hour,
+        minute: this.minute,
+        meridian: this.meridian,
+        location: this.location,
+        friends: cleanedFriends,
+        nomsPerFriend: this.nomsPerFriend + 1,
+      };
+
+      this.$store.dispatch('events/createEvent', movieNight);
+      this.$store.dispatch('votes/createVotes', movieNight);
+      this.$store.dispatch('votes/sendAlerts', movieNight);
+      this.$cookies.remove('movieNight');
+      this.$router.push(`votes/${movieNight.uId}/${movieNight.year}-${movieNight.month}-${movieNight.day}-${movieNight.hour}-${movieNight.minute}-${movieNight.meridian}/${movieNight.uId}`);
+    },
   },
   mounted() {
     // this.userId = localStorage.getItem('uId');
@@ -276,17 +306,23 @@ export default {
     } else {
       this.uId = this.$cookies.get('uId');
       console.log('CreateEvent > created: yes userId', this.uId);
-      this.eventName = this.$cookies.isKey('eventName') ? this.$cookies.get('eventName') : null;
-      this.month = this.$cookies.isKey('month') ? this.$cookies.get('month') : null;
-      this.day = this.$cookies.isKey('day') ? this.$cookies.get('day') : null;
-      this.year = this.$cookies.isKey('year') ? this.$cookies.get('year') : null;
-      this.hour = this.$cookies.isKey('hour') ? this.$cookies.get('hour') : null;
-      this.minute = this.$cookies.isKey('minute') ? this.$cookies.get('minute') : null;
-      this.meridian = this.$cookies.isKey('meridian') ? this.$cookies.get('meridian') : null;
-      this.location = this.$cookies.isKey('location') ? this.$cookies.get('location') : null;
-      this.friends = this.$cookies.isKey('friends') ? this.$cookies.get('friends') : [{ id: '' }, { id: '' },];
-      this.nomsPerFriend = this.$cookies.isKey('nomsPerFriend') ? this.$cookies.get('nomsPerFriend') : 0;
     }
+    
+    if( this.$cookies.isKey('movieNight') ) {
+      const movieNight = this.$cookies.get('movieNight');
+      this.eventName = movieNight.eventName;
+      this.month = movieNight.month;
+      this.day = movieNight.day;
+      this.year = movieNight.year;
+      this.hour = movieNight.hour;
+      this.minute = movieNight.minute;
+      this.meridian = movieNight.meridian;
+      this.location = movieNight.location;
+      this.friends = movieNight.friends;
+      this.nomsPerFriend = movieNight.nomsPerFriend - 1;
+      // console.log('eventName', this.eventName);
+    }
+      
   },
 };
 </script>

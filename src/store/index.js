@@ -1,27 +1,17 @@
 import { createStore } from 'vuex';
 
-import userModule from './modules/user/index.js';
+// import userModule from './modules/user/index.js';
 import eventsModule from './modules/events/index.js';
+import votesModule from './modules/votes/index.js';
 
 
 const store = createStore({
   modules: {
+    // user: userModule,
     events: eventsModule,
-    user: userModule,
+    votes: votesModule,
   },
 });
 
 export default store;
 
-// export default createStore({
-//   state: {
-//   },
-//   getters: {
-//   },
-//   mutations: {
-//   },
-//   actions: {
-//   },
-//   modules: {
-//   }
-// })
