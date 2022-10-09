@@ -31,7 +31,8 @@ export default {
     firebase.initializeApp(firebaseConfig);
     firebase.auth().onAuthStateChanged((user) => {
       if(user) {
-        localStorage.setItem('uId', user._delegate.uid);
+        // localStorage.setItem('uId', user._delegate.uid);
+        this.$cookies.set("uId", user._delegate.uid);
         // this.$router.push('/create');
       } else {
         console.log('App: there is no user', user);
@@ -43,3 +44,9 @@ export default {
   }),
 }
 </script>
+
+<style scoped>
+/* main.v-main {
+  
+} */
+</style>

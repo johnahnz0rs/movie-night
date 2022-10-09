@@ -1,5 +1,8 @@
 <template>
-  <h1>Login / Register</h1>
+  <div id="heading" class="text-center">
+    <h1>Login / Register</h1>
+    <p>you must be logged in to create a movie night vote</p>
+  </div>
   <div id="firebaseui-auth-container"></div>
 </template>
 <script>
@@ -21,6 +24,12 @@ export default {
   },
 };
 </script>
+
+<style lang="scss" scoped>
+#heading {
+  // text-align: center;
+}
+</style>
 
 
 

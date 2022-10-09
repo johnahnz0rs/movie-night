@@ -7,6 +7,10 @@
 
     <div id="links">
       <div>
+        <!-- <router-link to="/quick-pick">signOut</router-link> -->
+        <p @click="signOut"><u>Sign Out</u></p>
+      </div>
+      <div v-if="userAuth">
         <router-link to="/quick-pick">Quick Pick</router-link>
       </div>
       <div v-if="userAuth">
@@ -38,6 +42,14 @@ export default {
       // userAuth: true,
       userAuth: false,
     };
+  },
+  methods: {
+    signOut() {
+      // const cookieNames = this.$cookies.keys();
+      // console.log(cookieNames);
+      this.$cookies.remove('uId');
+      this.$router.push('/');
+    }
   },
 };
 </script>
