@@ -136,19 +136,33 @@
 
         <v-row>
           <v-col>
-            <h2>{{ eventName ? eventName : 'Movie Night' }}</h2>
-            <div v-if="location && month && day && year && hour && minute && meridian">
-              <p>{{ location }}</p>
-              <p>{{ month }} {{ day }} {{ year }} @ {{ hour }}:{{ minute }} {{ meridian}}</p></div>
-            <p v-else class="missing-info"><span @click="view = 1">please enter location, date, and time</span></p>
+            <v-card variant="outlined">
+              <v-card-title>
+                <h2>{{ eventName ? eventName : 'Movie Night' }}</h2>
+              </v-card-title>
+              <v-card-subtitle>
+                <div v-if="location && month && day && year && hour && minute && meridian">
+                  <p><strong>Where:</strong> {{ location }}</p>
+                  <p><strong>When:</strong> {{ month }} {{ day }} {{ year }} @ {{ hour }}:{{ minute }} {{ meridian}}</p>
+                </div>
+                <p v-else class="missing-info"><span @click="view = 1">please enter location, date, and time</span></p>
+                <p><strong><em>each person can nominate up to {{ nomsPerFriend + 1 }} movie{{ nomsPerFriend == 0 ? '' : 's'}}</em></strong><br>&nbsp;</p>
+              </v-card-subtitle>
+            </v-card>
+            <!-- <h2>{{ eventName ? eventName : 'Movie Night' }}</h2> -->
+            <!-- <div v-if="location && month && day && year && hour && minute && meridian">
+              <p><strong>Where:</strong> {{ location }}</p>
+              <p><strong>When:</strong> {{ month }} {{ day }} {{ year }} @ {{ hour }}:{{ minute }} {{ meridian}}</p>
+            </div>
+            <p v-else class="missing-info"><span @click="view = 1">please enter location, date, and time</span></p> -->
           </v-col>
         </v-row>
 
-        <v-row>
+        <!-- <v-row>
           <v-col>
             <p><strong><em>each person can nominate up to {{ nomsPerFriend + 1 }} movie{{ nomsPerFriend == 0 ? '' : 's'}}</em></strong><br>&nbsp;</p>
           </v-col>
-        </v-row>
+        </v-row> -->
 
         <v-row>
           <v-col>
@@ -166,9 +180,11 @@
         <!-- admin info -->
         <v-row id="admin-info" class="mt-5">
           <v-col>
-            <p><strong><em>we'll send you and your friends a link (via text msg) to pick a movie now!</em></strong></p>
-            <v-text-field v-model="admin.name" label="Your name" density="compact"></v-text-field>
-            <v-text-field v-model="admin.id" label="Your phone number" density="compact"></v-text-field>
+            <p>
+              <strong><em>enter your name and number to invite your friends to start the vote. (invite link sent by text msg)</em></strong>
+            </p>
+            <v-text-field v-model="admin.name" @input="updateMovieNightCookies" label="Your name" density="compact"></v-text-field>
+            <v-text-field v-model="admin.id" @input="updateMovieNightCookies" label="Your phone number" density="compact"></v-text-field>
           </v-col>
         </v-row>
 
@@ -284,9 +300,9 @@ export default {
           this.hour = today.getHours();
         }
       }
-      if( this.hour < 10 ) {
-        this.hour = '0' + this.hour;
-      }
+      // if( this.hour < 10 ) {
+      //   this.hour = '0' + this.hour;
+      // }
       this.minute = today.getMinutes() < 10 ? '0' + today.getMinutes() : today.getMinutes();
       this.meridian = today.getHours() < 12 ? 'AM' : 'PM';
       this.location = 'Here, Now';
@@ -309,17 +325,19 @@ export default {
       this.friends.splice(index, 1);
     },
     sendInvites() {
-      console.log('sending invites!');
+      console.log('**** starting  sendInvites() *****');
       let cleanedFriends = [];
       for( let i = 0; i < this.friends.length; i++ ) {
         if( this.friends[i].id.length > 0 ) {
           cleanedFriends.push(this.friends[i]);
         }
       }
+      cleanedFriends.push(this.admin);
+      const cleanedEventName = this.eventName ? this.eventName : 'Movie Night';
       const movieNight = {
         uId: this.uId,
         admin: this.admin,
-        eventName: this.eventName,
+        eventName: cleanedEventName,
         month: this.month,
         day: this.day,
         year: this.year,
@@ -330,10 +348,11 @@ export default {
         friends: cleanedFriends,
         nomsPerFriend: this.nomsPerFriendTickLabels[this.nomsPerFriend],
       };
-
+      console.log('dispatching events/createEvents, votes/createVotes, votes/sendAlerts', movieNight);
       this.$store.dispatch('events/createEvent', movieNight);
       this.$store.dispatch('votes/createVotes', movieNight);
-      this.$store.dispatch('votes/sendAlerts', movieNight);
+      // ***** turning this off during dev so i don't create test shortlinks (limit 500 total links) *****
+      // this.$store.dispatch('votes/sendAlerts', movieNight); 
       this.$cookies.remove('movieNight'); // this clears the cookies so the /create page will be a blank form jah bless
       this.$router.push(`votes/${movieNight.uId}/${movieNight.year}-${movieNight.month}-${movieNight.day}-${movieNight.hour}-${movieNight.minute}-${movieNight.meridian}/${movieNight.uId}`);
     },
@@ -360,6 +379,7 @@ export default {
       this.location = movieNight.location;
       this.friends = movieNight.friends;
       this.nomsPerFriend = movieNight.nomsPerFriend - 1;
+      this.admin = movieNight.admin;
       // console.log('eventName', this.eventName);
     }
       
