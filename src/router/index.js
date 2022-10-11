@@ -46,7 +46,7 @@ const routes = [
     component: AuthView
   },
   {
-    path: '/votes/:uId/:date/:friendId',
+    path: '/votes/:uIdAdmin/:date/:myId',
     name: 'votes',
     component: VotesView
   },

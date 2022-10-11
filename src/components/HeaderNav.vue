@@ -46,8 +46,10 @@ export default {
   methods: {
     signOut() {
       // const cookieNames = this.$cookies.keys();
-      // console.log(cookieNames);
+      console.log('**** starting signOut() ****');
+      this.$cookies.set('uId', '');
       this.$cookies.remove('uId');
+      console.log('**** END signOut() - sending you to homepage ****');
       this.$router.push('/');
     }
   },

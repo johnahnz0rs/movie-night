@@ -1,1 +1,12 @@
-export default {};
+export default {
+
+  movieNight(state, payload) {
+    state.movieNight = payload;
+  },
+
+  allowedFriends(state, payload) {
+    state.allowedFriends = payload;
+  },
+  
+
+};

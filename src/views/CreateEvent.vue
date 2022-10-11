@@ -77,8 +77,8 @@
         <v-row v-for="(friend, index) in friends" :key="index">
           <v-card width="100%" variant="outlined" class="my-5">
             <v-card-item class="pb-0">
-              <v-text-field v-model="friends[index].name" label="friend's name" density="compact"></v-text-field>
-              <v-text-field v-model="friends[index].id" label="friend's phone number" placeholder="10 digits only" type="tel" density="compact"></v-text-field>
+              <v-text-field v-model="friends[index].name" placeholder="friend's name" density="compact" clearable></v-text-field>
+              <v-text-field v-model="friends[index].id" placeholder="friend's phone number" type="tel" density="compact" clearable></v-text-field>
             </v-card-item>
             <v-card-actions class="pt-0">
               <v-btn @click="removeFriend(index)" variant="outlined" color="red" size="small" class="ml-auto">remove</v-btn>
@@ -134,42 +134,37 @@
       <!-- phase 4: review & send -->
       <div v-else-if="view == 4" id="event-review">
 
+        <!-- movie night info: name, where, when -->
         <v-row>
           <v-col>
             <v-card variant="outlined">
-              <v-card-title>
-                <h2>{{ eventName ? eventName : 'Movie Night' }}</h2>
-              </v-card-title>
-              <v-card-subtitle>
+              <v-card-item>
+                <h2>{{ cleanedEventName }}</h2>
                 <div v-if="location && month && day && year && hour && minute && meridian">
                   <p><strong>Where:</strong> {{ location }}</p>
                   <p><strong>When:</strong> {{ month }} {{ day }} {{ year }} @ {{ hour }}:{{ minute }} {{ meridian}}</p>
+                  <p><strong><em>each person can nominate up to {{ nomsPerFriendTickLabels[nomsPerFriend] }} movie{{ nomsPerFriend == 0 ? '' : 's'}}</em></strong><br>&nbsp;</p>
                 </div>
-                <p v-else class="missing-info"><span @click="view = 1">please enter location, date, and time</span></p>
-                <p><strong><em>each person can nominate up to {{ nomsPerFriend + 1 }} movie{{ nomsPerFriend == 0 ? '' : 's'}}</em></strong><br>&nbsp;</p>
-              </v-card-subtitle>
+                <div v-else>
+                  <p @click="view = 1" class="missing-info"><span>please enter location, date, and time</span></p>
+                </div>
+              </v-card-item>
             </v-card>
-            <!-- <h2>{{ eventName ? eventName : 'Movie Night' }}</h2> -->
-            <!-- <div v-if="location && month && day && year && hour && minute && meridian">
-              <p><strong>Where:</strong> {{ location }}</p>
-              <p><strong>When:</strong> {{ month }} {{ day }} {{ year }} @ {{ hour }}:{{ minute }} {{ meridian}}</p>
-            </div>
-            <p v-else class="missing-info"><span @click="view = 1">please enter location, date, and time</span></p> -->
           </v-col>
         </v-row>
 
-        <!-- <v-row>
-          <v-col>
-            <p><strong><em>each person can nominate up to {{ nomsPerFriend + 1 }} movie{{ nomsPerFriend == 0 ? '' : 's'}}</em></strong><br>&nbsp;</p>
-          </v-col>
-        </v-row> -->
 
+
+        <!-- list of invitees -->
+        <!-- list of invitees -->
+        <!-- list of invitees -->
         <v-row>
           <v-col>
             <p v-if="hasFriendsInList" class="pb-3"><strong><em>sending invites to:</em></strong></p>
-            <p v-else class="missing-info"><span @click="view = 2">please invite at least 1 friend</span></p>
+            <p v-else @click="view = 2" class="missing-info"><span>please invite at least 1 friend</span></p>
+
             <ol v-if="hasFriendsInList" id="review-friends" class="ml-5">
-              <li v-for="(friend, index) in friends" :key="index" class="py-2">
+              <li v-for="(friend, index) in cleanedFriends" :key="index" class="py-2">
                 {{ friend.name }} - {{ friend.id }}
               </li>
             </ol>
@@ -177,11 +172,13 @@
         </v-row>
 
 
-        <!-- admin info -->
+        <!-- enter admin info -->
+        <!-- enter admin info -->
+        <!-- enter admin info -->
         <v-row id="admin-info" class="mt-5">
           <v-col>
-            <p>
-              <strong><em>enter your name and number to invite your friends to start the vote. (invite link sent by text msg)</em></strong>
+            <p class="mb-3">
+              <strong><em>enter your name and number to invite your friend(s) and start the vote. invite link sent by text msg, boiii.</em></strong>
             </p>
             <v-text-field v-model="admin.name" @input="updateMovieNightCookies" label="Your name" density="compact"></v-text-field>
             <v-text-field v-model="admin.id" @input="updateMovieNightCookies" label="Your phone number" density="compact"></v-text-field>
@@ -195,7 +192,11 @@
             <v-btn @click="sendInvites" color="green" :disabled="!readyToSend">Invite Friends</v-btn>
           </v-col>
         </v-row>
-      </div>
+
+
+        
+      </div> <!-- end phase 4: review & send -- END -->
+      <!-- end phase 4: review & send -- END -->
     
 
 
@@ -225,6 +226,7 @@ export default {
   name: 'CreateEvent',
   data() {
     return {
+      uId: null,
       // constants
       months: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'June', 'July', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec'],
       days: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31],
@@ -233,8 +235,7 @@ export default {
       minutes: ['00', '15', '30', '45'],
       meridians: ['AM', 'PM'],
       nomsPerFriendTickLabels: { 0: '1', 1: '2', 2: '3', 3: '4', 4: '5' },
-      // 
-      uId: null,
+      // movieNight meta
       view: 1,
       eventName: null,
       month: null,
@@ -247,28 +248,41 @@ export default {
       friends: [{ id: '', name: '' }],
       nomsPerFriend: 0,
       admin: { id: '', name: '' },
-      
+      // 
       
     };
   },
   computed: {
+    cleanedEventName() {
+      return this.eventName ? this.eventName : 'Movie Night';
+    },
+    cleanedFriends() {
+      let cleanedFriends = [];
+      for( let i = 0; i < this.friends.length; i++ ) {
+        if (this.friends[i].id.length > 0 && this.friends[i].name.length > 0) {
+          cleanedFriends.push(this.friends[i]);
+        }
+      }
+      return cleanedFriends;
+    },
+    cleanedFriendsWithAdmin() {
+      let friends = this.cleanedFriends;
+      friends.push(this.admin);
+      return friends;
+    },
     readyToSend() {
       return this.uId && this.month && this.day && this.year && this.hour && this.minute && this.meridian && this.location && this.admin.id.length && this.hasFriendsInList;
     },
     hasFriendsInList() {
       // return this.friends[0].id.toString().length && this.friends[1].id.toString().length;
-      return this.friends[0].id.toString().length;
+      return this.cleanedFriends.length ? true : false;
     }
   },
   methods: {
-    // submitNewMovieNight() {
-    //   console.log("you submitted the form to create a new movie night");
-    //   console.log()
-    // },
     updateMovieNightCookies() {
       console.log('***** updateMovieNightCookies() *****');
       const movieNight = {
-        uId: this.uId,
+        uIdAdmin: this.uId,
         eventName: this.eventName,
         month: this.month,
         day: this.day,
@@ -278,8 +292,8 @@ export default {
         meridian: this.meridian,
         location: this.location,
         friends: this.friends,
+        nomsPerFriend: this.nomsPerFriend,
         admin: this.admin,
-        nomsPerFriend: this.nomsPerFriendTickLabels[this.nomsPerFriend],
       };
       const cookieString = JSON.stringify(movieNight);
       this.$cookies.set('movieNight', cookieString);
@@ -291,21 +305,16 @@ export default {
       this.month = this.months[today.getMonth()];
       this.day = today.getDate();
       this.year = today.getFullYear();
-      if( today.getHours() > 12 ) {
-        this.hour = today.getHours() - 12;
-      } else if ( today.getHours() < 12 ) {
-        if ( today.getHours() == 0 ) {
-          this.hour = 12;
-        } else {
-          this.hour = today.getHours();
-        }
+      let tempHour = today.getHours();
+      if (tempHour == 0) {
+        tempHour = 12;
+      } else if (tempHour > 12) {
+        tempHour = tempHour - 12;
       }
-      // if( this.hour < 10 ) {
-      //   this.hour = '0' + this.hour;
-      // }
+      this.hour = tempHour;
       this.minute = today.getMinutes() < 10 ? '0' + today.getMinutes() : today.getMinutes();
       this.meridian = today.getHours() < 12 ? 'AM' : 'PM';
-      this.location = 'Here, Now';
+      this.location = 'Right over there, Soonish.';
       this.updateMovieNightCookies();
       // this.view++;
     },
@@ -326,18 +335,10 @@ export default {
     },
     sendInvites() {
       console.log('**** starting  sendInvites() *****');
-      let cleanedFriends = [];
-      for( let i = 0; i < this.friends.length; i++ ) {
-        if( this.friends[i].id.length > 0 ) {
-          cleanedFriends.push(this.friends[i]);
-        }
-      }
-      cleanedFriends.push(this.admin);
-      const cleanedEventName = this.eventName ? this.eventName : 'Movie Night';
       const movieNight = {
-        uId: this.uId,
-        admin: this.admin,
-        eventName: cleanedEventName,
+        uIdAdmin: this.uId,
+        admin: this.admin, // send this so you can tell friends who created this movieNight event
+        eventName: this.cleanedEventName,
         month: this.month,
         day: this.day,
         year: this.year,
@@ -345,16 +346,19 @@ export default {
         minute: this.minute,
         meridian: this.meridian,
         location: this.location,
-        friends: cleanedFriends,
+        friends: this.cleanedFriendsWithAdmin,
         nomsPerFriend: this.nomsPerFriendTickLabels[this.nomsPerFriend],
       };
-      console.log('dispatching events/createEvents, votes/createVotes, votes/sendAlerts', movieNight);
+      console.log('dispatching 3: -- events/createEvents -- votes/createVotes -- votes/sendAlerts', movieNight);
       this.$store.dispatch('events/createEvent', movieNight);
       this.$store.dispatch('votes/createVotes', movieNight);
-      // ***** turning this off during dev so i don't create test shortlinks (limit 500 total links) *****
+      // ***** turning this off during dev 
+        // so i don't create test shortlinks (limit 500 total links) *****
       // this.$store.dispatch('votes/sendAlerts', movieNight); 
+
       this.$cookies.remove('movieNight'); // this clears the cookies so the /create page will be a blank form jah bless
-      this.$router.push(`votes/${movieNight.uId}/${movieNight.year}-${movieNight.month}-${movieNight.day}-${movieNight.hour}-${movieNight.minute}-${movieNight.meridian}/${movieNight.uId}`);
+      
+      this.$router.push(`votes/${movieNight.uIdAdmin}/${movieNight.year}-${movieNight.month}-${movieNight.day}-${movieNight.hour}-${movieNight.minute}-${movieNight.meridian}/${movieNight.admin.id}`);
     },
   },
   mounted() {
@@ -378,7 +382,7 @@ export default {
       this.meridian = movieNight.meridian;
       this.location = movieNight.location;
       this.friends = movieNight.friends;
-      this.nomsPerFriend = movieNight.nomsPerFriend - 1;
+      this.nomsPerFriend = movieNight.nomsPerFriend;
       this.admin = movieNight.admin;
       // console.log('eventName', this.eventName);
     }

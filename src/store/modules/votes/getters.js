@@ -1,1 +1,8 @@
-export default {};
+export default {
+
+  votes(state) {
+    return state.votes;
+  },
+
+
+};

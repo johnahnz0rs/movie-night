@@ -1,18 +1,35 @@
-import { getDatabase, ref, set } from "firebase/database";
+import { get, getDatabase, ref, set } from "firebase/database";
 
 export default {
 
+  // create the /votes dbase object - from /create > sendInvites()
   // create the /votes dbase object
+  // create the /votes dbase object
+  // create the /votes dbase object
+  // const movieNight = {
+  //   uIdAdmin: this.uId,
+  //   admin: this.admin,
+  //   eventName: this.cleanedEventName,
+  //   month: this.month,
+  //   day: this.day,
+  //   year: this.year,
+  //   hour: this.hour,
+  //   minute: this.minute,
+  //   meridian: this.meridian,
+  //   location: this.location,
+  //   friends: this.cleanedFriendsWithAdmin,
+  //   nomsPerFriend: this.nomsPerFriendTickLabels[this.nomsPerFriend],
+  // };
   async createVotes(context, data) {
     console.log('****starting store/votes/actions createVotes()****', context, data);
-    const uIdAdmin = data.uId;
-    const admin = data.admin;
+    const uIdAdmin = data.uIdAdmin;
     const date = `${data.year}-${data.month}-${data.day}-${data.hour}-${data.minute}-${data.meridian}`;
-    const friends = data.friends;
+    // const friends = data.friends;
     const votesData = {
       uIdAdmin,
-      admin, 
-      friends,
+      date,
+      nomsFinished: false,
+      votesFinished: false,
     };
     console.log('votesData:', votesData);
     const db = getDatabase();
@@ -20,25 +37,44 @@ export default {
   },
 
 
+  // text all parties - from /create > sendInvites()
+  // text all parties
+  // text all parties
   // text all parties
   async sendAlerts(context, data) {
-    console.log('**** starting store/votes/actions sendAlerts()****', context, data);
-    const uId = data.uId;
-    const eventName = data.eventName ? data.eventName : 'Move Night';
+
+    // const movieNight = {
+    //   uIdAdmin: this.uId,
+    //   admin: this.admin,
+    //   eventName: this.cleanedEventName,
+    //   month: this.month,
+    //   day: this.day,
+    //   year: this.year,
+    //   hour: this.hour,
+    //   minute: this.minute,
+    //   meridian: this.meridian,
+    //   location: this.location,
+    //   friends: this.cleanedFriendsWithAdmin,
+    //   nomsPerFriend: this.nomsPerFriendTickLabels[this.nomsPerFriend],
+    // };
+    console.log('**** starting store/votes/actions sendAlerts() ****', context, data);
+    const uIdAdmin = data.uIdAdmin;
+    const admin = data.admin;
+    const eventName = data.eventNam;
     const dateTime = `${data.year}-${data.month}-${data.day}-${data.hour}-${data.minute}-${data.meridian}`;
     const date = `${data.month} ${data.day}, ${data.year}`;
     const time = `${data.hour}:${data.minute} ${data.meridian}`;
     const location = data.location;
-    const nomsPerFriend = data.nomsPerFriend;
-    let newShortLinks = [];
+    const friends = data.friends;
+    console.log(admin, eventName, date, time, location, friends);
+    
 
-
-    // send invites loop
-    for( let i = 0; i < data.friends.length; i++ ) {
+    // send invites
+    for( let i = 0; i < friends.length; i++ ) {
 
       // get 
-      const friendId = data.friends[i].id;
-      const dest = `https://nowthatscampin.com/votes/${uId}/${dateTime}/${friendId}`;
+      const friendId = friends[i].id;
+      const dest = `https://nowthatscampin.com/votes/${uIdAdmin}/${dateTime}/${friendId}`;
       const requestBody = JSON.stringify({ destination: dest });
       const newShortLinkResponse = await fetch('https://api.rebrandly.com/v1/links', {
         method: 'POST',
@@ -57,7 +93,39 @@ export default {
       }
     }
 
-    console.log(uId, eventName,dateTime, date, time, location, nomsPerFriend, newShortLinks);
   },
+
+
+  // get my vote object - from /votes > created
+  // get my vote object 
+  // get my vote object 
+  // get my vote object 
+  async getVotesObject(context, data) {
+    console.log('**** START store/votes/actions > getVotesObject() ****', context, data);
+    const uIdAdmin = data.uIdAdmin;
+    const dateAndTime = data.dateAndTime;
+    const db = getDatabase();
+    
+    get(ref(db, `votes/${uIdAdmin}/${dateAndTime}`))
+      .then((snapshot) => {
+      if (snapshot.exists()) {
+        // console.log(snapshot.val());
+        const result = snapshot.val();
+        context.commit('votes', result);
+        console.log('*** votes -- return object from the dbase call ***', result);
+      } else {
+        console.log("No data available");
+        console.log(uIdAdmin, dateAndTime);
+      }
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  },
+
+
+
+
+
 
 };
