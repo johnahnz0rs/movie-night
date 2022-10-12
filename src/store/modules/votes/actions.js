@@ -2,24 +2,15 @@ import { get, getDatabase, ref, set } from "firebase/database";
 
 export default {
 
+  // const movieNight = { uIdAdmin, admin, eventName, month, day, year, hour, minute, meridian, location, friends, nomsPerFriend, };
+
+
+
+  
   // create the /votes dbase object - from /create > sendInvites()
   // create the /votes dbase object
   // create the /votes dbase object
   // create the /votes dbase object
-  // const movieNight = {
-  //   uIdAdmin: this.uId,
-  //   admin: this.admin,
-  //   eventName: this.cleanedEventName,
-  //   month: this.month,
-  //   day: this.day,
-  //   year: this.year,
-  //   hour: this.hour,
-  //   minute: this.minute,
-  //   meridian: this.meridian,
-  //   location: this.location,
-  //   friends: this.cleanedFriendsWithAdmin,
-  //   nomsPerFriend: this.nomsPerFriendTickLabels[this.nomsPerFriend],
-  // };
   async createVotes(context, data) {
     console.log('****starting store/votes/actions createVotes()****', context, data);
     const uIdAdmin = data.uIdAdmin;
@@ -37,27 +28,14 @@ export default {
   },
 
 
+
+
   // text all parties - from /create > sendInvites()
   // text all parties
   // text all parties
   // text all parties
   async sendAlerts(context, data) {
-
-    // const movieNight = {
-    //   uIdAdmin: this.uId,
-    //   admin: this.admin,
-    //   eventName: this.cleanedEventName,
-    //   month: this.month,
-    //   day: this.day,
-    //   year: this.year,
-    //   hour: this.hour,
-    //   minute: this.minute,
-    //   meridian: this.meridian,
-    //   location: this.location,
-    //   friends: this.cleanedFriendsWithAdmin,
-    //   nomsPerFriend: this.nomsPerFriendTickLabels[this.nomsPerFriend],
-    // };
-    console.log('**** starting store/votes/actions sendAlerts() ****', context, data);
+    // vars
     const uIdAdmin = data.uIdAdmin;
     const admin = data.admin;
     const eventName = data.eventNam;
@@ -66,8 +44,14 @@ export default {
     const time = `${data.hour}:${data.minute} ${data.meridian}`;
     const location = data.location;
     const friends = data.friends;
-    console.log(admin, eventName, date, time, location, friends);
+
+    // dev
+    console.log('*** votes/actions/sendAlerts ***', context, data); 
     
+    // create sms msg
+    // create list of shortlinks
+    // prep & send sms via twilio
+
 
     // send invites
     for( let i = 0; i < friends.length; i++ ) {
@@ -96,12 +80,16 @@ export default {
   },
 
 
+
+
+
+
+
   // get my vote object - from /votes > created
   // get my vote object 
   // get my vote object 
   // get my vote object 
   async getVotesObject(context, data) {
-    console.log('**** START store/votes/actions > getVotesObject() ****', context, data);
     const uIdAdmin = data.uIdAdmin;
     const dateAndTime = data.dateAndTime;
     const db = getDatabase();
@@ -109,13 +97,11 @@ export default {
     get(ref(db, `votes/${uIdAdmin}/${dateAndTime}`))
       .then((snapshot) => {
       if (snapshot.exists()) {
-        // console.log(snapshot.val());
         const result = snapshot.val();
         context.commit('votes', result);
-        console.log('*** votes -- return object from the dbase call ***', result);
       } else {
         console.log("No data available");
-        console.log(uIdAdmin, dateAndTime);
+        context.comment('votes', null);
       }
       })
       .catch((error) => {

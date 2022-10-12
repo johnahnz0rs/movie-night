@@ -38,7 +38,6 @@ export default {
   // get the event object (movieNight)
   // get the event object (movieNight)
   async getEventObject(context, data) {
-    // console.log('**** starting events/actions > getEventObject() ****', context, data);
     const uIdAdmin = data.uIdAdmin;
     const dateAndTime = data.dateAndTime;
     const db = getDatabase();
@@ -46,18 +45,19 @@ export default {
     get(ref(db, `events/${uIdAdmin}/${dateAndTime}`))
       .then((snapshot) => {
         if (snapshot.exists()) {
-          const movieNight = snapshot.val();
           // save the movieNight object to the store
-          context.commit('movieNight', movieNight);
           // create and save allowedFriends
+          const movieNight = snapshot.val();
           let allowedFriends = [];
           for (let i=0; i < movieNight.friends.length; i++ ) {
             allowedFriends.push(movieNight.friends[i].id);
           }
-          context.commit('allowedFriends', allowedFriends)
-          // console.log('*** events -- return object from dbase call ***', movieNight);
+          context.commit('allowedFriends', allowedFriends);
+          context.commit('movieNight', movieNight);
         } else {
           console.log('no data available', uIdAdmin, dateAndTime);
+          context.commit('allowedFriends', null);
+          context.commit('movieNight', null);
         }
       })
       .catch((error) => {

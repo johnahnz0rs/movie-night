@@ -1,33 +1,67 @@
 <template>
   <h1>Votes</h1>
-
-  <div class="outlined">
-    <h2>movieNight details</h2>
-    <p>where & when</p>
-    <p>who's invited</p>
-    <p>invited by</p>
-  </div>
-
-  <div class="outlined">
+  
+  
+  
+  <!-- ADMIN PANEL -->
+  <!-- ADMIN PANEL -->
+  <!-- ADMIN PANEL -->
+  <!-- <div v-if="isAdmin" class="outlined"> -->
+  <div class="outlined"> <!-- leaving this always-on, for dev --> <!-- remember to remove this line (and use v-if="isAdmin") before it goes to prod -->
     <h2>admin panel</h2>
-    <p>let the admin edit movieNight details</p>
-    <p>let the admin start/stop noms</p>
-    <p>let the admin start/stop votes</p>
+    <v-btn>edit movieNight details</v-btn><br />
+    <v-btn>start/stop noms</v-btn><br />
+    <v-btn>start/stop voting</v-btn>
   </div>
 
-  <div class="outlined">
+
+  <!-- MOVIENIGHT DETAILS -->
+  <!-- MOVIENIGHT DETAILS -->
+  <!-- MOVIENIGHT DETAILS -->
+  <div v-if="movieNight" class="outlined">
+    <!-- <h2>movieNight details</h2>
+    <p><strong>created by</strong> {{ movieNight.admin.name }}</p>
+    <p>
+      <strong>where & when</strong> <br />
+      {{ movieNight.location }} <br />
+      {{ movieNight.month }} {{ movieNight.day }}, {{ movieNight.year }} @ {{ movieNight.hour}}:{{ movieNight.minute }} {{ movieNight.meridian }}
+    </p>
+    <p>
+      <strong>who's invited</strong><br />
+      <ul>
+        <li v-for="friend in movieNight.friends" :key="friend.id">{{friend.name}}</li>
+      </ul>
+    </p> -->
+  </div>
+
+  <!-- NOMINATIONS -->
+  <!-- NOMINATIONS -->
+  <!-- NOMINATIONS -->
+  <div v-if="!nomsFinished" class="outlined">
     <h2>nominations</h2>
     <p>let the friend see current list of nominations</p>
     <p>let the friend nominate their own choices</p>
     <p>use movieNight.nomsPerFriend</p>
   </div>
+  <div v-else class="outlined">
+    <h2>nominations are finished</h2>
+    <p>please vote instead</p>
+  </div>
 
+
+  <!-- VOTING -->
+  <!-- VOTING -->
+  <!-- VOTING -->
   <div class="outlined">
     <h2>votes</h2>
     <p>let the friend vote</p>
     <p>use ranked choice - use the length of noms to figure out how many ranks are possible (max 3)</p>
   </div>
 
+
+  <!-- RESULTS -->
+  <!-- RESULTS -->
+  <!-- RESULTS -->
   <div class="outlined">
     <h2>results</h2>
     <p>show the winner.</p>
@@ -36,7 +70,7 @@
   </div>
 
 
-
+  <!-- dev -->
   <div class="outlined">
     <h2>route params</h2>
     <p>uIdAdmin {{ uIdAdminParam }}</p>
@@ -45,17 +79,12 @@
     <p>isAdmin {{ isAdmin }}</p>
   </div>
 
-
-
   <div class="outlined">
     <h2>movieNight object</h2>
     <pre>{{ movieNight }}</pre>
     <p>allowed friends {{ allowedFriends }}</p>
     <p>am i allowed {{ amIAllowed }}</p>
   </div>
-
-
-
 
   <div class="outlined">
     <h2>votes object</h2>
@@ -65,14 +94,9 @@
 
 <script>
 export default {
-  // const uId = $route.params.uId;
-  // const date = $route.params.date;
-  // const friendId = $route.params.friendId;
   data() {
     return {
-      // const allProgram = await this.$store.getters['wins/program'];
       test: 'lol',
-      // movieNight: null,
     };
   },
   computed: {
@@ -122,22 +146,17 @@ export default {
 
     // check if user is admin —— done in computed()
     // check if user is in the friends list —- done in computed()
+    // check if nominations are finished -- done in computed()
+    // check if votes are finished -- done in computed()
 
-
-
+    // get the events/movieNight object
+    // get the votes object
     const dbArgs = {
       uIdAdmin: this.uIdAdminParam,
       dateAndTime: this.dateParam,
     };
-    // get the events/movieNight object
     this.$store.dispatch('events/getEventObject', dbArgs);
-    // get the votes object
     this.$store.dispatch('votes/getVotesObject', dbArgs);
-    
-    // check if nominations are finished
-
-    // check if votes are finished
-
 
   },
 
