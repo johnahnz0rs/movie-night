@@ -6,6 +6,9 @@ export default {
 
 
 
+
+
+
   
   // create the /votes dbase object - from /create > sendInvites()
   // create the /votes dbase object
@@ -30,29 +33,41 @@ export default {
 
 
 
+
+
+
+
+
   // text all parties - from /create > sendInvites()
   // text all parties
   // text all parties
   // text all parties
   async sendAlerts(context, data) {
-    // vars
+
+    // shortlink vars
     const uIdAdmin = data.uIdAdmin;
-    const admin = data.admin;
-    const eventName = data.eventNam;
     const dateTime = `${data.year}-${data.month}-${data.day}-${data.hour}-${data.minute}-${data.meridian}`;
+    const friends = data.friends;
+    const friendsIds = [];
+
+    // sms msg vars
+    const adminName = data.admin.name;
+    const eventName = data.eventName;
     const date = `${data.month} ${data.day}, ${data.year}`;
     const time = `${data.hour}:${data.minute} ${data.meridian}`;
     const location = data.location;
-    const friends = data.friends;
 
     // dev
     console.log('*** votes/actions/sendAlerts ***', context, data); 
     
     // create sms msg
+    console.log('create sms msg', adminName, eventName, date, time, location);
     // create list of shortlinks
+    console.log('get list of shortlinks', uIdAdmin, dateTime, friendsIds);
     // prep & send sms via twilio
 
 
+    // OLD ===============
     // send invites
     for( let i = 0; i < friends.length; i++ ) {
 
@@ -85,11 +100,14 @@ export default {
 
 
 
+
+
   // get my vote object - from /votes > created
   // get my vote object 
   // get my vote object 
   // get my vote object 
   async getVotesObject(context, data) {
+    console.log('*** starting getVotesObject() ***');
     const uIdAdmin = data.uIdAdmin;
     const dateAndTime = data.dateAndTime;
     const db = getDatabase();
@@ -99,6 +117,7 @@ export default {
       if (snapshot.exists()) {
         const result = snapshot.val();
         context.commit('votes', result);
+        console.log('committing votes', result);
       } else {
         console.log("No data available");
         context.comment('votes', null);
@@ -110,6 +129,9 @@ export default {
   },
 
 
+
+
+  
 
 
 

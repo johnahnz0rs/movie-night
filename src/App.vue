@@ -1,7 +1,7 @@
 <template>
   <v-app>
     <HeaderNav />
-    <v-main>
+    <v-main class="p-8">
       <router-view/>
     </v-main>
   </v-app>
