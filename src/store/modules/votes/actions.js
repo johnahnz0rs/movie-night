@@ -18,10 +18,12 @@ export default {
     console.log('****starting store/votes/actions createVotes()****', context, data);
     const uIdAdmin = data.uIdAdmin;
     const date = `${data.year}-${data.month}-${data.day}-${data.hour}-${data.minute}-${data.meridian}`;
+    const nomsPerFriend = data.nomsPerFriend;
     // const friends = data.friends;
     const votesData = {
       uIdAdmin,
       date,
+      nomsPerFriend,
       nomsFinished: false,
       votesFinished: false,
     };
@@ -107,22 +109,85 @@ export default {
   // get my vote object 
   // get my vote object 
   async getVotesObject(context, data) {
-    // console.log('*** starting getVotesObject() ***');
+    console.log('*** starting getVotesObject() ***', data);
     const uIdAdmin = data.uIdAdmin;
     const dateAndTime = data.dateAndTime;
+    const myId = data.myId;
     const db = getDatabase();
     
+    // make the call
     get(ref(db, `votes/${uIdAdmin}/${dateAndTime}`))
       .then((snapshot) => {
-      if (snapshot.exists()) {
-        const result = snapshot.val();
-        context.commit('votes', result);
-        // console.log('committing votes', result);
-      } else {
-        console.log("No data available");
-        context.commit('votes', null);
-      }
+
+        // there is data
+        if (snapshot.exists()) {
+          let result = snapshot.val();
+
+          // the votes object
+          // context.commit('votesObject', result);
+
+          // nomsPerFriend
+          context.commit('nomsPerFriend', result.nomsPerFriend);
+          
+          
+          // nomsFinished
+          let nomsFinished = false;
+          if (result.nomsFinished) {
+            nomsFinished = true;
+          }
+          context.commit('nomsFinished', nomsFinished);
+          // nominations
+          context.commit('nominations', result.nominations ? result.nominations : []);
+          // myNoms
+          let myNoms = [];
+          for (let i = 0; i < result.nomsPerFriend; i++) {
+            myNoms.push({});
+          }
+          if (result.nominations) {
+            if (result.nominations[myId]) {
+              myNoms = result.nominations[myId];
+            }
+          }
+          context.commit('myNoms', myNoms);
+
+
+
+
+          // votes
+          context.commit('votes', result.votes ? result.votes : []);
+          // result.nominations = result.nominations ? result.nominations : [];
+          // votesFinished
+          context.commit('votesFinished', result.votesFinished ? true : false);
+          // let votesFinished = false;
+          // if (result.votesFinished) {
+          //   votesFinished = true;
+          // }
+          // myVotes
+          let myVotes = {
+            firstChoice: null,
+            secondChoice: null,
+            thirdChoice: null,
+          };
+          // if (result.votes[myId]) {
+          //   myVotes = result.votes[myId];
+          //   context.commit('myVotes', myVotes);
+          // } 
+          context.commit('myVotes', myVotes);
+
+
+          // winner
+          context.commit('winner', result.winner ? result.winner : null);
+
+          
+
+        
+        // no data  
+        } else {
+          console.log("No data available");
+          context.commit('votes', null);
+        }
       })
+      
       .catch((error) => {
         console.error(error);
       });

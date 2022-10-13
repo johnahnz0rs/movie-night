@@ -72,32 +72,9 @@ export default {
     // MovieVoting,
     // MovieVoteResults,
   },
-  data() {
-    return {
-      test: 'lol',
-      movieNight: null,
-    };
-  },
   computed: {
     uId() {
       return this.$cookies.isKey('uId') ? this.$cookies.get('uId') : null;
-    },
-    // route params
-    uIdAdminParam() {
-      return this.$route.params.uIdAdmin;
-    },
-    dateParam() {
-      return this.$route.params.date;
-    },
-    myIdParam() {
-      return this.$route.params.myId;
-    },
-    // dbase objects
-    // movieNight() {
-    //   return this.$store.getters['events/movieNight'];
-    // },
-    votes() {
-      return this.$store.getters['votes/votes'];
     },
     // calculated vars
     isAdmin() {
@@ -130,13 +107,17 @@ export default {
 
     // get the events/movieNight object
     // get the votes object
+    const uIdAdminParam = this.$route.params.uIdAdmin;
+    const dateParam = this.$route.params.date;
+    const myIdParam = this.$route.params.myId;
     const dbArgs = {
-      uIdAdmin: this.uIdAdminParam,
-      dateAndTime: this.dateParam,
+      uIdAdmin: uIdAdminParam,
+      dateAndTime: dateParam,
+      myId: myIdParam,
     };
     this.$store.dispatch('events/getEventObject', dbArgs);
     this.$store.dispatch('votes/getVotesObject', dbArgs);
-    this.movieNight = this.$store.getters['events/movieNight'];
+    // this.movieNight = this.$store.getters['events/movieNight'];
 
   },
 

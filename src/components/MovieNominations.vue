@@ -1,12 +1,13 @@
 <template>
-<div v-if="votes" class="mb-3">
+<!-- <div v-if="votes" class="mb-3"> -->
+<div class="mb-3">
 
   <!-- header -->
   <v-row>
     <v-col>
       <h2>my nominations</h2>
       <!-- show nomsPerFriend || noms are closed. -->
-      <p v-if="!votes.nomsFinished" id="noms-per-friend">everyone can nominate up to {{ movieNight.nomsPerFriend ? movieNight.nomsPerFriend : '' }} movie{{ movieNight.nomsPerFriend > 1 ? 's' : '' }}</p>
+      <p v-if="!nomsFinished" id="noms-per-friend">everyone can nominate up to {{ nomsPerFriend }} movie{{ nomsPerFriend > 1 ? 's' : '' }}</p>
       <p v-else>nominations are finished; please vote for what you want to watch</p>
     </v-col>
   </v-row>
@@ -19,17 +20,20 @@
       <p v-else class="my-nom-single">nominate a movie</p>
     </v-col>
   </v-row>
+  <!-- <v-row v-else>
+    <v-col><p @click="devPrint(myNoms)">no myNoms omg</p></v-col>
+  </v-row> -->
 
 
   <!-- search for movies -->
   <v-row class="mt-3">
     <v-col cols="9" md="10" class="pb-1">
     <!-- <v-col cols="9" md="10"> -->
-      <v-text-field v-model="searchTerm" @keyup.enter="getMovies" label="Search movies" variant="outlined" density="compact"></v-text-field>
+      <v-text-field v-model="searchTerm" @keyup.enter="getMovieSearchResults" label="Search movies" variant="outlined" density="compact"></v-text-field>
     </v-col>
     <v-col cols="3" md="2" class="pb-1">
     <!-- <v-col cols="3" md="2"> -->
-      <v-btn @click.prevent="getMovies">Search</v-btn>
+      <v-btn @click.prevent="getMovieSearchResults">Search</v-btn>
     </v-col>
   </v-row>
 
@@ -42,7 +46,8 @@
       <img v-if="movie.poster_path" :src="`https://image.tmdb.org/t/p/w154/${movie.poster_path}`" :alt="`{{movie.title}}`">
       
       <!-- nominate button -->
-      <v-btn @click="nominateMovie(movie)" :disabled="myNoms.indexOf(movie) > -1 ? true : false" variant="tonal" color="green">nominate</v-btn>
+      <!-- <v-btn @click="nominateMovie(movie)" :disabled="myNoms.indexOf(movie) > -1 ? true : false" variant="tonal" color="green">nominate</v-btn> -->
+      <v-btn @click="nominateMovie(movie)" variant="tonal" color="green">nominate</v-btn>
 
       <!-- movie details -->
       <v-dialog v-model="searchResults[index].dialog" fullscreen>
@@ -79,13 +84,19 @@
   </v-row>
 
 </div>
+<!-- <div v-else>
+  <p>no data for tihs.votes</p>
+</div> -->
 </template>
 
 <script>
 export default{
   data() {
     return {
+      // const
       tmdbApi: '4b82ea454a84cdf8315e0146aa0aea00',
+      myIdParam: this.$route.params.myId,
+      // search for a movie
       searchTerm: '',
       searchResults: [
         {
@@ -137,34 +148,60 @@ export default{
           vote_count: 7793
         },
       ],
+      // nominate a movie
     };
   },
   computed: {
+    movieNight() {
+      return this.$store.getters['events/movieNight'];
+    },
+    nomsPerFriend() {
+      return this.$store.getters['votes/nomsPerFriend'];
+    },
+    nomsFinished() {
+      return this.$store.getters['votes/nomsFinished'];
+    },
+    nominations() {
+      return this.$store.getters['votes/nominations']
+    },
+    myNoms() {
+      return this.$store.getters['votes/myNoms'];
+      // let temp = [{}];
+      // if (this.nominations) {
+      //   temp = this.nominations[this.myIdParam];
+      // }
+      // return temp;
+    },
+    votesFinished() {
+      return this.$store.getters['votes/votesFinished'];
+    },
+    // ppl's votes
     votes() {
       return this.$store.getters['votes/votes'];
     },
-    // movieNight() {
-    //   return this.$store.getters['events/movieNight'];
+    myVotes() {
+      return this.$store.getters['votes/myVotes'];
+    }
+    // myId() {
+    //   return this.$route.params.myId;
     // },
-    myId() {
-      return this.$route.params.myId;
-    },
-    myNoms() {
-      let tempNoms = [];
-      for (let i=0; i < this.movieNight.nomsPerFriend; i++) {
-        tempNoms.push({});
-      }
-      if ( Object.prototype.hasOwnProperty.call(this.votes, 'nominations') ) {
-        if ( Object.prototype.hasOwnProperty.call(this.votes.nominations, this.myId) ) {
-          tempNoms = this.votes.nominations[this.myId];
-        }
-      }
-      return tempNoms;
-    },
+    // myNoms() {
+    //   return this.votes.nominations[this.myId];
+      // let tempNoms = [];
+      // for (let i=0; i < this.movieNight.nomsPerFriend; i++) {
+      //   tempNoms.push({});
+      // }
+      // if ( Object.prototype.hasOwnProperty.call(this.votes, 'nominations') ) {
+      //   if ( Object.prototype.hasOwnProperty.call(this.votes.nominations, this.myId) ) {
+      //     tempNoms = this.votes.nominations[this.myId];
+      //   }
+      // }
+      // return tempNoms;
+    // },
   },
   methods: {
-    async getMovies() {
-      console.log(`*** getMovies(${this.searchTerm}) ***`);
+    async getMovieSearchResults() {
+      console.log(`*** getMovieSearchResults(${this.searchTerm}) ***`);
       const response = await fetch(`https://api.themoviedb.org/3/search/movie?api_key=${this.tmdbApi}&query=${this.searchTerm}`);
       let responseData = await response.json();
       for (let i=0; i < responseData.length; i++) {
@@ -180,9 +217,18 @@ export default{
       // this.myNoms.push(movie);
       this.movieNight.nominations[this.myId].push(movie);
     },
+    devPrint(thing) {
+      console.log(thing);
+    }
+
+
+
   },
   created() {
-    this.movieNight = this.$store.getters['events/movieNight'];
+    // this.movieNight = this.$store.getters['events/movieNight'];
+    // this.votes = this.$store.getters['votes/votes'];
+    // await 
+    //  this.movieNight = this.getMovieNightObject();
   },
 };
 </script>

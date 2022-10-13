@@ -34,13 +34,6 @@
 
 <script>
 export default {
-  // name: 'MovieNightDetails',
-  // props: ['movieNight'],
-  data() {
-    return {
-      // movieNight: null,
-    };
-  },
   computed: {
     movieNight() {
       return this.$store.getters['events/movieNight'];
