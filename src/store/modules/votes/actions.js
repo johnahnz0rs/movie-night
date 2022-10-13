@@ -107,7 +107,7 @@ export default {
   // get my vote object 
   // get my vote object 
   async getVotesObject(context, data) {
-    console.log('*** starting getVotesObject() ***');
+    // console.log('*** starting getVotesObject() ***');
     const uIdAdmin = data.uIdAdmin;
     const dateAndTime = data.dateAndTime;
     const db = getDatabase();
@@ -117,7 +117,7 @@ export default {
       if (snapshot.exists()) {
         const result = snapshot.val();
         context.commit('votes', result);
-        console.log('committing votes', result);
+        // console.log('committing votes', result);
       } else {
         console.log("No data available");
         context.comment('votes', null);

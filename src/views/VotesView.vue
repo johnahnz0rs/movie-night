@@ -45,7 +45,7 @@
     <!-- ADMIN PANEL -->
     <!-- ADMIN PANEL -->
     <!-- <div v-if="isAdmin" class="outlined"> -->
-      <div class="outlined"> <!-- leaving this always-on, for dev --> <!-- remember to remove this line (and use v-if="isAdmin") before it goes to prod -->
+      <div class="outlined" style="margin-top: 400px;"> <!-- leaving this always-on, for dev --> <!-- remember to remove this line (and use v-if="isAdmin") before it goes to prod -->
       <MovieAdminPanel />
     </div>
 
