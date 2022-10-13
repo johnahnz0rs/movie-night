@@ -20,6 +20,7 @@
     <MovieNightDetails />
     <!-- </div> -->
 
+    
     <!-- NOMINATIONS -->
     <!-- NOMINATIONS -->
     <!-- NOMINATIONS -->

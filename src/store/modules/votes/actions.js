@@ -120,7 +120,7 @@ export default {
         // console.log('committing votes', result);
       } else {
         console.log("No data available");
-        context.comment('votes', null);
+        context.commit('votes', null);
       }
       })
       .catch((error) => {
