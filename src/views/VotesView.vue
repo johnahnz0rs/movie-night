@@ -16,15 +16,15 @@
     <!-- MOVIENIGHT DETAILS -->
     <!-- MOVIENIGHT DETAILS -->
     <!-- MOVIENIGHT DETAILS -->
-    <!-- <div class="outlined"> -->
     <MovieNightDetails />
-    <!-- </div> -->
 
     
     <!-- NOMINATIONS -->
     <!-- NOMINATIONS -->
     <!-- NOMINATIONS -->
-    <MovieNominations />
+    <div v-if="!nomsFinished">
+      <MovieNominations />
+    </div>
 
 
     <!-- VOTING -->
@@ -73,29 +73,31 @@ export default {
     // MovieVoteResults,
   },
   computed: {
-    uId() {
-      return this.$cookies.isKey('uId') ? this.$cookies.get('uId') : null;
-    },
-    // calculated vars
-    isAdmin() {
-      if (this.$cookies.isKey('uId') && this.$cookies.get('uId') == this.movieNight.uIdAdmin) {
-        return true;
-      }
-      return false;
-    },
-    allowedFriends() {
-      return this.$store.getters['events/allowedFriends'];
-    },
-    amIAllowed() {
-      return this.allowedFriends.includes(this.myIdParam);
-    },
+    // uId() {
+    //   return this.$cookies.isKey('uId') ? this.$cookies.get('uId') : null;
+    // },
+    // // calculated vars
+    // isAdmin() {
+    //   if (this.$cookies.isKey('uId') && this.$cookies.get('uId') == this.movieNight.uIdAdmin) {
+    //     return true;
+    //   }
+    //   return false;
+    // },
+    // allowedFriends() {
+    //   return this.$store.getters['events/allowedFriends'];
+    // },
+    // amIAllowed() {
+    //   return this.allowedFriends.includes(this.myIdParam);
+    // },
+    // nomsFinished() {
+    //   return this.votes.nomsFinished;
+    // },
+    // votesFinished() {
+    //   return this.votes.votesFinished;
+    // }
     nomsFinished() {
-      return this.votes.nomsFinished;
+      return this.$store.getters['votes/nomsFinished'];
     },
-    votesFinished() {
-      return this.votes.votesFinished;
-    }
-
   },
   created() {
     console.log('**** starting VotesView > created() ****')
@@ -117,7 +119,7 @@ export default {
     };
     this.$store.dispatch('events/getEventObject', dbArgs);
     this.$store.dispatch('votes/getVotesObject', dbArgs);
-    // this.movieNight = this.$store.getters['events/movieNight'];
+    
 
   },
 

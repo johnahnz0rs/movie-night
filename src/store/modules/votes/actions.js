@@ -197,6 +197,24 @@ export default {
 
 
   
+  // update myNoms
+  async updateMyNoms(context, data) {
+    console.log('*** starting updateMyNoms() ***', context, data);
+
+    // let votes = data.votes;
+    // votes
+
+    // // votes.nominations[data.myId]
+    // const movie = data.movie;
+    // const endpoint = `votes/${data.uIdAdmin}/${data.date}`;
+
+
+  },
+
+
+
+
+
 
 
 
