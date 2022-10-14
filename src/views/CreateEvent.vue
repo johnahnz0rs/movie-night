@@ -354,6 +354,7 @@ export default {
       console.log('dispatching 3: -- events/createEvents -- votes/createVotes -- votes/sendAlerts', movieNight);
       this.$store.dispatch('events/createEvent', movieNight);
       this.$store.dispatch('votes/createVotes', movieNight);
+      this.$store.dispatch('movieNights/createMovieNight', movieNight);
       // ***** turning this off during dev 
         // so i don't create test shortlinks (limit 500 total links) *****
       // this.$store.dispatch('votes/sendAlerts', movieNight); 
