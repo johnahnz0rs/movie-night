@@ -1,7 +1,7 @@
 <template>
-<div class="mb-3">
+<div class="mb-3"> <!-- start MovieNominations -->
 
-  <!-- header -->
+  <!-- header x -->
   <v-row>
     <v-col>
       <h2>my nominations</h2>
@@ -19,11 +19,10 @@
       <p v-else class="my-nom-single">nominate a movie</p>
     </v-col>
   </v-row>
-  <!-- <v-row v-else>
-    <v-col><p @click="devPrint(myNoms)">no myNoms omg</p></v-col>
-  </v-row> -->
 
 
+  <!-- search for movies -->
+  <!-- search for movies -->
   <!-- search for movies -->
   <v-row class="mt-3">
     <v-col cols="9" md="10" class="pb-1">
@@ -37,18 +36,29 @@
   </v-row>
 
 
-  <!-- search results -->
+
+
+
+  <!-- nominate from search results -->
+  <!-- nominate from search results -->
+  <!-- nominate from search results -->
   <v-row v-if="searchResults" id="search-results" class="text-center">
     <v-col v-for="(movie, index) in searchResults" :key="movie.id" cols="6" md="4" class="mb-3">
-      <!-- movie details -->
-      <p class="movie-title"><span class="font-weight-bold text-h6">{{ movie.title }}</span> ({{ movie.release_date.slice(0,4) }})</p>
-      <img v-if="movie.poster_path" :src="`https://image.tmdb.org/t/p/w154/${movie.poster_path}`" :alt="`{{movie.title}}`">
       
+      <!-- movie details -->
+      <p class="movie-title"><span class="font-weight-bold text-h6">{{ movie.title }} </span><span v-if="movie.release_date">({{ movie.release_date.slice(0,4) }})</span></p>
+      <img v-if="movie.poster_path" class="movie-poster" :src="`https://image.tmdb.org/t/p/w154/${movie.poster_path}`" :alt="`{{movie.title}}`">
+      
+
       <!-- nominate button -->
-      <!-- <v-btn @click="nominateMovie(movie)" :disabled="myNoms.indexOf(movie) > -1 ? true : false" variant="tonal" color="green">nominate</v-btn> -->
+      <!-- nominate button -->
+      <!-- nominate button -->
       <v-btn @click="nominateMovie(movie)" :disabled="!canStillNominate" variant="tonal" color="green">nominate</v-btn>
 
-      <!-- movie details -->
+
+      <!-- modal - movie details -->
+      <!-- modal - movie details -->
+      <!-- modal - movie details -->
       <v-dialog v-model="searchResults[index].dialog" fullscreen>
         <template v-slot:activator="{ props }">
           <v-btn v-bind="props" variant="plain" class="mt-1">see details</v-btn>
@@ -67,28 +77,26 @@
           </v-card-actions>
         </v-card>
       </v-dialog>
+
     </v-col>
-  </v-row>
+  </v-row> <!-- end nominate from search results - END -->
 
 
 
 
 
-</div>
-<!-- <div v-else>
-  <p>no data for tihs.votes</p>
-</div> -->
+</div> <!-- end MovieNominations END -->
 </template>
 
 <script>
-export default{
+export default {
   data() {
     return {
       // const
       tmdbApi: '4b82ea454a84cdf8315e0146aa0aea00',
-      uIdAdminParam: this.$route.params.uIdAdmin,
-      dateParam: this.$route.params.date,
-      myIdParam: this.$route.params.myId,
+      // uIdAdminParam: this.$route.params.uIdAdmin,
+      // dateParam: this.$route.params.date,
+      // myIdParam: this.$route.params.myId,
       // search for a movie
       searchTerm: '',
       searchResults: [
@@ -138,57 +146,53 @@ export default{
           title: "Dune",
           video: false,
           vote_average: 7.9,
-          vote_count: 7793
+          vote_count: 7793,
         },
       ],
+      myNoms: [],
+      // votes: null,
       // nominate a movie
     };
   },
   computed: {
-    // movieNight() {
-    //   return this.$store.getters['events/movieNight'];
-    // },
+    votes() {
+      return this.$store.getters['votes/votes'];
+    },
     nomsPerFriend() {
       return this.$store.getters['votes/nomsPerFriend'];
     },
-    nomsFinished() {
-      return this.$store.getters['votes/nomsFinished'];
-    },
-    // nominations() {
-    //   return this.$store.getters['votes/nominations']
+    // myNoms() {
+    //   return this.$store.getters['votes/myNoms'];
     // },
-    myNoms() {
-      return this.$store.getters['votes/myNoms'];
-    },
     cleanedMyNoms() {
       let cleaned = [];
       for (let i=0; i<this.myNoms.length; i++) {
         if (this.myNoms[i].id) {
-          cleaned.push()
+          cleaned.push(this.myNoms[i]);
         }
       }
-    }
+      return cleaned;
+    },
     canStillNominate() {
+      // count the number of real noms (has 'id' prop)
       let nomsCount = 0;
-      if (this.myNoms) {
+      if (this.myNoms){
         for (let i=0; i<this.myNoms.length; i++) {
           if (this.myNoms[i].id) {
             nomsCount++;
           }
         }
       }
-      return nomsCount < this.nomsPerFriend;
+      // can i vote?
+      let canNom = false;
+      if (nomsCount < this.nomsPerFriend) {
+        canNom = true;
+      }
+      return canNom;
     },
-    // votesFinished() {
-    //   return this.$store.getters['votes/votesFinished'];
-    // },
-    // // ppl's votes
-    // votes() {
-    //   return this.$store.getters['votes/votes'];
-    // },
-    // myVotes() {
-    //   return this.$store.getters['votes/myVotes'];
-    // },
+    
+
+
   },
   methods: {
 
@@ -206,37 +210,76 @@ export default{
 
     // nominate a movie
     nominateMovie(movie) {
-      console.log('*** nominateMovie() ***', movie);
+      console.log('*** nominateMovie(movie) ***', movie);
       console.log('myNoms', this.myNoms);
-      let votesObject = this.$store.getters['votes/votes'];
-      let cleanedMyNoms = [];
+      let tempNoms = [];
       for (let i=0; i<this.myNoms.length; i++) {
+        console.log(this.myNoms[i]);
         if (this.myNoms[i].id) {
-          cleanedMyNoms.push(this.myNoms[i]);
+          tempNoms.push(this.myNoms[i]);
         }
       }
-      cleanedMyNoms.push(movie);
-      votesObject.nominations[this.myIdParam] = cleanedMyNoms;
-      console.log('*** nominateMovie() -- votesObject ***', votesObject);
+      if (tempNoms.length < this.nomsPerFriend) {
+        console.log('tempNoms has less than nomsPerFriend');
+        tempNoms.push(movie);
+      }
+
+      console.log('tempNoms', tempNoms);
+      // console.log('votesObject.nominations', votesObject);
+      // console.log('myId', myId);
+
+      // let cleanedMyNoms = [];
+      // for (let i=0; i<this.myNoms.length; i++) {
+      //   if (this.myNoms[i].id) {
+      //     cleanedMyNoms.push(this.myNoms[i]);
+      //   }
+      // }
+      // if (cleanedMyNoms.length < this.nomsPerFriend) {
+      //   cleanedMyNoms.push(movie);
+      // }
+      
+      // votesObject.nominations[myId] = cleanedMyNoms;
+      // console.log('*** nominateMovie() -- votesObject ***', votesObject);
       // const update = {
       //   uIdAdmin: this.uIdAdminParam,
       //   date: this.dateParam,
       //   myId: this.myIdParam,
       //   votesObject,
       //   // movie,
-      //   myNoms: cleanedmyNoms,
+      //   myNoms: cleanedMyNoms,
       // };
-      // if (this.canStillNominate) {
-        // this.$store.dispatch('votes/updateMyNoms', update);
-      // }
-    },
-    devPrint(thing) {
-      console.log(thing);
+      // // if (this.canStillNominate) {
+      //   // this.$store.dispatch('votes/updateMyNoms', update);
+      // // }
+
+      // console.log('*** nominateMovie() END', update);
     },
 
 
 
   },
+  created() {
+    console.log('*** starting MovieNominations > created()');
+    this.myNoms = this.$store.getters['votes/myNoms'];
+    // const uIdAdmin = this.$route.params.uIdAdmin;
+    // const dateParam = this.$route.params.date;
+    // const myIdParam = this.$route.params.myId;
+    // const uIdAdminParam = this.$route.params.uIdAdmin;
+    // const dateParam = this.$route.params.date;
+    // const myIdParam = this.$route.params.myId;
+    // const dbArgs = {
+    //   uIdAdmin: uIdAdminParam,
+    //   dateAndTime: dateParam,
+    //   myId: myIdParam,
+    // };
+    
+    // this.$store.dispatch('votes/getVotesObject', dbArgs);
+    // console.log(this.$store.getters['votes/votes']);
+    // this.wha = this.$store.getters['votes/votes'];
+    // this.votes = this.$store.getters['votes/votes'];
+    
+  },
+  
 };
 </script>
 
@@ -257,6 +300,7 @@ export default{
     min-height: 50px;
     line-height: 0.85em;;
   }
+
 }
 
 </style>

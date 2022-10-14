@@ -4,9 +4,12 @@ export default {
     state.movieNight = payload;
   },
 
-  allowedFriends(state, payload) {
-    state.allowedFriends = payload;
-  },
+  // allowedFriends(state, payload) {
+  //   state.allowedFriends = payload;
+  // },
   
+  amIAllowed(state, payload) {
+    state.amIAllowed = payload;
+  },
 
 };

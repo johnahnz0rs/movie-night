@@ -124,12 +124,26 @@ export default {
           let result = snapshot.val();
 
           // the votes object
-          // context.commit('votesObject', result);
+          console.log('commit votes', result);
+          context.commit('votes', result);
+
+          // votes
+          context.commit('votes', result.votes ? result.votes : []);
+
+          // votesFinished
+          context.commit('votesFinished', result.votesFinished ? true : false);
+          
+          // myVotes
+          let myVotes = {
+            firstChoice: null,
+            secondChoice: null,
+            thirdChoice: null,
+          }; 
+          context.commit('myVotes', myVotes);
 
           // nomsPerFriend
           context.commit('nomsPerFriend', result.nomsPerFriend);
-          
-          
+                    
           // nomsFinished
           let nomsFinished = false;
           if (result.nomsFinished) {
@@ -138,6 +152,8 @@ export default {
           context.commit('nomsFinished', nomsFinished);
           // nominations
           context.commit('nominations', result.nominations ? result.nominations : []);
+
+
           // myNoms
           let myNoms = [];
           for (let i = 0; i < result.nomsPerFriend; i++) {
@@ -150,29 +166,7 @@ export default {
           }
           context.commit('myNoms', myNoms);
 
-
-
-
-          // votes
-          context.commit('votes', result.votes ? result.votes : []);
-          // result.nominations = result.nominations ? result.nominations : [];
-          // votesFinished
-          context.commit('votesFinished', result.votesFinished ? true : false);
-          // let votesFinished = false;
-          // if (result.votesFinished) {
-          //   votesFinished = true;
-          // }
-          // myVotes
-          let myVotes = {
-            firstChoice: null,
-            secondChoice: null,
-            thirdChoice: null,
-          };
-          // if (result.votes[myId]) {
-          //   myVotes = result.votes[myId];
-          //   context.commit('myVotes', myVotes);
-          // } 
-          context.commit('myVotes', myVotes);
+          
 
 
           // winner

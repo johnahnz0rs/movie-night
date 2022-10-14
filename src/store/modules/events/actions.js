@@ -12,6 +12,10 @@ export default {
     const uIdAdmin = data.uIdAdmin;
     const date = `${data.year}-${data.month}-${data.day}-${data.hour}-${data.minute}-${data.meridian}`;
     // console.log('data', data);
+    let allowedFriends = [];
+    for (let i=0; i<data.friends.length; i++) {
+      allowedFriends.push(data.friends[i].id);
+    }
     const movieNight = {
       uIdAdmin,
       eventName: data.eventName,
@@ -23,6 +27,7 @@ export default {
       meridian: data.meridian,
       location: data.location,
       friends: data.friends,
+      allowedFriends,
       nomsPerFriend: data.nomsPerFriend,
     };
 
@@ -38,34 +43,29 @@ export default {
   // get the event object (movieNight)
   // get the event object (movieNight)
   async getEventObject(context, data) {
+
     const uIdAdmin = data.uIdAdmin;
     const dateAndTime = data.dateAndTime;
+    const myId = data.myId;
     const db = getDatabase();
 
     get(ref(db, `events/${uIdAdmin}/${dateAndTime}`))
       .then((snapshot) => {
         if (snapshot.exists()) {
-          // save the movieNight object to the store
-          // create and save allowedFriends
           const movieNight = snapshot.val();
-          let allowedFriends = [];
-          for (let i=0; i < movieNight.friends.length; i++ ) {
-            allowedFriends.push(movieNight.friends[i].id);
+          if (movieNight.allowedFriends.includes(myId)) {
+            context.commit('movieNight', movieNight);
+            context.commit('amIAllowed', true);
+          } else {
+            context.commit('amIAllowed', false);
           }
-          context.commit('allowedFriends', allowedFriends);
-          context.commit('movieNight', movieNight);
         } else {
-          console.log('no data available', uIdAdmin, dateAndTime);
-          context.commit('allowedFriends', null);
-          context.commit('movieNight', null);
+          console.log('*** getEventObject() - no data available', uIdAdmin, dateAndTime, myId);
         }
       })
       .catch((error) => {
         console.error(error);
       });
-
-
-
   },
 
 };

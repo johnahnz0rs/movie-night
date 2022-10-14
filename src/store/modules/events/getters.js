@@ -4,8 +4,10 @@ export default {
     return state.movieNight;
   },
 
-  allowedFriends(state) {
-    return state.allowedFriends;
-  }
-
+  // allowedFriends(state) {
+  //   return state.allowedFriends;
+  // }
+  amIAllowed(state) {
+    return state.amIAllowed;
+  },
 };

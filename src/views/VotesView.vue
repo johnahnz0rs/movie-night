@@ -1,7 +1,6 @@
 <template>
   <v-container>
 
-
     <!-- header -->
     <!-- <v-row class="text-center">
       <v-col>
@@ -46,7 +45,7 @@
     <!-- ADMIN PANEL -->
     <!-- ADMIN PANEL -->
     <!-- <div v-if="isAdmin" class="outlined"> -->
-      <div class="outlined" style="margin-top: 400px;"> <!-- leaving this always-on, for dev --> <!-- remember to remove this line (and use v-if="isAdmin") before it goes to prod -->
+    <div v-if="isAdmin" class="outlined" style="margin-top: 400px;"> <!-- leaving this always-on, for dev --> <!-- remember to remove this line (and use v-if="isAdmin") before it goes to prod -->
       <MovieAdminPanel />
     </div>
 
@@ -72,43 +71,38 @@ export default {
     // MovieVoting,
     // MovieVoteResults,
   },
+  data() {
+    return {
+      uId: '',
+      isAdmin: false,
+      // amIAllowed: false,
+      // allowedFriends: [],
+      // movieNight: {},
+    };
+  },
   computed: {
-    // uId() {
-    //   return this.$cookies.isKey('uId') ? this.$cookies.get('uId') : null;
-    // },
-    // // calculated vars
-    // isAdmin() {
-    //   if (this.$cookies.isKey('uId') && this.$cookies.get('uId') == this.movieNight.uIdAdmin) {
-    //     return true;
-    //   }
-    //   return false;
-    // },
-    // allowedFriends() {
-    //   return this.$store.getters['events/allowedFriends'];
-    // },
-    // amIAllowed() {
-    //   return this.allowedFriends.includes(this.myIdParam);
-    // },
-    // nomsFinished() {
-    //   return this.votes.nomsFinished;
-    // },
-    // votesFinished() {
-    //   return this.votes.votesFinished;
-    // }
     nomsFinished() {
       return this.$store.getters['votes/nomsFinished'];
     },
+    votesFinished() {
+      return true;
+    },
+    // allowedFriends() {
+    //   return this.$store.getters['events/allowedFriends']
+    // },
+    amIAllowed() {
+      return this.$store.getters['events/amIAllowed'];
+      // let amI = false;
+      // if (this.allowedFriends) {
+      //   amI = this.allowedFriends.includes(this.$route.params.myId);
+      // }
+      // // return this.allowedFriends.includes(this.$route.params.myId);
+      // return amI;
+    },
   },
   created() {
-    console.log('**** starting VotesView > created() ****')
-
-    // check if user is admin —— done in computed()
-    // check if user is in the friends list —- done in computed()
-    // check if nominations are finished -- done in computed()
-    // check if votes are finished -- done in computed()
-
-    // get the events/movieNight object
-    // get the votes object
+    console.log('**** starting VotesView > created() ****');
+    
     const uIdAdminParam = this.$route.params.uIdAdmin;
     const dateParam = this.$route.params.date;
     const myIdParam = this.$route.params.myId;
@@ -119,7 +113,22 @@ export default {
     };
     this.$store.dispatch('events/getEventObject', dbArgs);
     this.$store.dispatch('votes/getVotesObject', dbArgs);
+
+    this.uId = this.$cookies.get('uId');
+
+    if (this.$route.params.uIdAdmin == this.uId) {
+      this.isAdmin = true;
+    }
+    // this.allowedFriends = this.$store.getters['events/allowedFriends'];
+  },
+  mounted() {
     
+    // if (this.allowedFriends.includes(this.$route.params.myId)) {
+    //   this.amIAllowed = true;
+    // }
+
+
+    // console.log('*** created() - END');
 
   },
 
