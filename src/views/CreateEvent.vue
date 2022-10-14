@@ -256,6 +256,7 @@ export default {
     cleanedEventName() {
       return this.eventName ? this.eventName : 'Movie Night';
     },
+    // cleanedFriends used on frontend to list attendees
     cleanedFriends() {
       let cleanedFriends = [];
       for( let i = 0; i < this.friends.length; i++ ) {
@@ -265,6 +266,7 @@ export default {
       }
       return cleanedFriends;
     },
+    // cleanedFriendsWithAdmin is only used to create the movieNight object
     cleanedFriendsWithAdmin() {
       let friends = this.cleanedFriends;
       friends.push(this.admin);
