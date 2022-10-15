@@ -59,7 +59,7 @@
 <script>
 import MovieAdminPanel from '../components/MovieAdminPanel.vue';
 import MovieNightDetails from '../components/MovieNightDetails.vue';
-import MovieNominations from '../components/MovieNominations.vue';
+import MovieNominations from '../components/-MovieNominations-v1.vue';
 // import MovieVoting from '../components/MovieVoting.vue';
 // import MovieVoteResults from '../components/MovieVoteResults.vue';
 

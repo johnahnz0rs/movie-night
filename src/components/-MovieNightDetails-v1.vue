@@ -13,19 +13,15 @@
 
       <p class="d-flex justify-space-between mb-1">
         <strong>where & when</strong> 
-        <span class="text-right">
-          <span class="text-decoration-underline">{{ movieNight.location }}</span>
-          <br /><em>{{ movieNight.month }} {{ movieNight.day }}, {{ movieNight.year }} @ {{ movieNight.hour}}:{{ movieNight.minute }} {{ movieNight.meridian }}</em>
-        </span>
+        <span>{{ movieNight.location }} <br /><em>{{ movieNight.month }} {{ movieNight.day }}, {{ movieNight.year }} @ {{ movieNight.hour}}:{{ movieNight.minute }} {{ movieNight.meridian }}</em></span>
+        <!-- <strong>where & when</strong> <br />
+        {{ movieNight.location }} <br />
+        <em>{{ movieNight.month }} {{ movieNight.day }}, {{ movieNight.year }} @ {{ movieNight.hour}}:{{ movieNight.minute }} {{ movieNight.meridian }}</em> -->
       </p>
       
       <p class="d-flex justify-space-between">
         <strong>who's invited</strong>
-        <span>
-          <span v-for="(friend, index) in movieNight.friends" :key="friend.id">
-            {{friend.name}}{{ index < movieNight.friends.length - 1 ? ', ' : '' }}
-          </span>
-        </span>
+        <span><span v-for="(friend, index) in movieNight.friends" :key="friend.id">{{friend.name}}{{ index < movieNight.friends.length - 1 ? ', ' : '' }}</span></span>
       </p>
 
       <hr>

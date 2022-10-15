@@ -27,10 +27,17 @@ const routes = [
     component: CreateEventView
   },
   {
-    path: '/mn/:mn',
+    path: '/mn/:mnId/:voterId',
     name: 'movieNight',
     component: MovieNightView
   },
+
+
+
+
+  // "not sure" or "v2" routes
+  // "not sure" or "v2" routes
+  // "not sure" or "v2" routes
   {
     path: '/account',
     name: 'account',

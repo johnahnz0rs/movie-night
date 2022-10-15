@@ -364,6 +364,57 @@ export default {
     // sendInvites()
     // sendInvites()
     // sendInvites()
+    async sendAlerts(context, data) {
+
+      // shortlink vars
+      const uIdAdmin = data.uIdAdmin;
+      const dateTime = `${data.year}-${data.month}-${data.day}-${data.hour}-${data.minute}-${data.meridian}`;
+      const friends = data.friends;
+      const friendsIds = [];
+
+      // sms msg vars
+      const adminName = data.admin.name;
+      const eventName = data.eventName;
+      const date = `${data.month} ${data.day}, ${data.year}`;
+      const time = `${data.hour}:${data.minute} ${data.meridian}`;
+      const location = data.location;
+
+      // dev
+      console.log('*** votes/actions/sendAlerts ***', context, data); 
+
+      // create sms msg
+      console.log('create sms msg', adminName, eventName, date, time, location);
+      // create list of shortlinks
+      console.log('get list of shortlinks', uIdAdmin, dateTime, friendsIds);
+      // prep & send sms via twilio
+
+
+      // OLD ===============
+      // send invites
+      for( let i = 0; i < friends.length; i++ ) {
+
+        // get 
+        const friendId = friends[i].id;
+        const dest = `https://nowthatscampin.com/votes/${uIdAdmin}/${dateTime}/${friendId}`;
+        const requestBody = JSON.stringify({ destination: dest });
+        const newShortLinkResponse = await fetch('https://api.rebrandly.com/v1/links', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'apikey': '905d9976a1d24548ab0930f5f56bc93d',
+          },
+          body: requestBody
+        });
+
+        if(!newShortLinkResponse.ok){
+          const error = new Error(newShortLinkResponse.message || 'something went wrong with newShortLinkResponse');
+          throw error;
+        } else {
+          console.log('got a new shortlink', await newShortLinkResponse.json());
+        }
+      }
+
+    },
     sendInvites() {
       console.log('**** starting  sendInvites() *****');
 
@@ -399,26 +450,22 @@ export default {
       };
 
       // save movieNight object to dbase
-      
+      const db = getDatabase();
+      const movieNightKey = push(child(ref(db), `movieNights/${this.uId}`)).key; // get a key for new movieNight
+      let updates = {}; // write the updates
+      updates[`movieNights/${movieNightKey}`] = movieNight;
+      update(ref(db), updates);
       
       // send text msgs (invite links)
       // this.$store.dispatch('votes/sendAlerts', movieNight); 
 
 
-      // redirect to /mn page
 
-
+      // clear cookies
       this.$cookies.remove('movieNight'); // this clears the cookies so the /create page will be a blank form jah bless
       
-      const db = getDatabase();
-      // get a key for new movieNight
-      const movieNightKey = push(child(ref(db), `movieNights/${this.uId}`)).key;
-
-      // write the updates
-      let updates = {};
-      updates[`movieNights/${movieNightKey}`] = movieNight;
-      update(ref(db), updates);
-      this.$router.push(`mn/${movieNightKey}`);
+      // redirect to /mn page
+      this.$router.push(`mn/${movieNightKey}/${movieNight.admin.id}`);
 
     },
     // sendInvites() END
