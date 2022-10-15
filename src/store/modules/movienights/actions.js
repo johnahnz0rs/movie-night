@@ -1,56 +1,28 @@
-import { get, push, child, getDatabase, ref, set } from "firebase/database";
+// import { get, push, child, getDatabase, ref, set } from "firebase/database";
+import { get, getDatabase, ref } from "firebase/database";
 
 export default {
 
-  async createMovieNight(context, data) {
-    console.log('***** createMovieNight() *****', context, data);
 
-    // vars
-    const uIdAdmin = data.uIdAdmin;
-    const date = `${data.year}-${data.month}-${data.day}-${data.hour}-${data.minute}-${data.meridian}`;
-    // console.log('data', data);
-    let allowedFriends = [];
-    let nominations = {};
-    let votes = {};
-    for (let i=0; i<data.friends.length; i++) {
-      friendsId = data.friends[i].id
-      allowedFriends.push(friendsId);
-      nominations[friendsId] = { lorem: 'ipsum' };
-      votes[friendsId] = { lorem: 'ipsum' };
-    }
-    
-    const movieNight = {
-      uIdAdmin,
-      admin: data.admin,
-      eventName: data.eventName,
-      month: data.month,
-      day: data.day,
-      year: data.year,
-      hour: data.hour,
-      minute: data.minute,
-      meridian: data.meridian,
-      location: data.location,
-      friends: data.friends,
-      nomsPerFriend: data.nomsPerFriend,
-      allowedFriends,
-      nominations,
-      votes,
-      nomsFinished: false,
-      votesFinished: false,
 
-    };
+  // The candidate with the majority (more than 50%) of first-choice votes wins outright. If no candidate gets a majority of first-choice votes, then it triggers a new counting process. The candidate who did the worst is eliminated, and that candidate’s voters’ ballots are redistributed to their second-choice pick. In other words, if you ranked a losing candidate as your first choice, and the candidate is eliminated, then your vote still counts: it just moves to your second-choice candidate. That process continues until there is a candidate who has the majority of votes.
 
-    console.log('*** about to create new movieNight in dbase ***', movieNight);
+  
+  async getMovieNightObject(context, data) {
     const db = getDatabase();
-    // set(ref(db, `events/${uIdAdmin}/${date}`), movieNight);
-    // set(ref(db, `movieNights/${uIdAdmin}/${date}`), movieNight);
-    const movieNightKey = push(child(ref(db), `movieNights/${uIdAdmin}}`)).key;
-    updates {
-      
-    }
-  },
-
-
-
+    get(ref(db, `movieNights/${data.mn}`))
+      .then((snapshot) => {
+        if (snapshot.exists()) {
+          const movieNight = snapshot.val();
+          context.commit('movieNight', movieNight);
+          console.log('*** movieNight ***', movieNight);
+        } else {
+          console.log('*** getEventObject() - no data available');
+        }
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }
 
 };

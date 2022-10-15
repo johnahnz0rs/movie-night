@@ -30,13 +30,14 @@
     
 
   </v-row>
+  <v-row v-else><v-col><p>lol</p></v-col></v-row>
 </template>
 
 <script>
 export default {
   computed: {
     movieNight() {
-      return this.$store.getters['events/movieNight'];
+      return this.$store.getters['movieNights/movieNight'];
     },
   },
   methods: {},

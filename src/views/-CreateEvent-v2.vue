@@ -13,7 +13,6 @@
       <div id="heading" class="text-center">
         <v-row>
           <v-col>
-            <!-- <p>{{user}}</p> -->
             <h1>Create New Movie Night</h1>
             <h2 v-if="view==1"><strong>step 1:</strong> what, where, when?</h2>
             <h2 v-else-if="view==2">step 2: invite your friends</h2>
@@ -223,7 +222,6 @@
 // slashtag and title are optional
 
 import { child, getDatabase, push, ref, update } from "firebase/database";
-// import { getAuth } from "firebase/auth";
 
 export default {
   
@@ -233,7 +231,6 @@ export default {
   name: 'CreateEvent',
   data() {
     return {
-      // user: null,
       uId: null,
       // constants
       months: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'June', 'July', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec'],
@@ -367,7 +364,8 @@ export default {
     sendInvites() {
       console.log('**** starting  sendInvites() *****');
 
-      // vars
+
+
       let allowedFriends = [];
       let nominations = {};
       let votes = {};
@@ -397,16 +395,13 @@ export default {
         nominations,
         votes,
       };
-
-      // save movieNight object to dbase
-      
-      
-      // send text msgs (invite links)
+      console.log('dispatching 3: -- events/createEvents -- votes/createVotes -- votes/sendAlerts', movieNight);
+      this.$store.dispatch('events/createEvent', movieNight);
+      this.$store.dispatch('votes/createVotes', movieNight);
+      // this.$store.dispatch('movieNights/createMovieNight', movieNight);
+      // ***** turning this off during dev 
+        // so i don't create test shortlinks (limit 500 total links) *****
       // this.$store.dispatch('votes/sendAlerts', movieNight); 
-
-
-      // redirect to /mn page
-
 
       this.$cookies.remove('movieNight'); // this clears the cookies so the /create page will be a blank form jah bless
       
@@ -415,11 +410,15 @@ export default {
       const movieNightKey = push(child(ref(db), `movieNights/${this.uId}`)).key;
 
       // write the updates
-      let updates = {};
-      updates[`movieNights/${movieNightKey}`] = movieNight;
-      update(ref(db), updates);
-      this.$router.push(`mn/${movieNightKey}`);
+      // let updates = {};
+      // updates[`movieNights/${movieNightKey}`] = movieNight;
+      // update(ref(db), updates);
+      // this.$router.push(`mn/${movieNightKey}`);
 
+
+
+      set(ref(db, `events/${uIdAdmin}/${date}`), movieNight);
+      this.$router.push(`votes/${movieNight.uIdAdmin}/${movieNight.year}-${movieNight.month}-${movieNight.day}-${movieNight.hour}-${movieNight.minute}-${movieNight.meridian}/${movieNight.admin.id}`);
     },
     // sendInvites() END
     // sendInvites() END
@@ -439,11 +438,6 @@ export default {
     // sendInvites() END
   },
   mounted() {
-
-    // const auth = getAuth();
-    // this.user = auth.currentUser;
-    // console.log('this is firebase user', this.user);
-
     // this.userId = localStorage.getItem('uId');
     if( !this.$cookies.isKey('uId') ) {
       console.log('CreateEvent > created: lol no user uId');

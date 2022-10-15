@@ -1,9 +1,10 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import HomeView from '../views/HomeView.vue';
 import AuthView from '../views/AuthView.vue';
-import CreateEvent from '../views/CreateEvent.vue';
-import VotesView from '../views/VotesView.vue';
+import CreateEventView from '../views/CreateEvent.vue';
+import MovieNightView from '../views/MovieNightView.vue';
 
+import VotesView from '../views/VotesView.vue';
 import AccountView from '../views/AccountView.vue';
 import UpcomingEvents from '../views/UpcomingEvents.vue';
 import PastEvents from '../views/PastEvents.vue';
@@ -16,14 +17,24 @@ const routes = [
     component: HomeView
   },
   {
-    path: '/account',
-    name: 'account',
-    component: AccountView
+    path: '/auth',
+    name: 'auth',
+    component: AuthView
   },
   {
     path: '/create',
     name: 'create',
-    component: CreateEvent
+    component: CreateEventView
+  },
+  {
+    path: '/mn/:mn',
+    name: 'movieNight',
+    component: MovieNightView
+  },
+  {
+    path: '/account',
+    name: 'account',
+    component: AccountView
   },
   {
     path: '/upcoming-events',
@@ -39,11 +50,6 @@ const routes = [
     path: '/quick-pick',
     name: 'quickpick',
     component: QuickPick
-  },
-  {
-    path: '/auth',
-    name: 'auth',
-    component: AuthView
   },
   {
     path: '/votes/:uIdAdmin/:date/:myId',

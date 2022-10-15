@@ -1,1 +1,11 @@
-export default {};
+export default {
+
+
+  movieNight(state) {
+    return state.movieNight;
+  },
+
+
+
+
+};
