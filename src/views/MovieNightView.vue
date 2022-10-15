@@ -52,11 +52,12 @@
       <!-- dev -->
       <!-- dev -->
       <!-- dev -->
-      <p>mnId: {{this.$route.params.mnId}}</p>
-      <p>friendId: {{this.$route.params.voterId}}</p>
-      <!-- <p v-if="movieNight">A {{movieNight}}</p> -->
-      <p>movieNight: {{movieNight}}</p>
-
+      <div style="margin-top:400px;">
+        <p>mnId: {{this.$route.params.mnId}}</p>
+        <p>friendId: {{this.$route.params.voterId}}</p>
+        <!-- <p v-if="movieNight">A {{movieNight}}</p> -->
+        <p>movieNight: {{movieNight}}</p>
+      </div>
 
 
 
@@ -110,7 +111,7 @@ export default {
     },
   },
   created() {
-    this.$store.dispatch('movieNights/getMovieNightObject', {mn: this.$route.params.mnId});
+    this.$store.dispatch('movieNights/getMovieNightObject', { uIdAdmin: this.$route.params.uIdAdmin, mnId: this.$route.params.mnId });
   },
 
 

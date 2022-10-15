@@ -13,7 +13,7 @@
       <div id="heading" class="text-center">
         <v-row>
           <v-col>
-            <!-- <p>{{user}}</p> -->
+            <p>uId: {{uId}}</p>
             <h1>Create New Movie Night</h1>
             <h2 v-if="view==1"><strong>step 1:</strong> what, where, when?</h2>
             <h2 v-else-if="view==2">step 2: invite your friends</h2>
@@ -223,7 +223,7 @@
 // slashtag and title are optional
 
 import { child, getDatabase, push, ref, update } from "firebase/database";
-// import { getAuth } from "firebase/auth";
+import { getAuth } from "firebase/auth";
 
 export default {
   
@@ -453,7 +453,7 @@ export default {
       const db = getDatabase();
       const movieNightKey = push(child(ref(db), `movieNights/${this.uId}`)).key; // get a key for new movieNight
       let updates = {}; // write the updates
-      updates[`movieNights/${movieNightKey}`] = movieNight;
+      updates[`movieNights/${this.uId}/${movieNightKey}`] = movieNight;
       update(ref(db), updates);
       
       // send text msgs (invite links)
@@ -465,7 +465,7 @@ export default {
       this.$cookies.remove('movieNight'); // this clears the cookies so the /create page will be a blank form jah bless
       
       // redirect to /mn page
-      this.$router.push(`mn/${movieNightKey}/${movieNight.admin.id}`);
+      this.$router.push(`mn/${movieNight.uIdAdmin}/${movieNightKey}/${movieNight.admin.id}`);
 
     },
     // sendInvites() END
@@ -492,13 +492,20 @@ export default {
     // console.log('this is firebase user', this.user);
 
     // this.userId = localStorage.getItem('uId');
-    if( !this.$cookies.isKey('uId') ) {
-      console.log('CreateEvent > created: lol no user uId');
-      this.$router.push('/auth');
-    } else {
-      this.uId = this.$cookies.get('uId');
-      console.log('CreateEvent > created: yes userId', this.uId);
-    }
+    // if( !this.$cookies.isKey('uId') ) {
+    //   console.log('CreateEvent > created: lol no user uId');
+    //   this.$router.push('/auth');
+    // } else {
+    //   this.uId = this.$cookies.get('uId');
+    //   console.log('CreateEvent > created: yes userId', this.uId);
+    // }
+
+    const auth = getAuth();
+    this.uId = auth.currentUser.uid;
+
+
+
+
     
     if( this.$cookies.isKey('movieNight') ) {
       const movieNight = this.$cookies.get('movieNight');

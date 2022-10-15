@@ -1,37 +1,49 @@
 <template>
-<div class="mb-3">
+<div class="mb-1">
 
   <!-- Header -->
-  <v-row>
+  <v-row class="d-flex justify-space-between">
     <v-col>
-      <h2>my nominations</h2>
+      <div class="d-flex justify-space-between">
+        <h2>my nominations</h2>
+        <!-- <v-btn color="green">done w/<br/>my noms</v-btn> -->
+      </div>
       <p id="noms-per-friend">everyone can nominate up to {{this.movieNight.nomsPerFriend}} movie{{this.movieNight.nomsPerFriend > 1 ? 's' : ''}}</p>
     </v-col>
-  </v-row>
-
-
-
-  <!-- myNoms -->
-  <v-row id="my-noms">
-    <!-- <v-col v-for="nom in this.movieNight.nominations[$route.params.voterId]" -->
-    <v-col v-for="nom in this.myNoms"
-    
-      :key="nom.id"
-      class="pa-2 text-center"
-      cols="4"
-      md="3">
-      <p>{{nom}}</p>
+    <v-col cols="4" class="text-right">
+      <v-btn @click="submitMyNoms" color="green">done w/<br/>my noms</v-btn>
     </v-col>
   </v-row>
 
   
 
+
+
+  <!-- myNoms -->
+  <v-row id="my-noms" class="mb-1 d-flex justify-space-around">
+    <!-- <v-col v-for="nom in this.movieNight.nominations[$route.params.voterId]" -->
+    <v-col v-for="nom in this.myNoms"
+      :key="nom.id"
+      class="text-center"
+      cols="4"
+      md="3">
+      <img :src="`https://image.tmdb.org/t/p/w154/${nom.poster_path}`" alt="{{nom.title}}" style="max-width: 110px;">
+
+      <p><strong>{{nom.title}}</strong></p>
+      <v-btn @click="removeNomination(nom)" size="x-small" rounded="pill" color="red">remove</v-btn>
+      
+    </v-col>
+  </v-row>
+  <hr/>
+  
+
   <!-- search bar -->
-  <v-row class="mt-3">
+  <v-row v-if="canStillNominate" class="mt-3">
     <v-col cols="9" md="10" class="pb-1">
+      <h3 class="pl-1">search and nominate</h3>
       <v-text-field v-model="searchTerm" @keyup.enter="getMovieSearchResults" label="Search movies" variant="outlined" density="compact"></v-text-field>
     </v-col>
-    <v-col cols="3" md="2" class="pb-1">
+    <v-col cols="3" md="2" class="pb-1 d-flex align-center">
       <v-btn @click.prevent="getMovieSearchResults" variant="flat" color="blue">Search</v-btn>
     </v-col>
   </v-row>
@@ -39,11 +51,47 @@
 
 
   <!-- search results -->
-  <v-row>
-    <v-col>
+  <v-row v-if="canStillNominate" id="search-results" class="text-center">
+    <v-col v-for="(movie, i) in searchResults" :key="movie.id" cols="6" md="4" class="mb-3">
+
+      <!-- movie info -->
+      <p class="movie-title">
+        <span class="font-weight-bold text-h6">{{ movie.title }}</span>
+        <span v-if="movie.release_date">({{ movie.release_date.slice(0,4) }})</span>
+      </p>
+      <img v-if="movie.poster_path" class="movie-poster" :src="`https://image.tmdb.org/t/p/w154/${movie.poster_path}`" :alt="`{{movie.title}}`"> {{ i }}
+
+      <!-- nominate button -->
+      <v-btn @click="nominateMovie(movie)" variant="tonal" color="green" class="text-darken-2" :disabled="isMovieAlreadyInMyNoms(movie)">
+        {{ isMovieAlreadyInMyNoms(movie) ? 'nominated' : 'nominate' }}
+      </v-btn>
 
     </v-col>
   </v-row>
+
+
+
+  <!-- submit my noms -->
+  <v-row v-if="!canStillNominate" class="mt-3">
+    <v-col class="d-flex justify-space-around">
+      <v-btn @click="submitMyNoms" size="large" color="green">Submit My Nominations</v-btn>
+    </v-col>
+  </v-row>
+
+
+
+  <!-- modal to double-check if voter wants to finish/submit myNoms -->
+  <v-dialog v-model="submitMyNomsDialog" persistent>
+    <v-card>
+      <v-card-title>Are You Sure?</v-card-title>
+      <v-card-text>You only have <strong>{{myNoms.length}}</strong> nominations, when you can nominate up to {{movieNight.nomsPerFriend}} movie{{myNoms.length > 1 ? 's' : ''}}.<br/><br/><strong>You will not be able to change your nominations after submitting.</strong><br/><br/><strong class="text-uppercase">Are you sure you want to continue?</strong></v-card-text>
+      <v-card-actions class="d-flex justify-space-between">
+        <v-btn @click="submitMyNomsDialog = false" variant="text" color="red">Go back,<br/>add more</v-btn>
+        <v-btn @click="reallySubmitMyNoms" variant="tonal" color="green">I'm done<br/>nominating</v-btn>
+      </v-card-actions>
+    </v-card>
+  </v-dialog>
+
 
 
 
@@ -56,13 +104,20 @@
 
 
 <script>
-// export default {
+// import { child, getDatabase, push, ref, update } from "firebase/database";
+import { getDatabase, ref, update } from "firebase/database";
 export default {
 
   data() {
     return {
+
+      uIdAdmin: this.$route.params.uIdAdmin,
+      mnId: this.$route.params.mnId,
+      voterId: this.$route.params.voterId,
       searchTerm: '',
-      searchResults: [],
+      // searchResults: [],
+      searchResults: [{adult: false,backdrop_path: "/iYLKMV7PIBtFmtygRrhSiyzcVsF.jpg",genre_ids: [12, 35, 10751, 16],id: 277834,original_language: "en",original_title: "Moana",overview: "In Ancient Polynesia, when a terrible curse incurred by Maui reaches an impetuous Chieftain's daughter's island, she answers the Ocean's call to seek out the demigod to set things right.",popularity: 33.532,poster_path: "/4JeejGugONWpJkbnvL12hVoYEDa.jpg",release_date: "2016-11-23",title: "Moana",video: false,vote_average: 7.6,vote_count: 10731,},{adult: false,backdrop_path: "/wOLTJxfv98miIQcn0oNXq9fIgXM.jpg",genre_ids: [28, 35, 80, 53],id: 9737,original_language: "en",original_title: "Bad Boys",overview: "Marcus Burnett is a hen-pecked family man. Mike Lowry is a foot-loose and fancy free ladies' man. Both are Miami policemen, and both have 72 hours to reclaim a consignment of drugs stolen from under their station's nose. To complicate matters, in order to get the assistance of the sole witness to a murder, they have to pretend to be each other.",popularity: 40.035,poster_path: "/x1ygBecKHfXX4M2kRhmFKWfWbJc.jpg",release_date: "1995-04-07",title: "Bad Boys",video: false,vote_average: 6.8,vote_count: 5343},{adult: false,backdrop_path: "/lzWHmYdfeFiMIY4JaMmtR7GEli3.jpg",genre_ids: [878, 12],id: 438631,original_language: "en",original_title: "Dune",overview: "Paul Atreides, a brilliant and gifted young man born into a great destiny beyond his understanding, must travel to the most dangerous planet in the universe to ensure the future of his family and his people. As malevolent forces explode into conflict over the planet's exclusive supply of the most precious resource in existence-a commodity capable of unlocking humanity's greatest potential-only those who can conquer their fear will survive.",popularity: 162.847,poster_path: "/d5NXSklXo0qyIYkgV94XAgMIckC.jpg",release_date: "2021-09-08", title: "Dune", video: false, vote_average: 7.9, vote_count: 7793,},],
+      submitMyNomsDialog: false,
     };
   },
   computed: {
@@ -71,29 +126,159 @@ export default {
     },
     myNoms() {
       let nominations = []
-      for (let i=0; i<this.movieNight.nominations[this.$route.params.voterId].length; i++) {
-        if (this.movieNight.nominations[this.$route.params.voterId][i].id) {
-          nominations.push(this.movieNight.nominations[this.$route.params.voterId][i]);
+      for (let i=0; i<this.movieNight.nominations[this.voterId].length; i++) {
+        if (this.movieNight.nominations[this.voterId][i].id) {
+          nominations.push(this.movieNight.nominations[this.voterId][i]);
         }
       }
-      return ['johnahn'];
+      return nominations;
     },
+    myNomsIds() {
+      let ids = [];
+      for (let i=0; i<this.myNoms.length; i++) {
+        ids.push(this.myNoms[i].id);
+      }
+      return ids;
+    },
+    canStillNominate() {
+      return this.myNoms.length < this.movieNight.nomsPerFriend;
+    }
   },
 
 
   methods: {
+
+    // get search results - returns a list of movies
     async getMovieSearchResults() {
-      const response = await fetch(`https://api.themoviedb.org/3/search/movie?api_key=4b82ea454a84cdf8315e0146aa0aea00&query=${this.searchTerm}`);
+      const response = await fetch(`https://api.themoviedb.org/3/search/movie?query=${this.searchTerm}&api_key=4b82ea454a84cdf8315e0146aa0aea00`);
       let responseData = await response.json();
       for (let i=0; i < responseData.length; i++) {
         responseData.results[i].dialog = false;
       }
       this.searchResults = responseData.results;
-      let something = this.myNoms;
-      something.push('johnahnz0rs is l33t')
-      console.log('lol this is getMovieSearch Results but i\'m printing myNoms', something);
     },
 
+
+
+    // // is movie already in myNoms
+    isMovieAlreadyInMyNoms(movie) {
+      return this.myNomsIds.includes(movie.id);
+    },
+
+
+    updateMyNomsInDbaseAndStore(noms) {
+
+      // update the dbase
+      const db = getDatabase();
+      let updates = {};
+      updates[`movieNights/${this.uIdAdmin}/${this.mnId}/nominations/${this.voterId}`] = noms;
+      update(ref(db), updates);
+
+      // update the store
+      this.$store.dispatch('movieNights/updateMyNoms', {noms, voterId: this.voterId});
+
+    },
+
+
+
+
+    // nominate a movie
+    async nominateMovie(movie) {
+      console.log('*** nominateMovie() ***', movie);
+      this.isMovieAlreadyInMyNoms(movie);
+
+      // myNoms object
+      let noms = this.myNoms;
+      if (
+      this.myNoms.length < this.movieNight.nomsPerFriend && 
+      !this.isMovieAlreadyInMyNoms(movie)) {
+        noms.push(movie);
+
+        console.log('*** nominateMovie() -- noms', noms);
+        this.updateMyNomsInDbaseAndStore(noms);
+      }
+    },
+
+
+
+
+    // remove a nom
+    removeNomination(movie) {
+      console.log('*** removeNomination(movie)', movie);
+
+      // create new myNoms
+      const i = this.myNoms.indexOf(movie);
+      console.log(i);
+      let noms = this.myNoms;
+      noms.splice(i,1);
+
+      this.updateMyNomsInDbaseAndStore(noms);
+
+      console.log(this.myNoms);
+    },
+
+
+
+
+
+    // submit myNoms
+    submitMyNoms() {
+
+      console.log('*** submitMyNoms() ');
+      // check if less than max 
+      if( this.myNoms.length < this.movieNight.nomsPerFriend) {
+        this.submitMyNomsDialog = true;
+
+      } else {
+        this.reallySubmitMyNoms();
+      }
+      
+
+
+    },
+
+
+
+
+
+    // REALLY submit myNoms
+    reallySubmitMyNoms() {
+      this.submitMyNomsDialog = false;
+      console.log('*** reallySubmitMyNoms() ');
+      
+      
+      // update myNoms in dbase and store
+      this.updateMyNomsInDbaseAndStore(this.myNoms);
+
+
+      // add self to friendsWhoFinishedVoting (list of votingIds)
+      // update the dbase
+      const db = getDatabase();
+      let friendsWhoFinishedVoting = this.movieNight.friendsWhoFinishedVoting ? this.movieNight.friendsWhoFinishedVoting : [];
+      if (!friendsWhoFinishedVoting.includes(this.voterId)) {
+        friendsWhoFinishedVoting.push(this.voterId);
+      }
+      let updates = {};
+      updates[`movieNights/${this.uIdAdmin}/${this.mnId}/friendsWhoFinishedVoting/`] = friendsWhoFinishedVoting;
+      update(ref(db), updates);
+
+      // // update the store
+      this.$store.dispatch('movieNights/updateFriendsWhoFinishedVoting', { friendsWhoFinishedVoting });
+
+
+
+      // check if all users have finished nominations (nomsFinished)
+      if (this.movieNight.friendsWhoFinishedVoting.length == this.movieNight.allowedFriends.length) {
+        let nomsFinishedUpdate = {};
+        nomsFinishedUpdate[`movieNights/${this.uIdAdmin}/${this.mnId}/nomsFinished`] = true;
+        update(ref(db), nomsFinishedUpdate);  
+        this.$store.dispatch('movieNights/updateNomsFinished', { nomsFinished: true });
+      } 
+      
+      
+
+
+    },
     
   },
 
@@ -104,10 +289,10 @@ export default {
 <style lang="scss" scoped>
 
 #search-results {
-  // .movie-title {
-  //   min-height: 50px;
-  //   line-height: 0.85em;;
-  // }
+  .movie-title {
+    min-height: 50px;
+    line-height: 0.85em;;
+  }
 
 }
 

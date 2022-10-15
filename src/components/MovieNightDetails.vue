@@ -1,5 +1,5 @@
 <template>
-  <v-row v-if="movieNight" class="mb-3">
+  <v-row v-if="movieNight" class="mb-1">
 
 
     <v-col>
@@ -19,9 +19,9 @@
         </span>
       </p>
       
-      <p class="d-flex justify-space-between">
+      <p class="d-flex justify-space-between mb-1">
         <strong>who's invited</strong>
-        <span>
+        <span class="text-right">
           <span v-for="(friend, index) in movieNight.friends" :key="friend.id">
             {{friend.name}}{{ index < movieNight.friends.length - 1 ? ', ' : '' }}
           </span>

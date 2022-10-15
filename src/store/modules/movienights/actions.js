@@ -14,7 +14,7 @@ export default {
   // get the movieNight Object
   async getMovieNightObject(context, data) {
     const db = getDatabase();
-    get(ref(db, `movieNights/${data.mn}`))
+    get(ref(db, `movieNights/${data.uIdAdmin}/${data.mnId}`))
       .then((snapshot) => {
         if (snapshot.exists()) {
           const movieNight = snapshot.val();
@@ -92,6 +92,36 @@ export default {
     }
 
   },
+
+
+
+  // update myNoms
+  async updateMyNoms(context, data) {
+    let movieNight = context.getters['movieNight'];
+    movieNight.nominations[data.voterId] = data.noms;
+    context.commit('movieNight', movieNight);
+  },
+
+
+
+  // update friendsWhoFinishedVoting
+  async updateFriendsWhoFinishedVoting(context, data) {
+    let movieNight = context.getters['movieNight'];
+    movieNight.friendsWhoFinishedVoting = data.friendsWhoFinishedVoting;
+    context.commit('movieNight', movieNight);
+  },
+
+
+
+  // update nomsFinished
+  async updateNomsFinished(context, data) {
+    let movieNight = context.getters['movieNight'];
+    movieNight.nomsFinished = data.nomsFinished;
+    context.commit('movieNight', movieNight);
+  },
+
+
+
 
 
 };

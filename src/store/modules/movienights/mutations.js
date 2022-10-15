@@ -5,5 +5,12 @@ export default {
   },
 
 
+  myNoms(state, payload) {
+    const voterId = payload.voterId;
+    state.movieNight.nominations[voterId] = payload.noms;
+  },
+
+
 
 };
+

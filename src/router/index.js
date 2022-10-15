@@ -27,7 +27,7 @@ const routes = [
     component: CreateEventView
   },
   {
-    path: '/mn/:mnId/:voterId',
+    path: '/mn/:uIdAdmin/:mnId/:voterId',
     name: 'movieNight',
     component: MovieNightView
   },
