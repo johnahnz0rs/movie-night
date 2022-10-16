@@ -141,7 +141,17 @@ export default {
       return ids;
     },
     canStillNominate() {
-      return this.myNoms.length < this.movieNight.nomsPerFriend;
+      let canI = true;
+      if (this.movieNight.nomsFinished) {
+        canI = false;
+      }
+      if (this.myNoms.length == this.movieNight.nomsPerFriend) {
+        canI = false;
+      }
+      if (this.movieNight.friendsWhoFinishedNominating && this.movieNight.friendsWhoFinishedNominating.includes(this.voterId)) {
+        canI = false;
+      }
+      return canI;
     }
   },
 
@@ -251,24 +261,24 @@ export default {
       this.updateMyNomsInDbaseAndStore(this.myNoms);
 
 
-      // add self to friendsWhoFinishedVoting (list of votingIds)
+      // add self to friendsWhoFinishedNominating (list of votingIds)
       // update the dbase
       const db = getDatabase();
-      let friendsWhoFinishedVoting = this.movieNight.friendsWhoFinishedVoting ? this.movieNight.friendsWhoFinishedVoting : [];
-      if (!friendsWhoFinishedVoting.includes(this.voterId)) {
-        friendsWhoFinishedVoting.push(this.voterId);
+      let friendsWhoFinishedNominating = this.movieNight.friendsWhoFinishedNominating ? this.movieNight.friendsWhoFinishedNominating : [];
+      if (!friendsWhoFinishedNominating.includes(this.voterId)) {
+        friendsWhoFinishedNominating.push(this.voterId);
       }
       let updates = {};
-      updates[`movieNights/${this.uIdAdmin}/${this.mnId}/friendsWhoFinishedVoting/`] = friendsWhoFinishedVoting;
+      updates[`movieNights/${this.uIdAdmin}/${this.mnId}/friendsWhoFinishedNominating/`] = friendsWhoFinishedNominating;
       update(ref(db), updates);
 
       // // update the store
-      this.$store.dispatch('movieNights/updateFriendsWhoFinishedVoting', { friendsWhoFinishedVoting });
+      this.$store.dispatch('movieNights/updateFriendsWhoFinishedVoting', { friendsWhoFinishedNominating });
 
 
 
       // check if all users have finished nominations (nomsFinished)
-      if (this.movieNight.friendsWhoFinishedVoting.length == this.movieNight.allowedFriends.length) {
+      if (this.movieNight.friendsWhoFinishedNominating.length == this.movieNight.allowedFriends.length) {
         let nomsFinishedUpdate = {};
         nomsFinishedUpdate[`movieNights/${this.uIdAdmin}/${this.mnId}/nomsFinished`] = true;
         update(ref(db), nomsFinishedUpdate);  
