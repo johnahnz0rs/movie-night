@@ -3,17 +3,40 @@
 
   <!-- Header -->
   <v-row class="d-flex justify-space-between">
-    <v-col>
-      <div class="d-flex justify-space-between">
-        <h2>my nominations</h2>
-        <!-- <v-btn color="green">done w/<br/>my noms</v-btn> -->
-      </div>
-      <p id="noms-per-friend">everyone can nominate up to {{this.movieNight.nomsPerFriend}} movie{{this.movieNight.nomsPerFriend > 1 ? 's' : ''}}</p>
+    <v-col v-if="!canSubmitMyNoms" cols="12">
+      <h3 class="text-center">waiting on other friends to finish nominating. check back soon</h3>
     </v-col>
-    <v-col cols="4" class="text-right">
-      <v-btn @click="submitMyNoms" color="green">done w/<br/>my noms</v-btn>
+    <v-col col="6">
+      <div class=""> <!-- d-flex justify-space-between -->
+        <p id="noms-per-friend">everyone can nominate up to {{this.movieNight.nomsPerFriend}} movie{{this.movieNight.nomsPerFriend > 1 ? 's' : ''}}</p>
+      </div>
+    </v-col>
+    <!-- submitMyNoms BUTTON -->
+    <v-col cols="6" class="text-right">
+      <v-btn @click="submitMyNoms" color="green" :disabled="!canSubmitMyNoms">{{submitMyNomsButtonText}}</v-btn>
+    </v-col>
+    <v-col cols="12" class="mt-0 pt-0">
+      <h2><span style="text-decoration: underline;">{{voterName}}'s nominations</span> ({{myNoms.length}})</h2>
     </v-col>
   </v-row>
+
+  <!-- modal to double-check if voter wants to finish/submit myNoms -->
+  <v-dialog v-model="submitMyNomsDialog" fullscreen persistent>
+    <v-card>
+      <v-card-text class="text-h5">
+        <p class="text-h3 my-5">Are You Sure?</p>
+        <p class="my-3">You nominated {{myNoms.length}} movie{{myNoms.length > 1 ? 's' : ''}}, but you can have up to {{movieNight.nomsPerFriend}}.</p>
+        <p class="mb-5 pb-5"><strong>You cannot change your nominations later.</strong></p>
+        <div class="d-flex justify-space-between">
+          <v-btn @click="submitMyNomsDialog = false" variant="text" color="red">Go back,<br/>add more</v-btn>
+          <v-btn @click="reallySubmitMyNoms" variant="tonal" color="green">I'm done<br/>nominating</v-btn>
+        </div>
+      </v-card-text>
+      <v-card-actions class="d-flex justify-space-between">
+        
+      </v-card-actions>
+    </v-card>
+  </v-dialog>
 
   
 
@@ -21,22 +44,34 @@
 
   <!-- myNoms -->
   <v-row id="my-noms" class="mb-1 d-flex justify-space-around">
-    <!-- <v-col v-for="nom in this.movieNight.nominations[$route.params.voterId]" -->
+    
+    <!-- forEach nom in myNoms -->
     <v-col v-for="nom in this.myNoms"
       :key="nom.id"
       class="text-center"
       cols="4"
-      md="3">
+      md="2">
       <img :src="`https://image.tmdb.org/t/p/w154/${nom.poster_path}`" alt="{{nom.title}}" style="max-width: 110px;">
-
       <p><strong>{{nom.title}}</strong></p>
+      <!-- remove this nom -->
       <v-btn @click="removeNomination(nom)" size="x-small" rounded="pill" color="red">remove</v-btn>
-      
     </v-col>
   </v-row>
   <hr/>
+
+
+
+
+
   
 
+  <!-- search bar -->
+  <!-- search bar -->
+  <!-- search bar -->
+  <!-- search bar -->
+  <!-- search bar -->
+  <!-- search bar -->
+  <!-- search bar -->
   <!-- search bar -->
   <v-row v-if="canStillNominate" class="mt-3">
     <v-col cols="9" md="10" class="pb-1">
@@ -51,15 +86,15 @@
 
 
   <!-- search results -->
-  <v-row v-if="canStillNominate" id="search-results" class="text-center">
-    <v-col v-for="(movie, i) in searchResults" :key="movie.id" cols="6" md="4" class="mb-3">
+  <v-row v-if="canStillNominate" id="search-results" class="text-center pb-5 mb-5">
+    <v-col v-for="movie in searchResults" :key="movie.id" cols="6" sm="3" class="mb-3">
 
       <!-- movie info -->
       <p class="movie-title">
-        <span class="font-weight-bold text-h6">{{ movie.title }}</span>
-        <span v-if="movie.release_date">({{ movie.release_date.slice(0,4) }})</span>
+        <span class="font-weight-bold text-h6">{{ movie.title }}</span> 
+        <span v-if="movie.release_date"> ({{ movie.release_date.slice(0,4) }})</span>
       </p>
-      <img v-if="movie.poster_path" class="movie-poster" :src="`https://image.tmdb.org/t/p/w154/${movie.poster_path}`" :alt="`{{movie.title}}`"> {{ i }}
+      <img v-if="movie.poster_path" class="movie-poster" :src="`https://image.tmdb.org/t/p/w154/${movie.poster_path}`" :alt="`{{movie.title}}`"><br/>
 
       <!-- nominate button -->
       <v-btn @click="nominateMovie(movie)" variant="tonal" color="green" class="text-darken-2" :disabled="isMovieAlreadyInMyNoms(movie)">
@@ -72,25 +107,19 @@
 
 
   <!-- submit my noms -->
-  <v-row v-if="!canStillNominate" class="mt-3">
-    <v-col class="d-flex justify-space-around">
-      <v-btn @click="submitMyNoms" size="large" color="green">Submit My Nominations</v-btn>
+  <!-- <v-row v-if="!canSubmitMyNoms" class="mt-3">
+    <v-col cols="12">
+      <h3 class="text-center">waiting on other friends to finish nominating. check back soon</h3>
     </v-col>
   </v-row>
+  <v-row class="mt-3">
+    <v-col cols="12" class="d-flex justify-space-around">
+      <v-btn @click="submitMyNoms" size="large" color="green" :disabled="!canSubmitMyNoms">{{submitMyNomsButtonText}}</v-btn>
+    </v-col>
+  </v-row> -->
 
 
 
-  <!-- modal to double-check if voter wants to finish/submit myNoms -->
-  <v-dialog v-model="submitMyNomsDialog" persistent>
-    <v-card>
-      <v-card-title>Are You Sure?</v-card-title>
-      <v-card-text>You only have <strong>{{myNoms.length}}</strong> nominations, when you can nominate up to {{movieNight.nomsPerFriend}} movie{{myNoms.length > 1 ? 's' : ''}}.<br/><br/><strong>You will not be able to change your nominations after submitting.</strong><br/><br/><strong class="text-uppercase">Are you sure you want to continue?</strong></v-card-text>
-      <v-card-actions class="d-flex justify-space-between">
-        <v-btn @click="submitMyNomsDialog = false" variant="text" color="red">Go back,<br/>add more</v-btn>
-        <v-btn @click="reallySubmitMyNoms" variant="tonal" color="green">I'm done<br/>nominating</v-btn>
-      </v-card-actions>
-    </v-card>
-  </v-dialog>
 
 
 
@@ -115,15 +144,35 @@ export default {
       mnId: this.$route.params.mnId,
       voterId: this.$route.params.voterId,
       searchTerm: '',
-      // searchResults: [],
-      searchResults: [{adult: false,backdrop_path: "/iYLKMV7PIBtFmtygRrhSiyzcVsF.jpg",genre_ids: [12, 35, 10751, 16],id: 277834,original_language: "en",original_title: "Moana",overview: "In Ancient Polynesia, when a terrible curse incurred by Maui reaches an impetuous Chieftain's daughter's island, she answers the Ocean's call to seek out the demigod to set things right.",popularity: 33.532,poster_path: "/4JeejGugONWpJkbnvL12hVoYEDa.jpg",release_date: "2016-11-23",title: "Moana",video: false,vote_average: 7.6,vote_count: 10731,},{adult: false,backdrop_path: "/wOLTJxfv98miIQcn0oNXq9fIgXM.jpg",genre_ids: [28, 35, 80, 53],id: 9737,original_language: "en",original_title: "Bad Boys",overview: "Marcus Burnett is a hen-pecked family man. Mike Lowry is a foot-loose and fancy free ladies' man. Both are Miami policemen, and both have 72 hours to reclaim a consignment of drugs stolen from under their station's nose. To complicate matters, in order to get the assistance of the sole witness to a murder, they have to pretend to be each other.",popularity: 40.035,poster_path: "/x1ygBecKHfXX4M2kRhmFKWfWbJc.jpg",release_date: "1995-04-07",title: "Bad Boys",video: false,vote_average: 6.8,vote_count: 5343},{adult: false,backdrop_path: "/lzWHmYdfeFiMIY4JaMmtR7GEli3.jpg",genre_ids: [878, 12],id: 438631,original_language: "en",original_title: "Dune",overview: "Paul Atreides, a brilliant and gifted young man born into a great destiny beyond his understanding, must travel to the most dangerous planet in the universe to ensure the future of his family and his people. As malevolent forces explode into conflict over the planet's exclusive supply of the most precious resource in existence-a commodity capable of unlocking humanity's greatest potential-only those who can conquer their fear will survive.",popularity: 162.847,poster_path: "/d5NXSklXo0qyIYkgV94XAgMIckC.jpg",release_date: "2021-09-08", title: "Dune", video: false, vote_average: 7.9, vote_count: 7793,},],
+      searchResults: [],
+      // searchResults: [
+      //   {adult: false,backdrop_path: "/iYLKMV7PIBtFmtygRrhSiyzcVsF.jpg",genre_ids: [12, 35, 10751, 16],id: 277834,original_language: "en",original_title: "Moana",overview: "In Ancient Polynesia, when a terrible curse incurred by Maui reaches an impetuous Chieftain's daughter's island, she answers the Ocean's call to seek out the demigod to set things right.",popularity: 33.532,poster_path: "/4JeejGugONWpJkbnvL12hVoYEDa.jpg",release_date: "2016-11-23",title: "Moana",video: false,vote_average: 7.6,vote_count: 10731,},{adult: false,backdrop_path: "/wOLTJxfv98miIQcn0oNXq9fIgXM.jpg",genre_ids: [28, 35, 80, 53],id: 9737,original_language: "en",original_title: "Bad Boys",overview: "Marcus Burnett is a hen-pecked family man. Mike Lowry is a foot-loose and fancy free ladies' man. Both are Miami policemen, and both have 72 hours to reclaim a consignment of drugs stolen from under their station's nose. To complicate matters, in order to get the assistance of the sole witness to a murder, they have to pretend to be each other.",popularity: 40.035,poster_path: "/x1ygBecKHfXX4M2kRhmFKWfWbJc.jpg",release_date: "1995-04-07",title: "Bad Boys",video: false,vote_average: 6.8,vote_count: 5343},{adult: false,backdrop_path: "/lzWHmYdfeFiMIY4JaMmtR7GEli3.jpg",genre_ids: [878, 12],id: 438631,original_language: "en",original_title: "Dune",overview: "Paul Atreides, a brilliant and gifted young man born into a great destiny beyond his understanding, must travel to the most dangerous planet in the universe to ensure the future of his family and his people. As malevolent forces explode into conflict over the planet's exclusive supply of the most precious resource in existence-a commodity capable of unlocking humanity's greatest potential-only those who can conquer their fear will survive.",popularity: 162.847,poster_path: "/d5NXSklXo0qyIYkgV94XAgMIckC.jpg",release_date: "2021-09-08", title: "Dune", video: false, vote_average: 7.9, vote_count: 7793,},
+      // ], 
       submitMyNomsDialog: false,
-    };
+    }; 
   },
-  computed: {
+  computed: { 
     movieNight() {
       return this.$store.getters['movieNights/movieNight'];
     },
+
+
+    voterName() {
+      let voterName = '';
+
+      const friends = this.movieNight.friends ? this.movieNight.friends : [];
+      for (let i=0; i < friends.length; i++) {
+        if (friends[i]) {
+          if (this.voterId == friends[i].id) {
+            voterName = friends[i].name;
+          }
+        }
+      }
+      return voterName;
+    },
+
+
+
     myNoms() {
       let nominations = []
       for (let i=0; i<this.movieNight.nominations[this.voterId].length; i++) {
@@ -140,6 +189,12 @@ export default {
       }
       return ids;
     },
+
+
+
+
+
+
     canStillNominate() {
       let canI = true;
       if (this.movieNight.nomsFinished) {
@@ -152,7 +207,31 @@ export default {
         canI = false;
       }
       return canI;
-    }
+    },
+    canSubmitMyNoms() {
+      let canI = true;
+      if (this.movieNight.nomsFinished) {
+        canI = false;
+      }
+      if (this.movieNight.friendsWhoFinishedNominating && this.movieNight.friendsWhoFinishedNominating.includes(this.voterId)) {
+        canI = false;
+      }
+      return canI;
+    },
+    submitMyNomsButtonText() {
+      let text = 'submit my noms';
+      if (!this.canSubmitMyNoms) {
+        text = 'submitted';
+      } 
+      return text;
+    },
+
+
+
+
+
+
+
   },
 
 
@@ -253,27 +332,30 @@ export default {
 
     // REALLY submit myNoms
     reallySubmitMyNoms() {
-      this.submitMyNomsDialog = false;
+      
       console.log('*** reallySubmitMyNoms() ');
-      
-      
-      // update myNoms in dbase and store
-      this.updateMyNomsInDbaseAndStore(this.myNoms);
-
-
-      // add self to friendsWhoFinishedNominating (list of votingIds)
-      // update the dbase
+      this.submitMyNomsDialog = false;
+      const noms = this.myNoms;
       const db = getDatabase();
+      const uIdAdmin = this.uIdAdmin;
+      const mnId = this.mnId;
+      const voterId = this.voterId;
+      // update myNoms in dbase and store
+      this.updateMyNomsInDbaseAndStore(noms);
+
+
+    // add self to friendsWhoFinishedNominating (list of votingIds)
+      // update the dbase
       let friendsWhoFinishedNominating = this.movieNight.friendsWhoFinishedNominating ? this.movieNight.friendsWhoFinishedNominating : [];
-      if (!friendsWhoFinishedNominating.includes(this.voterId)) {
-        friendsWhoFinishedNominating.push(this.voterId);
+      if (!friendsWhoFinishedNominating.includes(voterId)) {
+        friendsWhoFinishedNominating.push(voterId);
       }
       let updates = {};
-      updates[`movieNights/${this.uIdAdmin}/${this.mnId}/friendsWhoFinishedNominating/`] = friendsWhoFinishedNominating;
+      updates[`movieNights/${uIdAdmin}/${mnId}/friendsWhoFinishedNominating/`] = friendsWhoFinishedNominating;
       update(ref(db), updates);
 
       // // update the store
-      this.$store.dispatch('movieNights/updateFriendsWhoFinishedVoting', { friendsWhoFinishedNominating });
+      this.$store.dispatch('movieNights/updateFriendsWhoFinishedNominating', { friendsWhoFinishedNominating });
 
 
 
@@ -282,8 +364,13 @@ export default {
         let nomsFinishedUpdate = {};
         nomsFinishedUpdate[`movieNights/${this.uIdAdmin}/${this.mnId}/nomsFinished`] = true;
         update(ref(db), nomsFinishedUpdate);  
+
+
+        console.log('*** all friends have finished voting');
         this.$store.dispatch('movieNights/updateNomsFinished', { nomsFinished: true });
-      } 
+      } else {
+        console.log('*** not everyone has finished voting yet');
+      }
       
       
 

@@ -104,10 +104,10 @@ export default {
 
 
 
-  // update friendsWhoFinishedVoting
-  async updateFriendsWhoFinishedVoting(context, data) {
+  // update friendsWhoFinishedNominating
+  async updateFriendsWhoFinishedNominating(context, data) {
     let movieNight = context.getters['movieNight'];
-    movieNight.friendsWhoFinishedVoting = data.friendsWhoFinishedVoting;
+    movieNight.friendsWhoFinishedNominating = data.friendsWhoFinishedNominating;
     context.commit('movieNight', movieNight);
   },
 

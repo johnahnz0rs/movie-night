@@ -3,7 +3,7 @@
 
 
     <v-col>
-
+      <p class="text-h1"></p>
       <h2>{{ movieNight.eventName }}</h2>
       <!-- <p><strong>created by</strong> <br />{{ movieNight.admin.name }}</p> -->
       <p class="d-flex justify-space-between mb-1">
@@ -43,6 +43,11 @@ export default {
     movieNight() {
       return this.$store.getters['movieNights/movieNight'];
     },
+    // voterName() {
+    //   const voterId = this.$route.params.voterId;
+    //   for (let i=0; i < this.movieNight.friends.l)
+    //   return true;
+    // },
   },
   methods: {},
   created() {},

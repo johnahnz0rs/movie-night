@@ -16,7 +16,9 @@
 
 
 
-
+      <div v-if="nomsFinished && !votesFinished">
+        <MovieNightVotes />
+      </div>
 
 
 
@@ -53,10 +55,10 @@
       <!-- dev -->
       <!-- dev -->
       <div style="margin-top:400px;">
-        <p>mnId: {{this.$route.params.mnId}}</p>
-        <p>friendId: {{this.$route.params.voterId}}</p>
+        <pre>mnId: {{this.$route.params.mnId}}</pre>
+        <pre>friendId: {{this.$route.params.voterId}}</pre>
         <!-- <p v-if="movieNight">A {{movieNight}}</p> -->
-        <p>movieNight: {{movieNight}}</p>
+        <pre>movieNight: {{movieNight}}</pre>
       </div>
 
 
@@ -85,10 +87,12 @@
 <script>
 import MovieNightDetails from '../components/MovieNightDetails.vue';
 import MovieNightNominations from '@/components/MovieNightNominations.vue';
+import MovieNightVotes from '../components/MovieNightVotes.vue';
 export default {
   components: {
     MovieNightDetails,
     MovieNightNominations,
+    MovieNightVotes,
 },
   data() {
     return {
@@ -108,6 +112,9 @@ export default {
     },
     nomsFinished() {
       return this.movieNight.nomsFinished;
+    },
+    votesFinished() {
+      return this.movieNight.votesFinished;
     },
   },
   created() {
