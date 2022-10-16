@@ -13,7 +13,7 @@
       <div id="heading" class="text-center">
         <v-row>
           <v-col>
-            <p>uId: {{uId}}</p>
+            <!-- <p>uId: {{uId}}</p> -->
             <h1>Create New Movie Night</h1>
             <h2 v-if="view==1"><strong>step 1:</strong> what, where, when?</h2>
             <h2 v-else-if="view==2">step 2: invite your friends</h2>
@@ -223,7 +223,7 @@
 // slashtag and title are optional
 
 import { child, getDatabase, push, ref, update } from "firebase/database";
-import { getAuth } from "firebase/auth";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
 
 export default {
   
@@ -233,8 +233,7 @@ export default {
   name: 'CreateEvent',
   data() {
     return {
-      // user: null,
-      uId: null,
+      user: null,
       // constants
       months: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'June', 'July', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec'],
       days: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31],
@@ -261,6 +260,9 @@ export default {
     };
   },
   computed: {
+    uId() {
+      return this.user.uid ? this.user.uid : '';
+    },
     cleanedEventName() {
       return this.eventName ? this.eventName : 'Movie Night';
     },
@@ -485,8 +487,9 @@ export default {
     // sendInvites() END
     // sendInvites() END
   },
-  mounted() {
+  created() {
 
+    console.log('*** /create page > created() ');
     // const auth = getAuth();
     // this.user = auth.currentUser;
     // console.log('this is firebase user', this.user);
@@ -501,8 +504,14 @@ export default {
     // }
 
     const auth = getAuth();
-    this.uId = auth.currentUser.uid;
-
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        this.user = user;
+      }
+    });
+    // this.user = auth.currentUser;
+    // console.log(this.user);
+    
 
 
 

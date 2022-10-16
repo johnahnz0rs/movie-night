@@ -95,7 +95,7 @@ export default {
 
 
 
-  // update myNoms
+  // update myNoms (list of movie objects)
   async updateMyNoms(context, data) {
     let movieNight = context.getters['movieNight'];
     movieNight.nominations[data.voterId] = data.noms;
@@ -104,7 +104,7 @@ export default {
 
 
 
-  // update friendsWhoFinishedNominating
+  // update friendsWhoFinishedNominating (list of friendId's)
   async updateFriendsWhoFinishedNominating(context, data) {
     let movieNight = context.getters['movieNight'];
     movieNight.friendsWhoFinishedNominating = data.friendsWhoFinishedNominating;
@@ -113,13 +113,47 @@ export default {
 
 
 
-  // update nomsFinished
+  // update nomsFinished (boolean)
   async updateNomsFinished(context, data) {
     let movieNight = context.getters['movieNight'];
     movieNight.nomsFinished = data.nomsFinished;
     context.commit('movieNight', movieNight);
   },
 
+
+
+
+  // updateNomsFinal (list of unique noms)
+  async updateNomsFinal(context, data) {
+    let movieNight = context.getters['movieNight'];
+    movieNight.nomsFinal = data.nomsFinal;
+    context.commit('movieNight', movieNight);
+  },
+
+
+
+  // update myVotes -- object: { first: {}[. second: {}, third: {}] } 
+  async updateMyVotes(context, data) {
+    let movieNight = context.getters['movieNight'];
+    movieNight.votes[data.voterId] = data.myVotes;
+    context.commit('movieNight', movieNight);
+  },
+
+
+  // update friendsWhoFinishedVoting (list of friends' id's/phone numbers)
+  async updateFriendsWhoFinishedVoting(context, data) {
+    let movieNight = context.getters['movieNight'];
+    movieNight.friendsWhoFinishedVoting = data.friendsWhoFinishedVoting;
+    context.commit('movieNight', movieNight);
+  },
+
+
+
+  async updateVotesFinished(context, data) {
+    let movieNight = context.getters['movieNight'];
+    movieNight.votesFinished = data.votesFinished;
+    context.commit('movieNight', movieNight);
+  },
 
 
 

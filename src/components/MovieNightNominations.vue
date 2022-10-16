@@ -51,7 +51,7 @@
       class="text-center"
       cols="4"
       md="2">
-      <img :src="`https://image.tmdb.org/t/p/w154/${nom.poster_path}`" alt="{{nom.title}}" style="max-width: 110px;">
+      <img :src="`https://image.tmdb.org/t/p/w154/${nom.poster_path}`" style="max-width: 110px;">
       <p><strong>{{nom.title}}</strong></p>
       <!-- remove this nom -->
       <v-btn @click="removeNomination(nom)" size="x-small" rounded="pill" color="red">remove</v-btn>
@@ -373,6 +373,7 @@ export default {
       }
       
       
+      // send a new sms msg "hey noms have finished. you can now vote."
 
 
     },

@@ -21,6 +21,11 @@
       </div>
 
 
+      <div v-if="nomsFinished && votesFinished">
+        <MovieNightResults />
+      </div>
+
+
 
 
 
@@ -88,11 +93,13 @@
 import MovieNightDetails from '../components/MovieNightDetails.vue';
 import MovieNightNominations from '@/components/MovieNightNominations.vue';
 import MovieNightVotes from '../components/MovieNightVotes.vue';
+import MovieNightResults from '../components/MovieNightResults.vue';
 export default {
   components: {
     MovieNightDetails,
     MovieNightNominations,
     MovieNightVotes,
+    MovieNightResults,
 },
   data() {
     return {

@@ -29,13 +29,13 @@ export default {
   },
   created() {
     firebase.initializeApp(firebaseConfig);
-    firebase.auth().onAuthStateChanged((user) => {
-      if(user) {
-        this.$cookies.set("uId", user._delegate.uid);
-      } else {
-        console.log('App: there is no user', user);
-      }
-    });
+    // firebase.auth().onAuthStateChanged((user) => {
+    //   if(user) {
+    //     this.$cookies.set("uId", user._delegate.uid);
+    //   } else {
+    //     console.log('App: there is no user', user);
+    //   }
+    // });
   },
   data: () => ({
     //
