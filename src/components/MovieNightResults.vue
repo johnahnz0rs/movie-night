@@ -43,7 +43,16 @@ export default {
 
 
         // let weHaveAWinner = false;
+        let firstChoiceVotes = {};
+        for (let i=0; i<firstChoices.length; i++) {
+          if (firstChoices[i])
+        }
 
+
+        // try finding a winner w/ firstChoices
+
+
+        // if no winner in firstChoices, then 
 
 
 
