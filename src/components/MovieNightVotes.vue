@@ -86,7 +86,6 @@
         <v-btn @click="voteForMovie(nom)" variant="tonal" color="green">{{voteButtonText}}</v-btn><br/>
 
         <!-- see details (modal) -->
-        <!-- <v-dialog v-model="nomsFinal[i].dialog" fullscreen> -->
         <v-dialog v-model="myNomsFinal[i].dialog" fullscreen>
           <template v-slot:activator="{ props }">
             <v-btn v-bind="props" variant="plain" class="mt-1">see details</v-btn>

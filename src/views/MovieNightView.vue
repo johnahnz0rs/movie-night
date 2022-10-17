@@ -59,12 +59,11 @@
       <!-- dev -->
       <!-- dev -->
       <!-- dev -->
-      <div style="margin-top:400px;">
+      <!-- <div style="margin-top:400px;">
         <pre>mnId: {{this.$route.params.mnId}}</pre>
         <pre>friendId: {{this.$route.params.voterId}}</pre>
-        <!-- <p v-if="movieNight">A {{movieNight}}</p> -->
         <pre>movieNight: {{movieNight}}</pre>
-      </div>
+      </div> -->
 
 
 

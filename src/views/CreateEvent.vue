@@ -28,6 +28,12 @@
       <!-- phase 1: event details -->
       <!-- phase 1: event details -->
       <div v-if="view == 1" id="event-details">
+        <v-row id="view-actions" class="mb-5 pb-3">
+          <v-col>
+            <v-btn @click="theMovieNightIsNow" variant="plain" color="blue">It's Right NOW</v-btn>
+            <v-btn @click="nextStep" variant="outlined" color="green">Next Step</v-btn>
+          </v-col>
+        </v-row>
         <v-row>
           <v-col cols="12">
             <v-text-field variant="outlined" label="Event Name (optional)" v-model="eventName" clearable></v-text-field>
@@ -60,12 +66,7 @@
             <v-text-field variant="outlined" label="Location / Address" v-model="location" clearable></v-text-field>
           </v-col>
         </v-row>
-        <v-row id="view-actions">
-          <v-col>
-            <v-btn @click="theMovieNightIsNow" variant="plain" color="blue">It's Right NOW</v-btn>
-            <v-btn @click="nextStep" variant="outlined" color="green">Next Step</v-btn>
-          </v-col>
-        </v-row>
+        
       </div>
 
 
@@ -73,8 +74,12 @@
       <!-- phase 2: invite friends -->
       <!-- phase 2: invite friends -->
       <div v-else-if="view == 2" id="event-invite-friends" >
-
-
+        <v-row id="view-actions" class="mb-5 pb-3">
+          <v-col>
+            <v-btn @click="prevStep" variant="outlined" color="blue">Prev</v-btn>
+            <v-btn @click="nextStep" variant="outlined" color="green">Next</v-btn>
+          </v-col>
+        </v-row>
         <v-row v-for="(friend, index) in friends" :key="index">
           <v-card width="100%" variant="outlined" class="my-5">
             <v-card-item class="pb-0">
@@ -86,20 +91,11 @@
             </v-card-actions>
           </v-card>
         </v-row>
-
-
         <v-row class="">
           <!-- <v-col class="invite-another-friend"> -->
           <v-col class="text-center">
             <v-btn @click="anotherFriend" variant="flat"><u>Invite another Friend</u></v-btn>
-            <p class="mt-5 pt-5"><em>{{ Object.keys(friends).length }} friends invited</em></p>
-          </v-col>
-        </v-row>
-
-        <v-row id="view-actions">
-          <v-col>
-            <v-btn @click="prevStep" variant="outlined" color="blue">Prev</v-btn>
-            <v-btn @click="nextStep" variant="outlined" color="green">Next</v-btn>
+            <p class="mt-5"><em>{{ Object.keys(cleanedFriends).length }} friends invited</em></p>
           </v-col>
         </v-row>
       </div>
@@ -109,8 +105,15 @@
       <!-- phase 3: noms per friend -->
       <!-- phase 3: noms per friend -->
       <div v-else-if="view == 3" id="event-nominations">
+        <v-row id="view-actions" class="mb-5 mt-0 pt-0">
+          <v-col>
+            <v-btn @click="prevStep" variant="outlined" color="blue">Prev</v-btn>
+            <v-btn @click="nextStep" variant="outlined" color="green">Next</v-btn>
+          </v-col>
+        </v-row>
         <v-row>
           <v-col>
+            <h4 class="mb-5">a lower number of "nominations per friend" is recommended for <a href="https://time.com/5718941/ranked-choice-voting/#inline-ad-1" target="_blank" class="text-black"><em>ranked choice</em></a> to work best.</h4>
             <v-slider v-model="nomsPerFriend" 
               :ticks="nomsPerFriendTickLabels"
               :max="4"
@@ -118,13 +121,6 @@
               show-ticks="always"
               tick-size="5"
             ></v-slider>
-          </v-col>
-        </v-row>
-        
-        <v-row id="view-actions">
-          <v-col>
-            <v-btn @click="prevStep" variant="outlined" color="blue">Prev</v-btn>
-            <v-btn @click="nextStep" variant="outlined" color="green">Next</v-btn>
           </v-col>
         </v-row>
       </div>
@@ -135,7 +131,26 @@
       <!-- phase 4: review & send -->
       <div v-else-if="view == 4" id="event-review">
 
-        <!-- movie night info: name, where, when -->
+        <v-row id="view-actions" class="mb-3 mt-0 pt-0">
+          <v-col>
+            <v-btn @click="prevStep" variant="outlined" color="blue">Prev</v-btn>
+            <v-btn @click="sendInvites" color="green" :disabled="!readyToSend">Invite Friends</v-btn>
+          </v-col>
+        </v-row>
+        <!-- enter admin info -->
+        <!-- enter admin info -->
+        <v-row id="admin-info" class="">
+          <v-col>
+            <p class="mb-3"><em>
+              <strong>enter your name and number to start the vote.</strong>
+              <br/>we'll text your friends a link!
+            </em></p>
+            <v-text-field v-model="admin.name" @input="updateMovieNightCookies" label="Your name" density="compact"></v-text-field>
+            <v-text-field v-model="admin.id" @input="updateMovieNightCookies" label="Your phone number" density="compact"></v-text-field>
+          </v-col>
+        </v-row>
+        <!-- movieNight info -->
+        <!-- movieNight info -->
         <v-row>
           <v-col>
             <v-card variant="outlined">
@@ -145,6 +160,13 @@
                   <p><strong>Where:</strong> {{ location }}</p>
                   <p><strong>When:</strong> {{ month }} {{ day }} {{ year }} @ {{ hour }}:{{ minute }} {{ meridian}}</p>
                   <p><strong><em>each person can nominate up to {{ nomsPerFriendTickLabels[nomsPerFriend] }} movie{{ nomsPerFriend == 0 ? '' : 's'}}</em></strong><br>&nbsp;</p>
+                  <p v-if="hasFriendsInList" class="pb-3"><strong><em>sending invites to:</em></strong></p>
+                  <p v-else @click="view = 2" class="missing-info"><span>please invite at least 1 friend</span></p>
+                  <ol v-if="hasFriendsInList" id="review-friends" class="ml-5 pl-3">
+                    <li v-for="(friend, index) in cleanedFriends" :key="index" class="py-1">
+                      {{ friend.name }} - {{ friend.id }}
+                    </li>
+                  </ol>
                 </div>
                 <div v-else>
                   <p @click="view = 1" class="missing-info"><span>please enter location, date, and time</span></p>
@@ -153,56 +175,8 @@
             </v-card>
           </v-col>
         </v-row>
-
-
-
-        <!-- list of invitees -->
-        <!-- list of invitees -->
-        <!-- list of invitees -->
-        <v-row>
-          <v-col>
-            <p v-if="hasFriendsInList" class="pb-3"><strong><em>sending invites to:</em></strong></p>
-            <p v-else @click="view = 2" class="missing-info"><span>please invite at least 1 friend</span></p>
-
-            <ol v-if="hasFriendsInList" id="review-friends" class="ml-5">
-              <li v-for="(friend, index) in cleanedFriends" :key="index" class="py-2">
-                {{ friend.name }} - {{ friend.id }}
-              </li>
-            </ol>
-          </v-col>
-        </v-row>
-
-
-        <!-- enter admin info -->
-        <!-- enter admin info -->
-        <!-- enter admin info -->
-        <v-row id="admin-info" class="mt-5">
-          <v-col>
-            <p class="mb-3"><em>
-              <strong>enter your name and number to start the vote.</strong>
-              <br/>invite links sent to ur friends by text msg boiiii
-            </em></p>
-            <v-text-field v-model="admin.name" @input="updateMovieNightCookies" label="Your name" density="compact"></v-text-field>
-            <v-text-field v-model="admin.id" @input="updateMovieNightCookies" label="Your phone number" density="compact"></v-text-field>
-          </v-col>
-        </v-row>
-
-
-        <v-row id="view-actions">
-          <v-col>
-            <v-btn @click="prevStep" variant="outlined" color="blue">Prev</v-btn>
-            <v-btn @click="sendInvites" color="green" :disabled="!readyToSend">Invite Friends</v-btn>
-          </v-col>
-        </v-row>
-
-
-        
       </div> <!-- end phase 4: review & send -- END -->
       <!-- end phase 4: review & send -- END -->
-    
-
-
-
     </div> <!-- end #max-width -->
   </div> <!-- end #create-new-event -->
 
