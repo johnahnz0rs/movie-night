@@ -2,22 +2,26 @@
 <div class="mb-1">
 
   <!-- Header -->
-  <v-row class="d-flex justify-space-between">
+  <v-row class="d-flex justify-space-between mt-3">
     <v-col v-if="!canSubmitMyNoms" cols="12">
       <h3 class="text-center">waiting on other friends to finish nominating. check back soon</h3>
     </v-col>
+    <v-col v-else class="mt-0 pt-0">
+      <h2>Hi, {{voterName}}. Nominate your choice{{this.movieNight.nomsPerFriend > 1 ? 's' : ''}} for what to watch ({{myNoms.length}})</h2>
+      <p id="noms-per-friend">everyone can nominate up to {{this.movieNight.nomsPerFriend}} movie{{this.movieNight.nomsPerFriend > 1 ? 's' : ''}}</p>
+    </v-col>
+  </v-row>
+  <v-row>
     <v-col col="6">
       <div class=""> <!-- d-flex justify-space-between -->
-        <p id="noms-per-friend">everyone can nominate up to {{this.movieNight.nomsPerFriend}} movie{{this.movieNight.nomsPerFriend > 1 ? 's' : ''}}</p>
+        
       </div>
     </v-col>
     <!-- submitMyNoms BUTTON -->
     <v-col cols="6" class="text-right">
       <v-btn @click="submitMyNoms" color="green" :disabled="!canSubmitMyNoms">{{submitMyNomsButtonText}}</v-btn>
     </v-col>
-    <v-col cols="12" class="mt-0 pt-0">
-      <h2><span style="text-decoration: underline;">{{voterName}}'s nominations</span> ({{myNoms.length}})</h2>
-    </v-col>
+    
   </v-row>
 
   <!-- modal to double-check if voter wants to finish/submit myNoms -->
@@ -75,7 +79,7 @@
   <!-- search bar -->
   <v-row v-if="canStillNominate" class="mt-3">
     <v-col cols="9" md="10" class="pb-1">
-      <h3 class="pl-1">search and nominate</h3>
+      <h2 class="pl-1">search and nominate</h2>
       <v-text-field v-model="searchTerm" @keyup.enter="getMovieSearchResults" label="Search movies" variant="outlined" density="compact"></v-text-field>
     </v-col>
     <v-col cols="3" md="2" class="pb-1 d-flex align-center">

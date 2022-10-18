@@ -36,6 +36,7 @@ See [Configuration Reference](https://cli.vuejs.org/config/).
 - i need to re-activate text messaging (at least the first msg at event creation)
 - i need to create the admin panel: start/stop noms; start/stop votes; add/update/delete voters/friends; re-send text messages to each voter individually.
 - i need to tighten up the voting process. right now it's just a big mess of a spaghetti bowl.
+- after submitMyNoms, voter should not be able to "remove" a nom. that button should not even be shown after submission.
 
 
 
