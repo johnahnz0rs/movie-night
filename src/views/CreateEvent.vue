@@ -319,78 +319,93 @@ export default {
       console.log(index);
       this.friends.splice(index, 1);
     },
-    // sendInvites()
-    // sendInvites()
-    // sendInvites()
-    // sendInvites()
-    // sendInvites()
-    // sendInvites()
-    // sendInvites()
-    // sendInvites()
-    // sendInvites()
-    // sendInvites()
-    // sendInvites()
-    // sendInvites()
-    // sendInvites()
-    // sendInvites()
-    // sendInvites()
-    // sendInvites()
-    // sendInvites()
-    // sendInvites()
-    // sendInvites()
-    // sendInvites()
-    // sendInvites()
-    async sendAlerts(context, data) {
+    // sendInviteLinksByText()
+    // sendInviteLinksByText()
+    // sendInviteLinksByText()
+    // sendInviteLinksByText()
+    // sendInviteLinksByText()
+    // sendInviteLinksByText()
+    // sendInviteLinksByText()
+    // sendInviteLinksByText()
+    // sendInviteLinksByText()
+    // sendInviteLinksByText()
+    // sendInviteLinksByText()
+    // sendInviteLinksByText()
+    async sendInviteLinksByText(movieNight, mnId) {
+      console.log('****** this is sendInviteLinksByText(movieNight, mnId)', movieNight, mnId);
 
       // shortlink vars
-      const uIdAdmin = data.uIdAdmin;
-      const dateTime = `${data.year}-${data.month}-${data.day}-${data.hour}-${data.minute}-${data.meridian}`;
-      const friends = data.friends;
-      const friendsIds = [];
-
+      const uIdAdmin = movieNight.uIdAdmin;
+      const allowedFriends = movieNight.allowedFriends;
+      const shortLinkEndpoint = process.env.VUE_APP_SHORTLINK_ENDPOINT;
+      const shortLinkApiKey = process.env.VUE_APP_SHORTLINK_API_KEY;
       // sms msg vars
-      const adminName = data.admin.name;
-      const eventName = data.eventName;
-      const date = `${data.month} ${data.day}, ${data.year}`;
-      const time = `${data.hour}:${data.minute} ${data.meridian}`;
-      const location = data.location;
-
-      // dev
-      console.log('*** votes/actions/sendAlerts ***', context, data); 
-
+      const adminName = movieNight.admin.name;
+      const eventName = movieNight.eventName;
+      const eventMonth = movieNight.month;
+      const eventDay = movieNight.day;
       // create sms msg
-      console.log('create sms msg', adminName, eventName, date, time, location);
+      const inviteMsg = `${adminName} invited you to "${eventName}" on ${eventMonth} ${eventDay}. Plz RSVP & vote <link>`;
+
       // create list of shortlinks
-      console.log('get list of shortlinks', uIdAdmin, dateTime, friendsIds);
-      // prep & send sms via twilio
-
-
-      // OLD ===============
-      // send invites
-      for( let i = 0; i < friends.length; i++ ) {
-
-        // get 
-        const friendId = friends[i].id;
-        const dest = `https://nowthatscampin.com/votes/${uIdAdmin}/${dateTime}/${friendId}`;
+      let shortLinks = [];
+      // for each friend:
+      for( let i = 0; i < allowedFriends.length; i++ ) {
+        const friendId = allowedFriends[i];
+        const dest = `https://nowthatscampin.com/mn/${uIdAdmin}/${mnId}/${friendId}`;
         const requestBody = JSON.stringify({ destination: dest });
-        const newShortLinkResponse = await fetch('https://api.rebrandly.com/v1/links', {
+        
+        // get a shortlink
+        const newShortLinkResponse = await fetch(shortLinkEndpoint, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'apikey': '905d9976a1d24548ab0930f5f56bc93d',
+            'apikey': shortLinkApiKey,
           },
           body: requestBody
         });
 
+        // review the api response
         if(!newShortLinkResponse.ok){
           const error = new Error(newShortLinkResponse.message || 'something went wrong with newShortLinkResponse');
           throw error;
         } else {
-          console.log('got a new shortlink', await newShortLinkResponse.json());
-        }
+          const shortLink = await newShortLinkResponse.json();
+          shortLinks.push(shortLink.shortUrl);
+        }   
+
+      // send sms via twilio
+      // send sms via twilio
+      // send sms via twilio
+      // send sms via twilio
+      // send sms via twilio
+      // send sms via twilio
+      // send sms via twilio
+      // send sms via twilio
+      // send sms via twilio
+
+
+      
+
       }
+      // dev
+      console.log('**** sendInviteLinksByText()', inviteMsg, shortLinks);
 
     },
+
+
+
+
+      
+    // sendInvites()
+    // sendInvites()
+    // sendInvites()
+    // sendInvites()
+    // sendInvites()
+    // sendInvites()
+    // sendInvites()
+    // sendInvites()
+    // sendInvites()
     sendInvites() {
       console.log('**** starting  sendInvites() *****');
 
@@ -432,8 +447,11 @@ export default {
       updates[`movieNights/${this.uId}/${movieNightKey}`] = movieNight;
       update(ref(db), updates);
       
+
+      // console.log('**** from sendInvites() this is allowedFriends', movieNight.allowedFriends)
       // send text msgs (invite links)
       // this.$store.dispatch('votes/sendAlerts', movieNight); 
+      this.sendInviteLinksByText(movieNight, movieNightKey);
 
 
 

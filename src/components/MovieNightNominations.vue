@@ -239,7 +239,8 @@ export default {
 
     // get search results - returns a list of movies
     async getMovieSearchResults() {
-      const response = await fetch(`https://api.themoviedb.org/3/search/movie?query=${this.searchTerm}&api_key=4b82ea454a84cdf8315e0146aa0aea00`);
+      const api_key = process.env.VUE_APP_TMDB_API_KEY;
+      const response = await fetch(`https://api.themoviedb.org/3/search/movie?query=${this.searchTerm}&api_key=${api_key}`);
       let responseData = await response.json();
       for (let i=0; i < responseData.length; i++) {
         responseData.results[i].dialog = false;
