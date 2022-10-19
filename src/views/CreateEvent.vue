@@ -345,7 +345,7 @@ export default {
       const eventMonth = movieNight.month;
       const eventDay = movieNight.day;
       // create sms msg
-      const inviteMsg = `${adminName} invited you to "${eventName}" on ${eventMonth} ${eventDay}. Plz RSVP & vote <link>`;
+      // const inviteMsg = `${adminName} invited you to "${eventName}" on ${eventMonth} ${eventDay}. Plz RSVP & vote <link>`;
 
       // create list of shortlinks
       let shortLinks = [];
@@ -374,22 +374,51 @@ export default {
           shortLinks.push(shortLink.shortUrl);
         }   
 
-      // send sms via twilio
-      // send sms via twilio
-      // send sms via twilio
-      // send sms via twilio
-      // send sms via twilio
-      // send sms via twilio
-      // send sms via twilio
-      // send sms via twilio
-      // send sms via twilio
+        // send sms via twilio
+        // send sms via twilio
+        // send sms via twilio
+        // send sms via twilio
+        // send sms via twilio
+        // send sms via twilio
+        // send sms via twilio
+        // send sms via twilio
+        // send sms via twilio
+        const twilioId = process.env.VUE_APP_TWILIO_ACCOUNT_SID;
+        // const twilioAuthToken = process.env.VUE_APP_TWILIO_AUTH_TOKEN;
+        const twilioFromNumber = process.env.VUE_APP_TWILIO_FROM_PHONE;
+        // const twilio = require('twilio');
+        // const twilioClient = twilio(twilioId, twilioAuthToken);
+        // // const twilioToNumber = '+1' + friendId;
+        // twilioClient.messages
+        // .create({body: 'Hi there', from: twilioFromNumber, to: '+12135034625'})
+        // .then(message=>console.log(message.sid));
 
-
-      
+        const inviteMsg = `${adminName} invited you to "${eventName}" on ${eventMonth} ${eventDay}. Plz RSVP & vote ${shortLinks[i]}`;
+        const twilioEndPoint = `https://api.twilio.com/2010-04-01/Accounts/${twilioId}/Messages.json?Body=${inviteMsg}&To=+1${friendId}&From=${twilioFromNumber}`;
+        // const msgShortLink = shortLinks[i];
+        // const msgParams = JSON.stringify({
+        //   To: '+1' + friendId,
+        //   From: twilioFromNumber,
+        //   Body: inviteMsg,
+        // });
+        // console.log(twilioFromNumber, twilioEndPoint);
+        const twilioResponse = await fetch(`${twilioEndPoint}`, {
+          method: 'POST',
+          headers: {
+            // Authorization: `Basic ${twilioId}:${twilioAuthToken}`
+            Authorization: 'Basic QUNjZjBlZDQ2Mjk4ZjMyN2Y0ZjQ2N2NlYzIxMDIzNDE4MzpkNTJkNTdmMjRmMmUzY2Y2MWU0ZjU5MzkxMWZmYjUyYw=='
+          }
+        });
+        if (!twilioResponse.ok) {
+          const error = new Error(twilioResponse || 'something went wrong with sending sms via twilio');
+          throw error;
+        } else {
+          console.log('sent twilio sms', await twilioResponse.json());
+        }
 
       }
       // dev
-      console.log('**** sendInviteLinksByText()', inviteMsg, shortLinks);
+      console.log('**** sendInviteLinksByText()', shortLinks);
 
     },
 

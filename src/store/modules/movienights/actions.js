@@ -83,7 +83,7 @@ export default {
         body: requestBody
       });
 
-      if(!newShortLinkResponse.ok){
+      if(!newShortLinkResponse.ok) {
         const error = new Error(newShortLinkResponse.message || 'something went wrong with newShortLinkResponse');
         throw error;
       } else {
