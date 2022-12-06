@@ -16,6 +16,7 @@
     "node-polyfill-webpack-plugin": "^2.0.1",
     "npm": "^8.19.2",
     "roboto-fontface": "*",
+    "uuid": "^9.0.0",
     "vue": "^3.2.13",
     "vue-router": "^4.0.3",
     "vue3-cookies": "^1.0.6",

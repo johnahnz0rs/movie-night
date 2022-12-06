@@ -77,6 +77,10 @@
 </template>
 
 <script>
+import { v4 as uuidv4 } from 'uuid';
+import { initializeApp } from "firebase/app";
+// import { getDatabase, ref, set, onValue } from "firebase/database";
+import { get, getDatabase, ref, set } from "firebase/database";
 export default {
   data() {
     return {
@@ -97,6 +101,8 @@ export default {
       creatorNominations: null,
       // votes: {}, // { guestId: [{movie0}, ...], ... }
       // selections: [], // [ {movie0}, {movie1}, ... ]
+      // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+      
     };
   },
   created() {
@@ -122,8 +128,6 @@ export default {
   },
   methods: {
     createMovieNight() {
-      console.log('create movie night');
-
       let movieNight = {
         // people
         creatorId: this.creatorId,
@@ -139,7 +143,37 @@ export default {
         creatorNominations: this.creatorNominations,
         nomsPerGuest: this.nomsPerGuest,
       };
-      console.log('movieNight:', movieNight);
+      const mnId = uuidv4();
+      const firebaseConfig = {
+        apiKey: process.env.VUE_APP_FIREBASE_API_KEY,
+        authDomain: process.env.VUE_APP_FIREBASE_AUTH_DOMAIN,
+        databaseURL: process.env.VUE_APP_FIREBASE_DATABASE_URL,
+        projectId: process.env.VUE_APP_FIREBASE_PROJECT_ID,
+        storageBucket: process.env.VUE_APP_FIREBASE_STORAGE_BUCKET,
+        messagingSenderId: process.env.VUE_APP_FIREBASE_MESSAGING_SENDER_ID,
+        appId: process.env.VUE_APP_FIREBASE_APP_ID,
+        measurementId: process.env.VUE_APP_FIREBASE_MEASUREMENT_ID
+      };
+      const app = initializeApp(firebaseConfig);
+      const db = getDatabase(app);
+      set(ref(db, `/mn/${mnId}`), movieNight);
+      // set(ref(db, `/users/${this.creatorId}`), mnId);
+      // const createdByCreator = ref(db, `/users/${this.creatorId}/created`);
+
+      let newCreatedByCreator = [mnId];
+      get(ref(db, `/users/${this.creatorId}/created`)).then(snapshot => {
+        if (snapshot.exists()) {
+          const currentCreated = snapshot.val();
+          newCreatedByCreator = [...newCreatedByCreator, ...currentCreated]
+        }
+      }).then(() => {
+        set(ref(db, `users/${this.creatorId}/created`), newCreatedByCreator);
+      }).catch(error => {
+        console.log(error);
+      });
+
+      this.$router.push(`/mn/${mnId}`);
+
     },
   },
 };

@@ -91,7 +91,6 @@ export default {
     printStore() {
       let stuff = {
         view: this.$store.getters['create/view'],
-        creatorNominations: this.$store.getters['create/creatorNominations'],
         creatorId: this.$store.getters['create/creatorId'],
         creatorName: this.$store.getters['create/creatorName'],
         date: this.$store.getters['create/date'],
@@ -100,7 +99,8 @@ export default {
         allGuests: this.$store.getters['create/allGuests'],
         voteStatus: this.$store.getters['create/voteStatus'],
         nominationType: this.$store.getters['create/nominationType'],
-        nominations: this.$store.getters['create/nominations'],
+        creatorNominations: this.$store.getters['create/creatorNominations'],
+        // nominations: this.$store.getters['create/nominations'],
         nomsPerGuest: this.$store.getters['create/nomsPerGuest'],
       };
       console.log('***** printStore() ', stuff);
