@@ -39,6 +39,7 @@
             <v-text-field variant="outlined" label="Event Name (optional)" v-model="eventName" clearable></v-text-field>
           </v-col>
         </v-row>
+        <!-- date -->
         <v-row>
           <v-col cols="4">
             <v-select variant="outlined" :items="months" label="Month" v-model="month"></v-select>
@@ -50,6 +51,7 @@
             <v-select variant="outlined" :items="years" label="Year" v-model="year"></v-select>
           </v-col>
         </v-row>
+        <!-- time -->
         <v-row>
           <v-col cols="4">
             <v-select variant="outlined" :items="hours" label="hour" v-model="hour"></v-select>
@@ -61,6 +63,7 @@
             <v-select variant="outlined" :items="meridians" label="AM/PM" v-model="meridian"></v-select>
           </v-col>
         </v-row>
+        <!-- location -->
         <v-row>
           <v-col cols="12">
             <v-text-field variant="outlined" label="Location / Address" v-model="location" clearable></v-text-field>
@@ -196,8 +199,8 @@
 // $ curl 'https://api.rebrandly.com/v1/links/new?apikey=YOUR_API_KEY&destination=https://www.youtube.com/watch?v=3VmtibKpmXI&slashtag=video&domain\[id\]=8f104cc5b6ee4a4ba7897b06ac2ddcfb'
 // slashtag and title are optional
 
-import { child, getDatabase, push, ref, update } from "firebase/database";
-import { getAuth, onAuthStateChanged } from "firebase/auth";
+// import { child, getDatabase, push, ref, update } from "firebase/database";
+// import { getAuth, onAuthStateChanged } from "firebase/auth";
 
 export default {
   
@@ -319,219 +322,16 @@ export default {
       console.log(index);
       this.friends.splice(index, 1);
     },
-    // sendInviteLinksByText()
-    // sendInviteLinksByText()
-    // sendInviteLinksByText()
-    // sendInviteLinksByText()
-    // sendInviteLinksByText()
-    // sendInviteLinksByText()
-    // sendInviteLinksByText()
-    // sendInviteLinksByText()
-    // sendInviteLinksByText()
-    // sendInviteLinksByText()
-    // sendInviteLinksByText()
-    // sendInviteLinksByText()
     async sendInviteLinksByText(movieNight, mnId) {
       console.log('****** this is sendInviteLinksByText(movieNight, mnId)', movieNight, mnId);
-
-      // shortlink vars
-      const uIdAdmin = movieNight.uIdAdmin;
-      const allowedFriends = movieNight.allowedFriends;
-      const shortLinkEndpoint = process.env.VUE_APP_SHORTLINK_ENDPOINT;
-      const shortLinkApiKey = process.env.VUE_APP_SHORTLINK_API_KEY;
-      // sms msg vars
-      const adminName = movieNight.admin.name;
-      const eventName = movieNight.eventName;
-      const eventMonth = movieNight.month;
-      const eventDay = movieNight.day;
-      // create sms msg
-      // const inviteMsg = `${adminName} invited you to "${eventName}" on ${eventMonth} ${eventDay}. Plz RSVP & vote <link>`;
-
-      // create list of shortlinks
-      let shortLinks = [];
-      // for each friend:
-      for( let i = 0; i < allowedFriends.length; i++ ) {
-        const friendId = allowedFriends[i];
-        const dest = `https://nowthatscampin.com/mn/${uIdAdmin}/${mnId}/${friendId}`;
-        const requestBody = JSON.stringify({ destination: dest });
-        
-        // get a shortlink
-        const newShortLinkResponse = await fetch(shortLinkEndpoint, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'apikey': shortLinkApiKey,
-          },
-          body: requestBody
-        });
-        // review the api response
-        if(!newShortLinkResponse.ok){
-          const error = new Error(newShortLinkResponse.message || 'something went wrong with newShortLinkResponse');
-          throw error;
-        } else {
-          const shortLink = await newShortLinkResponse.json();
-          shortLinks.push(shortLink.shortUrl);
-        }   
-      }
-
-
-
-      
-      // send sms via twilio
-      const twilioId = process.env.VUE_APP_TWILIO_ACCOUNT_SID;
-      // const twilioAuthToken = process.env.VUE_APP_TWILIO_AUTH_TOKEN;
-      const twilioFromNumber = process.env.VUE_APP_TWILIO_FROM_PHONE;
-      // const twilio = require('twilio');
-      // const twilioClient = twilio(twilioId, twilioAuthToken);
-      // // const twilioToNumber = '+1' + friendId;
-      // twilioClient.messages
-      // .create({body: 'Hi there', from: twilioFromNumber, to: '+12135034625'})
-      // .then(message=>console.log(message.sid));
-
-      const inviteMsg = `${adminName} invited you to "${eventName}" on ${eventMonth} ${eventDay}. Plz RSVP & vote ${shortLinks[i]}`;
-      // const twilioEndPoint = `https://api.twilio.com/2010-04-01/Accounts/${twilioId}/Messages.json?Body=${inviteMsg}&To=+1${friendId}&From=${twilioFromNumber}`;
-      const twilioEndPoint = `https://api.twilio.com/2010-04-01/Accounts/${twilioId}/Messages.json?Body=${inviteMsg}&To=+1${friendId}&From=${twilioFromNumber}`;
-      // const msgShortLink = shortLinks[i];
-      // const msgParams = JSON.stringify({
-      //   To: '+1' + friendId,
-      //   From: twilioFromNumber,
-      //   Body: inviteMsg,
-      // });
-      // console.log(twilioFromNumber, twilioEndPoint);
-      const twilioResponse = await fetch(`${twilioEndPoint}`, {
-        method: 'POST',
-        headers: {
-          // Authorization: `Basic ${twilioId}:${twilioAuthToken}`
-          Authorization: 'Basic QUNjZjBlZDQ2Mjk4ZjMyN2Y0ZjQ2N2NlYzIxMDIzNDE4MzpkNTJkNTdmMjRmMmUzY2Y2MWU0ZjU5MzkxMWZmYjUyYw=='
-        }
-      });
-      if (!twilioResponse.ok) {
-        const error = new Error(twilioResponse || 'something went wrong with sending sms via twilio');
-        throw error;
-      } else {
-        console.log('sent twilio sms', await twilioResponse.json());
-      }
-
-      // dev
-      console.log('**** sendInviteLinksByText()', shortLinks);
-
     },
-
-
-
-
-      
-    // sendInvites()
-    // sendInvites()
-    // sendInvites()
-    // sendInvites()
-    // sendInvites()
-    // sendInvites()
-    // sendInvites()
-    // sendInvites()
-    // sendInvites()
     sendInvites() {
       console.log('**** starting  sendInvites() *****');
-
-      // vars
-      let allowedFriends = [];
-      let nominations = {};
-      let votes = {};
-      for (let i=0; i<this.cleanedFriendsWithAdmin.length; i++) {
-        const thisFriendsId = this.cleanedFriendsWithAdmin[i].id;
-        allowedFriends.push(thisFriendsId);
-        nominations[thisFriendsId] = { lorem: 'ipsum' };
-        votes[thisFriendsId] = { lorem: 'ipsum' };
-      }
-
-      const movieNight = {
-        uIdAdmin: this.uId,
-        admin: this.admin, // send this so you can tell friends who created this movieNight event
-        eventName: this.cleanedEventName,
-        month: this.month,
-        day: this.day,
-        year: this.year,
-        hour: this.hour,
-        minute: this.minute,
-        meridian: this.meridian,
-        location: this.location,
-        friends: this.cleanedFriendsWithAdmin,
-        nomsPerFriend: this.nomsPerFriendTickLabels[this.nomsPerFriend],
-        nomsFinished: false,
-        votesFinished: false,
-        allowedFriends,
-        nominations,
-        votes,
-      };
-
-      // save movieNight object to dbase
-      const db = getDatabase();
-      const movieNightKey = push(child(ref(db), `movieNights/${this.uId}`)).key; // get a key for new movieNight
-      let updates = {}; // write the updates
-      updates[`movieNights/${this.uId}/${movieNightKey}`] = movieNight;
-      update(ref(db), updates);
-      
-
-      // console.log('**** from sendInvites() this is allowedFriends', movieNight.allowedFriends)
-      // send text msgs (invite links)
-      // this.$store.dispatch('votes/sendAlerts', movieNight); 
-      this.sendInviteLinksByText(movieNight, movieNightKey);
-
-
-
-      // clear cookies
-      this.$cookies.remove('movieNight'); // this clears the cookies so the /create page will be a blank form jah bless
-      
-      // redirect to /mn page
-      this.$router.push(`mn/${movieNight.uIdAdmin}/${movieNightKey}/${movieNight.admin.id}`);
-
     },
-    // sendInvites() END
-    // sendInvites() END
-    // sendInvites() END
-    // sendInvites() END
-    // sendInvites() END
-    // sendInvites() END
-    // sendInvites() END
-    // sendInvites() END
-    // sendInvites() END
-    // sendInvites() END
-    // sendInvites() END
-    // sendInvites() END
-    // sendInvites() END
-    // sendInvites() END
-    // sendInvites() END
-    // sendInvites() END
   },
   created() {
 
     console.log('*** /create page > created() ');
-    // const auth = getAuth();
-    // this.user = auth.currentUser;
-    // console.log('this is firebase user', this.user);
-
-    // this.userId = localStorage.getItem('uId');
-    // if( !this.$cookies.isKey('uId') ) {
-    //   console.log('CreateEvent > created: lol no user uId');
-    //   this.$router.push('/auth');
-    // } else {
-    //   this.uId = this.$cookies.get('uId');
-    //   console.log('CreateEvent > created: yes userId', this.uId);
-    // }
-
-    const auth = getAuth();
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        this.user = user;
-      }
-    });
-    // this.user = auth.currentUser;
-    // console.log(this.user);
-    
-
-
-
-    
     if( this.$cookies.isKey('movieNight') ) {
       const movieNight = this.$cookies.get('movieNight');
       this.eventName = movieNight.eventName;
@@ -607,14 +407,6 @@ export default {
         cursor: pointer;
       }
     }
-
-
-    // button
-    // .invite-another-friend {
-    //   display: flex; 
-    //   justify-content: space-around;
-    //   margin-bottom: 48px;
-    // }
 
   
     #view-actions {

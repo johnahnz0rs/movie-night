@@ -273,9 +273,6 @@ export default {
 
     },
 
-
-
-
     // nominate a movie
     async nominateMovie(movie) {
       console.log('*** nominateMovie() ***', movie);
@@ -293,9 +290,6 @@ export default {
       }
     },
 
-
-
-
     // remove a nom
     removeNomination(movie) {
       console.log('*** removeNomination(movie)', movie);
@@ -310,10 +304,6 @@ export default {
 
       console.log(this.myNoms);
     },
-
-
-
-
 
     // submit myNoms
     submitMyNoms() {
@@ -330,10 +320,6 @@ export default {
 
 
     },
-
-
-
-
 
     // REALLY submit myNoms
     reallySubmitMyNoms() {
