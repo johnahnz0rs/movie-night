@@ -39,7 +39,7 @@
     <!-- step 5 | review & create -->
     <v-row v-if="(view==5)">
       <v-col>
-        <ReviewCreate />
+        <ReviewCreate :db="db" />
       </v-col>
     </v-row>
     
@@ -50,6 +50,18 @@
   </div>
 </template>
 <script>
+import { initializeApp } from "firebase/app";
+import { getDatabase } from "firebase/database";
+const firebaseConfig = {
+  apiKey: process.env.VUE_APP_FIREBASE_API_KEY,
+  authDomain: process.env.VUE_APP_FIREBASE_AUTH_DOMAIN,
+  databaseURL: process.env.VUE_APP_FIREBASE_DATABASE_URL,
+  projectId: process.env.VUE_APP_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.VUE_APP_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.VUE_APP_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.VUE_APP_FIREBASE_APP_ID,
+  measurementId: process.env.VUE_APP_FIREBASE_MEASUREMENT_ID
+};
 import GetUser from './GetUser.vue';
 import EventInfo from './EventInfo.vue';
 import AddGuests from './AddGuests.vue';
@@ -67,9 +79,11 @@ export default {
     ReviewCreate,
     CreateFooter,
   },
+  // props: ['db'],
   data() {
     return {
       readyToCreate: false,
+      db: null,
     };
   },
   computed: {
@@ -82,6 +96,8 @@ export default {
       this.$store.dispatch('create/creatorName', {creatorName: localStorage.creatorName});
       this.$store.dispatch('create/view', {view: 2});
     }
+    const app = initializeApp(firebaseConfig);
+    this.db = getDatabase(app);
   },
   methods: {
     updateReadyToCreate(val) {
