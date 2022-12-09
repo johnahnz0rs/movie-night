@@ -18,7 +18,10 @@
         <v-card>
           <v-card-title class="text-decoration-underline">When & Where</v-card-title>
           <v-card-text>
-            <p>{{date.monthName}} {{date.day}}, {{date.year}} @ {{time.hour}}:{{time.min}} {{time.meridian}}</p>
+            <p>
+              {{date.monthName}} {{date.day}}, {{date.year}}<br />
+              <em>{{time.hour}}:{{time.min}} {{time.meridian}}</em>
+            </p>
             <p>Location: {{location}}</p>
             <v-alert v-if="(!date.monthName || !date.day || !date.year || !time.hour || !time.min || !time.meridian || !location)" type="error" density="compact">Please enter all date, time, and location info.</v-alert>
           </v-card-text>
@@ -63,6 +66,8 @@
             <div v-else-if="(nominationType == 'nPG')">
               <h3>Guests can nominate up to {{nomsPerGuest}} movies each</h3>
             </div>
+
+            <v-alert v-if="(!nominationType)" type="error" density="compact">Please select a setting for movie nominations.</v-alert>
 
           </v-card-text>
         </v-card>
@@ -123,7 +128,7 @@ export default {
     this.voteStatus = this.nominationType == 'manual' ? 'vote' : 'nominate';
 
     // validate and confirm this MN is ready to be created
-    if (this.creatorId && this.creatorName && this.date.monthName && this.date.month && this.date.day && this.date.year && this.time.hour && this.time.min && this.time.meridian && this.location && (this.allGuests && this.allGuests.length > 0) && this.nominationType && ((this.nominationType == 'manual' && this.creatorNominations && this.creatorNominations.length > 1) || (this.nominationType == 'nPG' && this.nomsPerGuest)) &&this.voteStatus) {
+    if (this.creatorId && this.creatorName && this.date.monthName && this.date.month && this.date.day && this.date.year && this.time.hour && this.time.min && this.time.meridian && this.location && (this.allGuests && this.allGuests.length > 0) && this.nominationType && ((this.nominationType == 'manual' && this.creatorNominations && this.creatorNominations.length > 1) || (this.nominationType == 'nPG' && this.nomsPerGuest)) && this.voteStatus) {
       this.canCreateMovieNight = true;
     }
   },
@@ -163,13 +168,13 @@ export default {
 
       // add new movieNight to creator's list of createdMN's
       let newCreatedByCreator = [mnId];
-      get(ref(this.db, `/users/${this.creatorId}/created`)).then(snapshot => {
+      get(ref(db, `/users/${this.creatorId}/created`)).then(snapshot => {
         if (snapshot.exists()) {
           const currentCreated = snapshot.val();
           newCreatedByCreator = [...newCreatedByCreator, ...currentCreated]
-        }
+        } 
       }).then(() => {
-        set(ref(this.db, `users/${this.creatorId}/created`), newCreatedByCreator);
+        set(ref(db, `users/${this.creatorId}/created`), newCreatedByCreator);
       }).catch(error => {
         console.log(error);
       });
