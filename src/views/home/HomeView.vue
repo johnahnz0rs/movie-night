@@ -60,7 +60,7 @@ export default {
 main #homepage .v-container {
 
   #hero-row {
-    background-image: url('../assets/opt-vladimir-fedotov--w-V5GRG9-0-unsplash.jpg');
+    background-image: url('../../assets/opt-vladimir-fedotov--w-V5GRG9-0-unsplash.jpg');
     background-position: center;
     background-size: cover;
     background-repeat: no-repeat;

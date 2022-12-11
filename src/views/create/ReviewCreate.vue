@@ -83,11 +83,9 @@
 
 <script>
 import { v4 as uuidv4 } from 'uuid';
-import { initializeApp } from "firebase/app";
-import { get, getDatabase, ref, set } from "firebase/database";
-// import { get, ref, set } from "firebase/database";
+import { db } from '../../assets/db.js';
+import { get, ref, set } from 'firebase/database';
 export default {
-  // props: ['db'],
   data() {
     return {
       canCreateMovieNight: false,
@@ -104,11 +102,7 @@ export default {
       // process
       nominationType: null,
       voteStatus: null, // nominate, vote, selected
-      creatorNominations: null,
-      // votes: {}, // { guestId: [{movie0}, ...], ... }
-      // selections: [], // [ {movie0}, {movie1}, ... ]
-      // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-      
+      creatorNominations: null,      
     };
   },
   created() {
@@ -134,41 +128,32 @@ export default {
   },
   methods: {
     createMovieNight() {
+
+      // step 1: create new movieNight in dbase
       const mnId = uuidv4();
-      const firebaseConfig = {
-        apiKey: process.env.VUE_APP_FIREBASE_API_KEY,
-        authDomain: process.env.VUE_APP_FIREBASE_AUTH_DOMAIN,
-        databaseURL: process.env.VUE_APP_FIREBASE_DATABASE_URL,
-        projectId: process.env.VUE_APP_FIREBASE_PROJECT_ID,
-        storageBucket: process.env.VUE_APP_FIREBASE_STORAGE_BUCKET,
-        messagingSenderId: process.env.VUE_APP_FIREBASE_MESSAGING_SENDER_ID,
-        appId: process.env.VUE_APP_FIREBASE_APP_ID,
-        measurementId: process.env.VUE_APP_FIREBASE_MEASUREMENT_ID
-      };
-      const app = initializeApp(firebaseConfig);
-      const db = getDatabase(app);
       let movieNight = {
         // people
         creatorId: this.creatorId,
         creatorName: this.creatorName,
-        allGuests: this.allGuests,
+        allGuests: [{name: this.creatorName, number: this.creatorId}, ...this.allGuests],
         // when & where
         date: this.date,
         time: this.time,
         location: this.location,
         // process
-        voteStatus: this.voteStatus, 
         nominationType: this.nominationType,
         creatorNominations: this.creatorNominations,
+        nominations: this.nominationType == 'manual' ? [...this.creatorNominations] : null,
         nomsPerGuest: this.nomsPerGuest,
+        voteStatus: this.voteStatus,
       };
-
-      // create new movieNight in dbase
       set(ref(db, `/mn/${mnId}`), movieNight);
 
-      // add new movieNight to creator's list of createdMN's
+
+      // step 2: add new movieNight to creator's list of createdMN's
       let newCreatedByCreator = [mnId];
-      get(ref(db, `/users/${this.creatorId}/created`)).then(snapshot => {
+      get(ref(db, `/users/${this.creatorId}/created`))
+      .then(snapshot => {
         if (snapshot.exists()) {
           const currentCreated = snapshot.val();
           newCreatedByCreator = [...newCreatedByCreator, ...currentCreated]
@@ -179,7 +164,8 @@ export default {
         console.log(error);
       });
 
-      // send creator to MovieNightView
+
+      // step 3: send creator to MovieNightView
       this.$router.push(`/mn/${mnId}`);
 
     },

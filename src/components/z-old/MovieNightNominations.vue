@@ -137,8 +137,7 @@
 
 
 <script>
-// import { child, getDatabase, push, ref, update } from "firebase/database";
-import { getDatabase, ref, update } from "firebase/database";
+import { getDatabase, ref, update } from 'firebase/database';
 export default {
 
   data() {

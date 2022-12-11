@@ -1,15 +1,8 @@
 <template>
   <div id="event-info">
-    
-    <v-row>
-      <v-col>
-        <h2 class="mb-3">Step 2: when & where</h2>
-        <v-btn @click.prevent="printData">print data</v-btn>
-      </v-col>
-    </v-row>
 
     <v-row>
-      <v-col cols="12">Date</v-col>
+      <v-col cols="12" class="text-h6">Date</v-col>
       <v-col>
         <v-select variant="outlined" :items="months" label="Month" v-model="monthName"></v-select>
       </v-col>
@@ -22,7 +15,7 @@
     </v-row>
 
     <v-row>
-      <v-col cols="12">Time</v-col>
+      <v-col cols="12" class="text-h6">Time</v-col>
       <v-col>
         <v-select variant="outlined" :items="hours" label="Hour" v-model="hour" @input="updateTime"></v-select>
       </v-col>
@@ -35,7 +28,7 @@
     </v-row>
 
     <v-row>
-      <v-col cols="12">Location</v-col>
+      <v-col cols="12" class="text-h6">Location</v-col>
       <v-col>
         <v-text-field variant="outlined" label="Location name or Address" v-model="location" clearable @input="updateLocation"></v-text-field>
       </v-col>
@@ -148,4 +141,15 @@ export default {
   },
 };
 </script>
+
+<style lang="scss" scoped>
+#page-create #event-info .v-row {
+  margin-bottom: 12px;
+  margin-top: 12px;
+  .v-col {
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+}
+</style>
 

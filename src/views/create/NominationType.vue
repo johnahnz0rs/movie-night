@@ -1,17 +1,19 @@
 <template>
-  <div id="noms-per-guest">
+  <div id="nominationType">
 
-    <!-- screen header: step 4 -->
+
+    <!-- header -->
     <v-row>
       <v-col>
-        <h2> Step 4: movie nominations</h2>
-        <v-btn @click.prevent="printData">print data</v-btn>
+        <h2>Step 4: movie nominations</h2>
+        <h3 v-if="!this.nominationType" class="pt-5 mt-5">please choose one of the following</h3>
       </v-col>
     </v-row>
 
+
     <!-- choose a nominationType -->
-    <v-row class="bg-red-lighten-3 pb-5 pt-3">
-      <v-col class="d-flex flex-column justify-space-between">
+    <v-row class="pb-5 pt-3 px-3">
+      <v-col class="d-flex flex-column justify-space-around">
         <v-btn @click.prevent="useNomType('manual')" size="x-large" :class="manualClass" class="mb-4">
           enter your own list<br/>
           of movies to choose from
@@ -27,7 +29,7 @@
     <v-row v-if="(nominationType == 'manual')">
 
       <v-col>
-        <DisplayMyPicks sectionTitle="nominations" :myPicks="creatorNominations" @removeMovie="removeNomination" editable="true"/>
+        <DisplayMyPicks sectionTitle="your nominations" :myPicks="creatorNominations" @removeMovie="removeNomination" editable="true"/>
         <SelectMyPicks :nominations="creatorNominations" canStillNominate="true" editable="true" headerMsg="enter your movie choices now" @addMovie="addNomination" />
       </v-col>
     </v-row>
@@ -87,13 +89,6 @@ export default {
     nPG() { this.$store.dispatch('create/nomsPerGuest', {nomsPerGuest: this.nPG+1}) },
   },
   methods: {
-    printData() {
-      console.log({
-        nPG: this.nPG,
-        nominationType: this.nominationType,
-        nominations: this.nominations,
-      });
-    },
     useNomType(choice) {
       this.nominationType = choice;
       this.$store.dispatch('create/nominationType', {nominationType: choice});

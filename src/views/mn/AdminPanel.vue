@@ -1,70 +1,69 @@
 <template>
-  <div id="admin-panel">
-    
-    <v-row>
-      <v-col>
-        <h2>Admin Panel</h2>
+  <v-row id="admin-panel" class="bg-yellow-lighten-1 mb-3">
+    <v-col>
 
-        <!-- if manual -->
-        <!-- <div> -->
-        <div v-if="(mn.nominationType == 'manual' && voteStatus != 'selected')">
-          <p class="mb-1 font-weight-bold">You have submitted {{(mn.creatorNominations.length)}} movies to choose from.</p>
-          <p class="text-decoration-underline">{{guestsWhoHaveVoted.length}} of {{allGuests.length}} guests have voted</p>
-          <ul class="ml-5">
-            <li v-for="guest in allGuests" :key="guest.number">
-              {{guest.name}} {{ guestsWhoHaveVoted.includes(guest.number.toString()) ? '✔️': '❓' }}
-            </li>
-          </ul>
-          <v-btn @click.prevent="endTheVote">end the vote now</v-btn>
-        </div>
+      <!-- header -->
+      <h2>Admin Panel</h2>
 
 
-        <!-- if nPG & nominating -->
-        <!-- <div> -->
-        <div v-if="(nominationType == 'nPG' && voteStatus == 'nominate')">
-          <p class="mb-1 font-weight-bold">You allowed each guest to nominate up to {{nPG}} movie{{ nPG > 1 ? 's' : '' }}.</p>
-          <p class="text-decoration-underline">{{guestsWhoHaveNominated.length}} of {{allGuests.length}} guests submitted their nomination{{ nPG > 1 ? 's' : '' }}</p>
-          <ul class="ml-5">
-            <li v-for="guest in allGuests" :key="guest.number">
-              {{guest.name}} {{ guestsWhoHaveNominated.includes(guest.number.toString()) ? '✔️': '❓' }}
-            </li>
-          </ul>
-          <v-btn @click.prevent="endNomsStartVote">end nominations & start the vote</v-btn>
-        </div>
-        
-        
-        <!-- if nPG & voting -->
-        <!-- <div> -->
-        <div v-if="(nominationType == 'nPG' && voteStatus == 'vote')">
-          <p class="mb-1 font-weight-bold">Guests are choosing from {{allNominations.length}} movies.</p>
-          <p class="text-decoration-underline">{{guestsWhoHaveVoted.length}} of {{allGuests.length}} guests have voted{{ nPG > 1 ? 's' : '' }}</p>
-          <ul class="ml-5">
-            <li v-for="guest in allGuests" :key="guest.number">
-              {{guest.name}} {{ guestsWhoHaveVoted.includes(guest.number.toString()) ? '✔️': '❓' }}
-            </li>
-          </ul>
-          <v-btn @click.prevent="endTheVote">end the vote now</v-btn>
-        </div>
-        
-        
-        <!-- if voteStatus == selected -->
-        <!-- <div> -->
-        <div v-if="(nominationType == 'nPG' && voteStatus == 'selected')">
-          <p class="mb-1 font-weight-bold">Voting has finished.</p>
-        </div>
+      <!-- if manual/creatorNominations
+        && before voteStatus=='selected' -- aka ppl are voting -->
+      <div v-if="(mn.nominationType == 'manual' && voteStatus != 'selected')">
+        <p class="mb-1 font-weight-bold">You have submitted {{(mn.creatorNominations.length)}} movies to choose from.</p>
+        <p class="text-decoration-underline">{{guestsWhoHaveVoted.length}} of {{allGuests.length}} guests have voted.</p>
+        <ul class="ml-5">
+          <li v-for="guest in allGuests" :key="guest.number">
+            {{guest.name}} {{ guestsWhoHaveVoted.includes(guest.number.toString()) ? '✔️': '❓' }}
+          </li>
+        </ul>
+        <v-btn @click.prevent="endTheVote">end the vote now</v-btn>
+      </div>
 
+
+      <!-- if nPG & nominating -->
+      <div v-if="(nominationType == 'nPG' && voteStatus == 'nominate')">
+        <p class="mb-1 font-weight-bold">You allowed each guest to nominate up to {{nPG}} movie{{ nPG > 1 ? 's' : '' }}.</p>
+        <p class="text-decoration-underline">{{guestsWhoHaveNominated.length}} of {{allGuests.length}} guests submitted their nomination{{ nPG > 1 ? 's' : '' }}</p>
+        <ul class="ml-5">
+          <li v-for="guest in allGuests" :key="guest.number">
+            {{guest.name}} {{ guestsWhoHaveNominated.includes(guest.number.toString()) ? '✔️': '❓' }}
+          </li>
+        </ul>
+        <v-btn @click.prevent="endNomsStartVote">end nominations & start the vote</v-btn>
+      </div>
+      
+      
+      <!-- if nPG & voting -->
+      <div v-if="(nominationType == 'nPG' && voteStatus == 'vote')">
+        <p class="mb-1 font-weight-bold">Guests are choosing from {{allNominations.length}} movies.</p>
+        <p class="text-decoration-underline">{{guestsWhoHaveVoted.length}} of {{allGuests.length}} guests have voted{{ nPG > 1 ? 's' : '' }}</p>
+        <ul class="ml-5">
+          <li v-for="guest in allGuests" :key="guest.number">
+            {{guest.name}} {{ guestsWhoHaveVoted.includes(guest.number.toString()) ? '✔️': '❓' }}
+          </li>
+        </ul>
+        <v-btn @click.prevent="endTheVote">end the vote now</v-btn>
+      </div>
+      
+      
+      <!-- if voteStatus == selected -->
+      <div v-if="(nominationType == 'nPG' && voteStatus == 'selected')">
+        <p class="mb-1 font-weight-bold">Voting has finished.</p>
+
+      </div>
 
 
 
 
 
-      </v-col>
-    </v-row>
 
-  </div>
+    </v-col>
+  </v-row>
 </template>
 
 <script>
+import { db } from '../../assets/db.js';
+import { ref, set } from 'firebase/database';
 export default {
   computed: {
     mn() { return this.$store.getters['mn/mn'] },
@@ -83,26 +82,19 @@ export default {
   methods: {
     endTheVote() {
       console.log('endTheVote()');
+      let mnNew = {...this.mn};
+      mnNew.voteStatus = 'selected'
     },
     endNomsStartVote() {
       console.log('endNomsStartVote()');
+      let mnNew = {...this.mn};
+      mnNew.voteStatus = 'vote';
+      set(ref(db, `/mn/${this.$route.params.id}`), mnNew);
     },
   },
 };
 </script>
 
 
-<style lang="scss" scoped>
-#admin-panel {
-  // .v-row:first-of-type {
-    background-color: yellow;
-  // }
-  // p { 
-  //   padding-bottom: 8px;
-  //   margin-bottom: 24px;
-  //   border-bottom: 1px dashed black;
-  // }
-}
-</style>
 
 

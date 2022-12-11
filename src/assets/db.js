@@ -1,5 +1,5 @@
 import { initializeApp } from 'firebase/app';
-import { get, getDatabase, ref, set } from "firebase/database";
+import { getDatabase } from 'firebase/database';
 const firebaseConfig = {
   apiKey: process.env.VUE_APP_FIREBASE_API_KEY,
   authDomain: process.env.VUE_APP_FIREBASE_AUTH_DOMAIN,
@@ -11,15 +11,6 @@ const firebaseConfig = {
   measurementId: process.env.VUE_APP_FIREBASE_MEASUREMENT_ID
 };
 const app = initializeApp(firebaseConfig);
-
-
-// const db = getDatabase(app);
-
-
-// function getDb() {
-  const db = getDatabase(app);
-  // return db;
-// }
-// export default { getDb };
-export default { db, get, ref, set };
+const db = getDatabase(app);
+export { db };
 

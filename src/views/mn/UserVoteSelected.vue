@@ -161,7 +161,10 @@ export default {
       }
 
 
-
+      console.log('max:', max);
+      console.log('min:', min);
+      console.log('winners:', winners);
+      console.log('losers:', losers);
 
 
 

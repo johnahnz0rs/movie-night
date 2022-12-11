@@ -2,7 +2,7 @@
   <v-app>
     <HeaderNav />
     <v-main class="p-8">
-      <router-view :db="db"/>
+      <router-view />
     </v-main>
   </v-app>
 </template>
@@ -15,15 +15,6 @@ export default {
   components: {
     HeaderNav,
   },
-  data() {
-    return {
-      db: null,
-    };
-  },
-  // created() {
-  //   const app = initializeApp(firebaseConfig);
-  //   this.db = getDatabase(app);
-  // },
 }
 </script>
 

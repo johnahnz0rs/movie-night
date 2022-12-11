@@ -1,31 +1,37 @@
 <template>
   <div id="user-panel">
 
-
+    <!-- welcome -->
     <v-row><v-col>
-      <v-card>
-        <v-card-title>hi, {{userName}}!</v-card-title>
+      <v-card class="bg-blue-lighten-4">
         <v-card-text>
-            join us for a movie night:<br/>&nbsp;<br/>
-            <strong>{{date.monthName}} {{date.day}}, {{date.year}}</strong> <em>@ {{time.hour}}:{{time.min}} {{time.meridian}}</em><br/>
-            <strong>Location:</strong> {{location}}
+          <p class="text-subtitle-1 font-weight-bold mb-2">hi, {{userName}}! join us for a movie night</p>
+          <p class="font-weight-bold text-center">
+            <strong>{{date.monthName}} {{date.day}}, {{date.year}}</strong>
+            <br/><em>{{time.hour}}:{{time.min}} {{time.meridian.toLowerCase()}}</em><br/>
+            <strong>Location:</strong><br/>
+            <em>{{location}}</em>
+          </p>
         </v-card-text>
       </v-card>
     </v-col></v-row>
 
+    
+    <!-- nominate -->
     <div v-if="mn.nominationType == 'nPG' && mn.voteStatus == 'nominate'">
     <!-- <div class=""> -->
       <UserVoteNominate :userId="userId" />
     </div>
 
     
+    <!-- vote -->
     <div v-if="mn.voteStatus == 'vote'">
-    <!-- <div class=""> -->
       <UserVoteVote :userId="userId" />
     </div>
 
+
+    <!-- movie(s) selected -->
     <div v-if="mn.voteStatus == 'selected'">
-    <!-- <div class="d-none"> -->
       <UserVoteSelected />
     </div>
 
@@ -52,16 +58,4 @@ export default {
 };
 </script>
 
-
-<style lang="scss" scoped>
-#user-panel {
-
-  p {
-    border-bottom: 1px dashed black;
-    padding-bottom: 6px;
-    margin-bottom: 24px;
-  }
-
-}
-</style>
 

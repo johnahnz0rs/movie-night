@@ -23,7 +23,7 @@
       <!-- see my nominations -->
       <DisplayMyPicks :sectionTitle="displayMyPicksSectionTitle" :myPicks="myNoms" :editable="canSubmitMyNoms" @removeMovie="removeNom" />
 
-      <!-- search for/ add new noms -->
+      <!-- search for/add new noms -->
       <div v-if="(!userHasAlreadySubmittedNoms && myNoms.length < nPG)">
         <SelectMyPicks :nominations="myNoms" :canStillNominate="!userHasAlreadySubmittedNoms" :editable="canSubmitMyNoms" :headerMsg="headerMsg" @addMovie="addNom" @removeMovie="removeNom" />
       </div>
@@ -41,11 +41,8 @@
 import SelectMyPicks from '../../components/SelectMyPicks.vue';
 import DisplayMyPicks from '../../components/DisplayMyPicks.vue';
 
-import { initializeApp } from "firebase/app";
-import { getDatabase, ref, set } from "firebase/database";
-const firebaseConfig = { apiKey: process.env.VUE_APP_FIREBASE_API_KEY, authDomain: process.env.VUE_APP_FIREBASE_AUTH_DOMAIN, databaseURL: process.env.VUE_APP_FIREBASE_DATABASE_URL, projectId: process.env.VUE_APP_FIREBASE_PROJECT_ID, storageBucket: process.env.VUE_APP_FIREBASE_STORAGE_BUCKET, messagingSenderId: process.env.VUE_APP_FIREBASE_MESSAGING_SENDER_ID, appId: process.env.VUE_APP_FIREBASE_APP_ID, measurementId: process.env.VUE_APP_FIREBASE_MEASUREMENT_ID };
-const app = initializeApp(firebaseConfig);
-const db = getDatabase(app);
+import { db } from '../../assets/db.js';
+import { ref, set } from 'firebase/database';
 export default {
   props: [ 'userId' ],
   components: {
@@ -55,6 +52,7 @@ export default {
   created() {
     // check if all nominations are in
     if (this.guestsWhoHaveNominated.length == this.totalGuestCount) {
+      // update the voteStatus to 'vote'
       let mnNew = {...this.mn};
       mnNew.voteStatus = 'vote';
       // update dbase & $store
@@ -63,8 +61,8 @@ export default {
 
     // not all noms are in; proceed to nominate
     } else {
-      if (this.nominations[this.userId]) {
-        this.myNoms = this.nominations[this.userId];
+      if (this.nominations && this.nominations[this.userId]) {
+        this.myNoms = [ ...this.nominations[this.userId] ];
       }
     }
   },
@@ -126,25 +124,11 @@ export default {
       }
       mnNew.nominations[this.userId] = this.myNoms;
 
-
       // if all guests have voted:
       if (Object.keys(mnNew.nominations).length == this.totalGuestCount) {
 
         // update voteStatus
         mnNew.voteStatus = 'vote';
-
-        // // update allNominations
-        // let allNoms = [];
-        // for (let u in mnNew.nominations) {
-        //   console.log(mnNew.nominations[u]);
-        //   for (let m in mnNew.nominations[u]) {
-        //     if (!allNoms.includes(mnNew.nominations[u][m])) {
-        //       allNoms.push(mnNew.nominations[u][m]);
-        //     }
-        //   }
-        // }
-        // mnNew.allNominations = allNoms;
-        
       }
 
       // update dbase & $store
