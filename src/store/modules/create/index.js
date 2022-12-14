@@ -6,18 +6,12 @@ export default {
   namespaced: true,
   state() {
     return {
-      // general
+      // ux
       view: 1,
-      nominationType: null, // "manual" or "nPG"
-      voteStatus: null, // "nominate", "vote", or "selected"
-      creatorNominations: null, // [ {movie1}, {movie2}, ... ]
-      // nominations: null, // { guestId: [{movie1}, {movie2}, ...], ... }
-      // votes: null, // { guestId: [{movie1}, {movie2}, ...], ... }
-      // selections: null, // [ {movie1}, {movie2}, ... ]
-      // step 1
+      // step 1 - get user
       creatorId: null,
       creatorName: null,
-      // step 2
+      // step 2 - event info
       date: {
         monthName: null,
         month: null,
@@ -30,10 +24,12 @@ export default {
         meridian: null,
       },
       location: null,
-      // step 3
+      // step 3 - add guests
       allGuests: null,
-      // step 4
-      nomsPerGuest: null,
+      // step 4 - nominationType
+      nominationType: null, // 'manual' or 'nPG'
+      allNominations: null, // [ {movie1}, {movie2}, ... ]
+      voteStatus: null, // 'nominate', 'vote', or 'selected'      
     };
   },
   getters,

@@ -1,6 +1,8 @@
 <template>
   <v-container id="page-create">
 
+    <!-- <TestComponent :db="db" /> -->
+
     <!-- header -->
     <v-row>
       <v-col class="">
@@ -25,7 +27,7 @@
 
 
     <!-- step 5 | review & create -->
-    <ReviewCreate v-if="(view==5)" />
+    <ReviewCreate v-if="(view==5)" :mn="mn" />
 
     
     <!-- footer -->
@@ -41,7 +43,8 @@ import AddGuests from './AddGuests.vue';
 import NominationType from './NominationType.vue';
 import ReviewCreate from './ReviewCreate.vue';
 import CreateFooter from './CreateFooter.vue';
-
+// import { db } from '../../assets/db.js';
+// import TestComponent from './TestComponent.vue';
 export default {
   name: 'CreateEvent',
   components: {
@@ -51,10 +54,13 @@ export default {
     NominationType,
     ReviewCreate,
     CreateFooter,
+    // TestComponent,
   },
+  props: ['mn'],
   data() {
     return {
       readyToCreate: false,
+      // db: db,
     };
   },
   computed: {

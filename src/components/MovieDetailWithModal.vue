@@ -24,10 +24,11 @@
           <div class="d-flex justify-space-between">
             <div>
               <h2>{{dMovie.title}}</h2>
-              <p class="mb-5">({{dMovie.release_date.slice(0,4)}})</p>
+              <p class="mb-5" v-if="dMovie.release_date">({{dMovie.release_date.slice(0,4)}})</p>
             </div>
             <div>
-              <v-btn block @click="dMovie.dialog = false" color="red">Close</v-btn> <!-- x close modal -->
+              <!-- x close modal -->
+              <v-btn block @click="dMovie.dialog = false" variant="plain" color="red">Close</v-btn>
             </div>
           </div>
           <p>{{ dMovie.overview }}</p>
@@ -36,9 +37,9 @@
           </div>
         </v-card-text>
         <!-- x close modal -->
-        <v-card-actions>
+        <!-- <v-card-actions>
           <v-btn block @click="dMovie.dialog = false" color="red">Close</v-btn>
-        </v-card-actions>
+        </v-card-actions> -->
       </v-card>
     </v-dialog>
 

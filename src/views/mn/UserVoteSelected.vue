@@ -44,18 +44,18 @@ export default {
       
 
       // first round
-      let firstChoices = [];
-      let firstChoiceMovies = {};
-      for (let i in this.guestIds) {
-        const guestId = this.guestIds[i];
-        firstChoices.push(this.votes[guestId][0]);
-        if (!firstChoiceMovies[this.votes[guestId][0].id]) {
-          firstChoiceMovies[this.votes[guestId][0].id] = this.votes[guestId][0];
-        }
-      }
+      // let firstChoices = [];
+      // let firstChoiceMovies = {};
+      // for (let i in this.guestIds) {
+      //   const guestId = this.guestIds[i];
+      //   firstChoices.push(this.votes[guestId][0]);
+      //   if (!firstChoiceMovies[this.votes[guestId][0].id]) {
+      //     firstChoiceMovies[this.votes[guestId][0].id] = this.votes[guestId][0];
+      //   }
+      // }
       // console.log('firstChoices:', firstChoices);
       // console.log('firstChoiceMovies:', firstChoiceMovies);
-      this.getWinnersAndLosers(firstChoiceMovies);
+      // this.getWinnersAndLosers(firstChoiceMovies);
 
 
       // let firstChoicesTally = {};
@@ -87,7 +87,7 @@ export default {
 
         // }
       // }
-      
+      this.rankedChoiceVoting(this.guestIds, this.mn.allNominations, this.votes)
     }
   },
   data() { return {}; },
@@ -96,7 +96,7 @@ export default {
     votes() { return this.mn.votes ? this.mn.votes : {} },
     selected() { return this.mn.selected ? this.mn.selected : [] },
     guestIds() { 
-      let list = [this.mn.creatorId];
+      let list = [];
       for (let i in this.mn.allGuests) {
         list.push(this.mn.allGuests[i].number);
       } 
@@ -104,7 +104,65 @@ export default {
     },
   },
   methods: {
-    getWinnersAndLosers(votes) {
+
+
+    rankedChoiceVoting(allGuestsIds, allNoms, allVotes) {
+      
+      let allNomsMovieIds = [];
+      let currentRoundMovieChoices = [];
+      let currentRoundTally = {};
+      // let currentMin = null;
+      // let eliminatedMoviesIds = [];
+      let winnerMovieId = null;
+      
+      // get a list of all candidates/noms
+      for (let i in allNoms) {
+        const movieId = allNoms[i].id;
+        allNomsMovieIds.push(movieId);
+      }
+      // get all the user's first choice
+      for (let i in allGuestsIds) {
+        const userId = allGuestsIds[i];
+        currentRoundMovieChoices.push(allVotes[userId][0].id);
+      }
+      console.log('currentRoundMovieChoices', currentRoundMovieChoices);
+      // count the current round's votes
+      for (let i in currentRoundMovieChoices) {
+        const movieChoice = currentRoundMovieChoices[i];
+        if (!currentRoundTally[movieChoice]) {
+          currentRoundTally[movieChoice] = 1;
+        } else {
+          currentRoundTally[movieChoice] += 1;
+        }
+      }
+      console.log('currentRoundTally:', currentRoundTally);
+      // see if there's a clear winner (votes > 50%)
+      const currentVotesIds = Object.keys(currentRoundTally);
+      for (let i in currentVotesIds) {
+        const movieId = currentVotesIds[i];
+        const count = currentRoundTally[movieId];
+        if (count > allGuestsIds.length / 2) {
+          winnerMovieId = movieId;
+        }
+      }
+
+
+
+      // if clear winner, then return winnerMovieId
+      if (winnerMovieId) {
+        console.log('we got a winner!', winnerMovieId);
+        return winnerMovieId;
+      }
+      // if no clear winner, then reset currentRoundMovieChoices & call the function again.
+        // first find eliminatedMovies
+        // then replace votes for any of those movies.
+      
+      
+
+    },
+
+
+    getWinnersAndLosers2(votes) {
       // votes = { gId: {movie}, gId: {movie}, ... };
 
 
@@ -127,31 +185,31 @@ export default {
         } else {
           votesTally[movie.id] += 1;
         }
-        if (!movieObj[movie.id]) {
-          movieObj[movie.id] = movie;
-        }
+        // if (!movieObj[movie.id]) {
+        //   movieObj[movie.id] = movie;
+        // }
       }
 
       // list of mIds (the id's of the movies that were voted for)
       const votesMovieIds = [...Object.keys(votesTally)]; // [mId, mId, ...]
-      // console.log('votesMovieIds', votesMovieIds);
+      console.log('votesMovieIds', votesMovieIds);
 
       // find max and min
-      let max = null;
+      // let max = null;
       let min = null;
-      let winners = [];
+      // let winners = [];
       let losers = [];
       for (let m in votesMovieIds) {
-        max = max ? max : 1;
+        // max = max ? max : 1;
         min = min ? min : 1;
         const mId = votesMovieIds[m];
         const votesForThisMovie = votesTally[mId];
         const thisMovie = movieObj[mId];
-        if (votesForThisMovie == max) {
-          winners.push(thisMovie);
-        } else if (votesForThisMovie > max) {
-          winners = [ {...thisMovie} ];
-        }
+        // if (votesForThisMovie == max) {
+        //   winners.push(thisMovie);
+        // } else if (votesForThisMovie > max) {
+        //   winners = [ {...thisMovie} ];
+        // }
         if (votesForThisMovie == min) {
           losers.push(thisMovie);
         } else if (votesForThisMovie < min) {
@@ -161,34 +219,12 @@ export default {
       }
 
 
-      console.log('max:', max);
+      // console.log('max:', max);
       console.log('min:', min);
-      console.log('winners:', winners);
+      // console.log('winners:', winners);
       console.log('losers:', losers);
 
 
-
-
-      // get voteCounts
-      // let max = null;
-      // let min = null;
-      // let winners = [];
-      // let losers = [];
-      
-      // for (let i in Object.keys(votesTally)) {
-      //   // const mId = i;
-      //   max = max ? max : 1;
-      //   min = min ? min : 1;
-      //   if (votesTally[i] == max) {
-      //     console.log('votesTally[i] == max');
-      //     winners.push(allVotes.find(movie => movie.id == ))
-      //   }
-      //   if (votesTally[i] > max) {
-      //     console.log('votesTally[i] > max');
-      //     winners = [];
-      //   }
-      // }
-      
 
 
 

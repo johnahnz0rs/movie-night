@@ -1,19 +1,24 @@
 <template>
   <div>
-    <h1>lol TestComponent</h1>
-    <v-btn @click.prevent="doTheThing">Do the thing</v-btn>
+    <h1>TestComponent</h1>
+    <!-- <v-btn></v-btn> -->
+
   </div>
 </template>
-
 <script>
-import { ref, set } from 'firebase/database';
-import { db } from '../../assets/db.js';
+import { ref, get } from 'firebase/database';
 export default {
-  // props: ['jDb', 'jRef', 'jSet'],
+  props: ['db'],
+  created() {
+    this.doTheThing();
+  },
   methods: {
     doTheThing() {
-      console.log('yo whatup doing the thing now');
-      set(ref(db, '/mn/lolol'), {'jahn': 'leet'});
+      get(ref(this.db, '/mn')).then(snapshot => {
+        if(snapshot.exists()) {
+          console.log('TestComponent', snapshot.val());
+        }
+      })
     }
   },
 };

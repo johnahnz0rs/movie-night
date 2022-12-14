@@ -4,7 +4,7 @@
     <!-- if myNoms were already submitted -->
     <div v-if="userHasAlreadySubmittedNoms">
       <v-row><v-col>
-        <h4>Thank you. You have submitted your nomination{{ (myNoms.length > 1) ? 's' : '' }}. Waiting on {{ slowpokes }} other guest{{ (slowpokes > 1) ? 's' : '' }}.</h4>
+        <h4>Thank you. You have submitted your nomination. Waiting on {{ slowpokes }} other guest{{ (slowpokes > 1) ? 's' : '' }}.</h4>
       </v-col></v-row>
       <DisplayMyPicks :sectionTitle="displayMyPicksSectionTitle" :myPicks="myNoms" :editable="false" />
     </div>
@@ -80,7 +80,7 @@ export default {
       return this.mn.nominations ? this.mn.nominations : {};
     },
     nPG() { return this.mn.nomsPerGuest },
-    totalGuestCount() { return this.mn.allGuests.length + 1 },
+    totalGuestCount() { return this.mn.allGuests.length },
     guestsWhoHaveNominated() { return Object.keys(this.nominations) },
     userHasAlreadySubmittedNoms() { return this.guestsWhoHaveNominated.includes(this.userId.toString()) },
     canSubmitMyNoms() {
@@ -103,7 +103,7 @@ export default {
       }
       return can;
     },
-    slowpokes() { return this.totalGuestCount - this.guestsWhoHaveNominated.length },
+    slowpokes() { return parseInt(this.totalGuestCount) - this.guestsWhoHaveNominated.length },
     displayMyPicksSectionTitle() {
       return `your nomination${ (this.myNoms.length > 1) ? 's' : '' }`;
     }

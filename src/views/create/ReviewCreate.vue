@@ -64,7 +64,7 @@
             </div>
 
             <div v-else-if="(nominationType == 'nPG')">
-              <h3>Guests can nominate up to {{nomsPerGuest}} movies each</h3>
+              <h3>Guests can nominate a movie to watch</h3>
             </div>
 
             <v-alert v-if="(!nominationType)" type="error" density="compact">Please select a setting for movie nominations.</v-alert>
@@ -86,70 +86,62 @@ import { v4 as uuidv4 } from 'uuid';
 import { db } from '../../assets/db.js';
 import { get, ref, set } from 'firebase/database';
 export default {
+  props: ['mn'],
   data() {
     return {
       canCreateMovieNight: false,
-      // admin
-      creatorId: null,
-      creatorName: null,
-      // time & place
-      date: null,
-      time: null,
-      location: null,
-      // guests
-      allGuests: null,
-      nomsPerGuest: null,
-      // process
-      nominationType: null,
-      voteStatus: null, // nominate, vote, selected
-      creatorNominations: null,      
+      allNominations: null,
     };
   },
+  computed: {
+    creatorId() { return this.$store.getters['create/creatorId'] },
+    creatorName() { return this.$store.getters['create/creatorName'] },
+    date() { return this.$store.getters['create/date'] },
+    time() { return this.$store.getters['create/time'] },
+    location() { return this.$store.getters['create/location'] },
+    nominationType() { return this.$store.getters['create/nominationType'] },
+    voteStatus() { 
+      let status = this.nominationType;
+      if (status == 'manual') {
+        status = 'vote';
+      } else if (status == 'nPG') {
+        status = 'nominate'
+      }
+      return status;
+    },
+  },
   created() {
-    // admin
-    this.creatorId = this.$store.getters['create/creatorId'];
-    this.creatorName = this.$store.getters['create/creatorName'];
-    // time & place
-    this.date = this.$store.getters['create/date'];
-    this.time = this.$store.getters['create/time'];
-    this.location = this.$store.getters['create/location'];
-    // guests
-    this.allGuests = this.$store.getters['create/allGuests'];
-    this.nomsPerGuest = this.$store.getters['create/nomsPerGuest'];
-    // process
-    this.nominationType = this.$store.getters['create/nominationType'];
-    this.creatorNominations = this.$store.getters['create/creatorNominations'];
-    this.voteStatus = this.nominationType == 'manual' ? 'vote' : 'nominate';
-
     // validate and confirm this MN is ready to be created
-    if (this.creatorId && this.creatorName && this.date.monthName && this.date.month && this.date.day && this.date.year && this.time.hour && this.time.min && this.time.meridian && this.location && (this.allGuests && this.allGuests.length > 0) && this.nominationType && ((this.nominationType == 'manual' && this.creatorNominations && this.creatorNominations.length > 1) || (this.nominationType == 'nPG' && this.nomsPerGuest)) && this.voteStatus) {
+    if (this.mn.creatorId 
+    && this.mn.creatorName 
+    && this.mn.date.monthName && this.date.month && this.date.day && this.date.year 
+    && this.mn.time.hour && this.time.min && this.time.meridian 
+    && this.mn.location 
+    && (this.mn.allGuests && this.mn.allGuests.length > 0) 
+    && this.mn.nominationType && ((this.mn.nominationType == 'manual' && this.mn.allNominations && this.mn.allNominations.length > 1) || (this.mn.nominationType == 'nPG')) 
+    && this.mn.voteStatus) {
       this.canCreateMovieNight = true;
     }
   },
   methods: {
     createMovieNight() {
-
       // step 1: create new movieNight in dbase
       const mnId = uuidv4();
-      let movieNight = {
+      const movieNight = {
         // people
-        creatorId: this.creatorId,
-        creatorName: this.creatorName,
-        allGuests: [{name: this.creatorName, number: this.creatorId}, ...this.allGuests],
+        creatorId: this.mn.creatorId,
+        creatorName: this.mn.creatorName,
+        allGuests: [{name: this.mn.creatorName, number: this.mn.creatorId}, ...this.mn.allGuests],
         // when & where
-        date: this.date,
-        time: this.time,
-        location: this.location,
+        date: this.mn.date,
+        time: this.mn.time,
+        location: this.mn.location,
         // process
-        nominationType: this.nominationType,
-        creatorNominations: this.creatorNominations,
-        nominations: this.nominationType == 'manual' ? [...this.creatorNominations] : null,
-        nomsPerGuest: this.nomsPerGuest,
-        voteStatus: this.voteStatus,
+        nominationType: this.mn.nominationType,
+        allNominations: this.mn.nominationType == 'manual' ? [...this.mn.creatorNominations] : null,
+        voteStatus: this.mn.nominationType == 'manual' ? 'vote' : 'nominate', // nominate, vote, selected
       };
       set(ref(db, `/mn/${mnId}`), movieNight);
-
-
       // step 2: add new movieNight to creator's list of createdMN's
       let newCreatedByCreator = [mnId];
       get(ref(db, `/users/${this.creatorId}/created`))
@@ -157,28 +149,21 @@ export default {
         if (snapshot.exists()) {
           const currentCreated = snapshot.val();
           newCreatedByCreator = [...newCreatedByCreator, ...currentCreated]
+          set(ref(db, `users/${this.creatorId}/created`), newCreatedByCreator);
         } 
       }).then(() => {
-        set(ref(db, `users/${this.creatorId}/created`), newCreatedByCreator);
+        // step 3: send creator to MovieNightView
+        this.$router.push(`/mn/${mnId}`);
       }).catch(error => {
         console.log(error);
       });
-
-
-      // step 3: send creator to MovieNightView
-      this.$router.push(`/mn/${mnId}`);
-
     },
   },
 };
 </script>
-
 <style lang="scss" scoped>
 #review-create {
-
-  padding-bottom: 160px;
-
-
+  padding-bottom: 164px;
 }
 </style>
 

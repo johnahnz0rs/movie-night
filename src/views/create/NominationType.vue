@@ -29,16 +29,8 @@
     <v-row v-if="(nominationType == 'manual')">
 
       <v-col>
-        <DisplayMyPicks sectionTitle="your nominations" :myPicks="creatorNominations" @removeMovie="removeNomination" editable="true"/>
-        <SelectMyPicks :nominations="creatorNominations" canStillNominate="true" editable="true" headerMsg="enter your movie choices now" @addMovie="addNomination" />
-      </v-col>
-    </v-row>
-    
-    <!-- if guests can nominate their own movies -->
-    <v-row v-if="(nominationType == 'nPG')" class="mt-5">
-      <v-col>
-        <h2 class="mb-5">how many movies can each guest nominate?</h2>
-        <v-slider :ticks="nPGTickLabels" :max="2" step="1" show-ticks="always" tick-size="6" v-model="nPG"></v-slider>
+        <DisplayMyPicks sectionTitle="your nominations" :myPicks="allNominations" @removeMovie="removeNomination" editable="true"/>
+        <SelectMyPicks :nominations="allNominations" canStillNominate="true" editable="true" headerMsg="enter your movie choices now" @addMovie="addNomination" />
       </v-col>
     </v-row>
 
@@ -55,7 +47,7 @@ export default {
   },
   created() {
     this.nominationType = this.$store.getters['create/nominationType'];
-    this.creatorNominations = this.$store.getters['create/creatorNominations'] ? this.$store.getters['create/creatorNominations'] : [];
+    this.allNominations = this.$store.getters['create/allNominations'] ? this.$store.getters['create/allNominations'] : [];
     const nomsPerGuest = this.$store.getters['create/nomsPerGuest'];
     if (nomsPerGuest) {
       this.nPG = nomsPerGuest-1;
@@ -65,16 +57,8 @@ export default {
   },
   data() {
     return {
-      nPGTickLabels: { 0: '1', 1: '2', 2: '3' },
       nominationType: null,
-      creatorNominations: null,
-      nPG: null,
-      // creatorNominations: [
-      //   {dialog: false, adult: false,backdrop_path: "/iYLKMV7PIBtFmtygRrhSiyzcVsF.jpg",genre_ids: [12, 35, 10751, 16],id: 277834,original_language: "en",original_title: "Moana",overview: "In Ancient Polynesia, when a terrible curse incurred by Maui reaches an impetuous Chieftain's daughter's island, she answers the Ocean's call to seek out the demigod to set things right.",popularity: 33.532,poster_path: "/4JeejGugONWpJkbnvL12hVoYEDa.jpg",release_date: "2016-11-23",title: "Moana",video: false,vote_average: 7.6,vote_count: 10731,},
-      //   {dialog: false, adult: false,backdrop_path: "/wOLTJxfv98miIQcn0oNXq9fIgXM.jpg",genre_ids: [28, 35, 80, 53],id: 9737,original_language: "en",original_title: "Bad Boys",overview: "Marcus Burnett is a hen-pecked family man. Mike Lowry is a foot-loose and fancy free ladies' man. Both are Miami policemen, and both have 72 hours to reclaim a consignment of drugs stolen from under their station's nose. To complicate matters, in order to get the assistance of the sole witness to a murder, they have to pretend to be each other.",popularity: 40.035,poster_path: "/x1ygBecKHfXX4M2kRhmFKWfWbJc.jpg",release_date: "1995-04-07",title: "Bad Boys",video: false,vote_average: 6.8,vote_count: 5343},
-      //   {dialog: false, adult: false,backdrop_path: "/lzWHmYdfeFiMIY4JaMmtR7GEli3.jpg",genre_ids: [878, 12],id: 438631,original_language: "en",original_title: "Dune",overview: "Paul Atreides, a brilliant and gifted young man born into a great destiny beyond his understanding, must travel to the most dangerous planet in the universe to ensure the future of his family and his people. As malevolent forces explode into conflict over the planet's exclusive supply of the most precious resource in existence-a commodity capable of unlocking humanity's greatest potential-only those who can conquer their fear will survive.",popularity: 162.847,poster_path: "/d5NXSklXo0qyIYkgV94XAgMIckC.jpg",release_date: "2021-09-08", title: "Dune", video: false, vote_average: 7.9, vote_count: 7793,},
-      //   {dialog: false, adult: false,backdrop_path: "/lzWHmYdfeFiMIY4JaMmtR7GEli3.jpg",genre_ids: [878, 12],id: 438631,original_language: "en",original_title: "Dune",overview: "Paul Atreides, a brilliant and gifted young man born into a great destiny beyond his understanding, must travel to the most dangerous planet in the universe to ensure the future of his family and his people. As malevolent forces explode into conflict over the planet's exclusive supply of the most precious resource in existence-a commodity capable of unlocking humanity's greatest potential-only those who can conquer their fear will survive.",popularity: 162.847,poster_path: "/d5NXSklXo0qyIYkgV94XAgMIckC.jpg",release_date: "2021-09-08", title: "Dune", video: false, vote_average: 7.9, vote_count: 7793,},
-      // ], 
+      allNominations: null,
     };
   },
   computed: {
@@ -85,22 +69,19 @@ export default {
       return this.nominationType == 'nPG' ? 'decide-selected' : 'decide-not-selected';
     },
   },
-  watch: {
-    nPG() { this.$store.dispatch('create/nomsPerGuest', {nomsPerGuest: this.nPG+1}) },
-  },
   methods: {
     useNomType(choice) {
       this.nominationType = choice;
       this.$store.dispatch('create/nominationType', {nominationType: choice});
     },
     addNomination(data) {
-      this.creatorNominations.push(data);
-      this.$store.dispatch('create/creatorNominations', {creatorNominations: this.creatorNominations});
+      this.allNominations.push(data);
+      this.$store.dispatch('create/allNominations', {allNominations: this.allNominations});
     },
     removeNomination(data) {
-      const removeIndex = this.creatorNominations.indexOf(data);
-      this.creatorNominations.splice(removeIndex, 1);
-      this.$store.dispatch('create/creatorNominations', {creatorNominations: this.creatorNominations});
+      const removeIndex = this.allNominations.indexOf(data);
+      this.allNominations.splice(removeIndex, 1);
+      this.$store.dispatch('create/allNominations', {allNominations: this.allNominations});
     },
   },
 };

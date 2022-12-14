@@ -7,7 +7,7 @@
     </v-col></v-row>
 
 
-    <v-row class="d-flex justify-space-between">
+    <v-row class="d-flex justify-space-betweem">
 
       <v-col v-if="votes[0]">
         <h4>1st choice</h4>

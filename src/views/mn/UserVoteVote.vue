@@ -1,6 +1,6 @@
 <template>
   <div id="vote">
-    <!-- <p>userHasAlreadyVoted: {{userHasAlreadyVoted}}</p> -->
+
 
     <!-- err: there are no noms -->
     <div v-if="(!mn.nominations || Object.keys(mn.nominations).length == 0)">
@@ -19,7 +19,7 @@
     <div v-if="userHasAlreadyVoted">
       <v-row>
         <v-col>
-          <p>Thank you. You have already submitted your vote{{ (myVotes.length > 1) ? 's' : '' }}. Waiting on {{ slowpokes }} other guest{{ (slowpokes > 1) ? 's' : '' }}.</p>
+          <p class="mb-5">Thank you. You have already submitted your vote{{ (myVotes.length > 1) ? 's' : '' }}. Waiting on {{ slowpokes }} other guest{{ (slowpokes > 1) ? 's' : '' }}.</p>
           <DisplayMyVotes sectionTitle="your votes" :votes="myVotes" editable="false" />
         </v-col>
       </v-row>
@@ -69,33 +69,40 @@ export default {
     DisplayMyVotes,
     SelectMyVotes,
   },
-  created() {
+  created() { 
+    /**
+     * this screen requires mn.alNominations to operate. otherwise the admin must reset to voteStatus: 'vote'
+     *  */ 
+    // if allNominations already exists
     if (this.allNominations) {
       this.votableNominations = [...this.allNominations];
       if (this.guestsWhoHaveVoted.includes(this.userId.toString()) && this.votes[this.userId].length > 0 ){
         this.myVotes = [ ...this.mn.votes[this.userId] ];
       }
+    // if allNominations DNE
     } else {
-      // there is no allNominations, we must create one
-      
-
       // create mnNew
       let mnNew = {...this.mn};
-
+      // if 'manual'
       if (this.mn.nominationType == 'manual') {
-        mnNew.allNominations = [...this.mn.creatorNominations];
-        this.votableNominations = [...this.mn.creatorNominations];
+        this.votableNominations = [...this.mn.allNominations];
         this.updateDbaseAndStore(mnNew);
+      // else if 'nPG'
       } else if (this.mn.nominationType == 'nPG') {
         // err: there are no nominations
         if (!mnNew.nominations || Object.keys(mnNew.nominations).length == 0) {
           alert(`There are no nominations for you to vote for.\nSo you get nothing. You lose. Good day, sir.\n\nPS - jk plz ask ${mnNew.creatorName} to fix this.`);
+        // there ARE nominations
         } else {
           let allNoms = [];
+          let nomIds = [];
           for (let u in mnNew.nominations) {
-            for (let m in mnNew.nominations[u]) {
-              if (!allNoms.includes(mnNew.nominations[u][m])) {
-                allNoms.push(mnNew.nominations[u][m]);
+            const usersNoms = [...mnNew.nominations[u]];
+            for (let m in usersNoms) {
+              const movie = {...usersNoms[m]};
+              if (!nomIds.includes(movie.id)) {
+                nomIds.push(movie.id);
+                allNoms.push(movie);
               }
             }
           }
@@ -118,7 +125,7 @@ export default {
     allNominations() { return this.mn.allNominations ? this.mn.allNominations : null },
     votes() { return this.mn.votes ? this.mn.votes : {} },
     guestsWhoHaveVoted() { return [...Object.keys(this.votes)] },
-    totalGuestCount() { return (this.mn.allGuests.length + 1) },
+    totalGuestCount() { return this.mn.allGuests.length },
     userHasAlreadyVoted() { return this.guestsWhoHaveVoted.includes(this.userId.toString())  },
     movieChoiceText() {
       let t = '';
@@ -131,7 +138,7 @@ export default {
       }
       return t;
     },
-    slowpokes() { return this.totalGuestCount - this.guestsWhoHaveVoted },
+    slowpokes() { return this.totalGuestCount - this.guestsWhoHaveVoted.length },
   },
   watch: {
     // votes() {},

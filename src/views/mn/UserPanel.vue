@@ -2,7 +2,7 @@
   <div id="user-panel">
 
     <!-- welcome -->
-    <v-row><v-col>
+    <v-row class="mb-5"><v-col>
       <v-card class="bg-blue-lighten-4">
         <v-card-text>
           <p class="text-subtitle-1 font-weight-bold mb-2">hi, {{userName}}! join us for a movie night</p>

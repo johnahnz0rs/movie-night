@@ -1,7 +1,5 @@
 <template>
   <div id="nominate-movies">
-    
-    <!-- <h4>selectMyPicks</h4> -->
 
     <!-- <div> -->
     <div v-if="(canStillNominate)">
@@ -9,7 +7,7 @@
 
       <!-- search bar -->
       <v-row class="pt-5">
-        <v-col cols="12"><h4>add a movie</h4></v-col>
+        <v-col cols="12"><h4>add a movie to choose from</h4></v-col>
         <v-col cols="9" md="10" class="pb-1 d-flex align-middle">
           <v-text-field v-model="searchTerm" label="Search movies" placeholder="enter a movie title" @keyup.enter="getMovieSearchResults" variant="outlined" clearable density="compact"></v-text-field>
         </v-col>
