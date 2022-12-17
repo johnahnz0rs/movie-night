@@ -117,7 +117,6 @@ export default {
     return {
       myVotes: [],
       votableNominations: [],
-      creatorNominations: [],
     };
   },
   computed: {
@@ -139,9 +138,6 @@ export default {
       return t;
     },
     slowpokes() { return this.totalGuestCount - this.guestsWhoHaveVoted.length },
-  },
-  watch: {
-    // votes() {},
   },
   methods: {
     updateDbaseAndStore(mnNew) {

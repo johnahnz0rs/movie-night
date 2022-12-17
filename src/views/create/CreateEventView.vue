@@ -27,7 +27,11 @@
 
 
     <!-- step 5 | review & create -->
-    <ReviewCreate v-if="(view==5)" :mn="mn" />
+    <ReviewCreate v-if="(view==5)" />
+
+
+    <!-- step 6 | send invites -->
+    <SendInvites v-if="(view==6)" />
 
     
     <!-- footer -->
@@ -42,6 +46,7 @@ import EventInfo from './EventInfo.vue';
 import AddGuests from './AddGuests.vue';
 import NominationType from './NominationType.vue';
 import ReviewCreate from './ReviewCreate.vue';
+import SendInvites from './SendInvites.vue';
 import CreateFooter from './CreateFooter.vue';
 // import { db } from '../../assets/db.js';
 // import TestComponent from './TestComponent.vue';
@@ -53,6 +58,7 @@ export default {
     AddGuests,
     NominationType,
     ReviewCreate,
+    SendInvites,
     CreateFooter,
     // TestComponent,
   },

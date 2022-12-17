@@ -53,14 +53,14 @@
             <div v-if="(nominationType == 'manual')">
               <h3 class="mb-1">Guests can choose from the following:</h3>
               <!-- display nominations -->
-              <v-row v-if="creatorNominations" class="pb-5">
-                <v-col v-for="nom in creatorNominations" :key="nom.id" cols="4" md="2" class="text-center">
+              <v-row v-if="allNominations" class="pb-5">
+                <v-col v-for="nom in allNominations" :key="nom.id" cols="4" md="2" class="text-center">
                   <!-- movie poster & title -->
                   <img :src="`https://image.tmdb.org/t/p/w154/${nom.poster_path}`" style="max-width: 110px;">
                   <p><strong>{{nom.title}}</strong></p>
                 </v-col>
               </v-row>
-              <v-alert v-if="(!creatorNominations || creatorNominations.length < 2)" type="error" density="compact">Please select at least 2 movies to choose from.</v-alert>
+              <v-alert v-if="(!allNominations || allNominations.length < 2)" type="error" density="compact">Please select at least 2 movies to choose from.</v-alert>
             </div>
 
             <div v-else-if="(nominationType == 'nPG')">
@@ -86,11 +86,10 @@ import { v4 as uuidv4 } from 'uuid';
 import { db } from '../../assets/db.js';
 import { get, ref, set } from 'firebase/database';
 export default {
-  props: ['mn'],
+  // props: ['mn'],
   data() {
     return {
       canCreateMovieNight: false,
-      allNominations: null,
     };
   },
   computed: {
@@ -99,27 +98,21 @@ export default {
     date() { return this.$store.getters['create/date'] },
     time() { return this.$store.getters['create/time'] },
     location() { return this.$store.getters['create/location'] },
+    allGuests() { return this.$store.getters['create/allGuests'] },
     nominationType() { return this.$store.getters['create/nominationType'] },
-    voteStatus() { 
-      let status = this.nominationType;
-      if (status == 'manual') {
-        status = 'vote';
-      } else if (status == 'nPG') {
-        status = 'nominate'
-      }
-      return status;
-    },
+    allNominations() { return this.$store.getters['create/allNominations'] },
+    voteStatus() { return this.$store.getters['create/voteStatus'] },
   },
   created() {
     // validate and confirm this MN is ready to be created
-    if (this.mn.creatorId 
-    && this.mn.creatorName 
-    && this.mn.date.monthName && this.date.month && this.date.day && this.date.year 
-    && this.mn.time.hour && this.time.min && this.time.meridian 
-    && this.mn.location 
-    && (this.mn.allGuests && this.mn.allGuests.length > 0) 
-    && this.mn.nominationType && ((this.mn.nominationType == 'manual' && this.mn.allNominations && this.mn.allNominations.length > 1) || (this.mn.nominationType == 'nPG')) 
-    && this.mn.voteStatus) {
+    if (this.creatorId 
+    && this.creatorName 
+    && this.date.monthName && this.date.month && this.date.day && this.date.year 
+    && this.time.hour && this.time.min && this.time.meridian 
+    && this.location 
+    && (this.allGuests && this.allGuests.length > 0) 
+    && this.nominationType && ( (this.nominationType == 'manual' && this.allNominations && this.allNominations.length > 1) || (this.nominationType == 'nPG') ) 
+    && this.voteStatus) {
       this.canCreateMovieNight = true;
     }
   },
@@ -129,31 +122,39 @@ export default {
       const mnId = uuidv4();
       const movieNight = {
         // people
-        creatorId: this.mn.creatorId,
-        creatorName: this.mn.creatorName,
-        allGuests: [{name: this.mn.creatorName, number: this.mn.creatorId}, ...this.mn.allGuests],
+        creatorId: this.creatorId,
+        creatorName: this.creatorName,
+        allGuests: [
+          {
+            name: this.creatorName, 
+            number: this.creatorId
+          }, 
+          ...this.allGuests
+        ],
         // when & where
-        date: this.mn.date,
-        time: this.mn.time,
-        location: this.mn.location,
+        date: this.date,
+        time: this.time,
+        location: this.location,
         // process
-        nominationType: this.mn.nominationType,
-        allNominations: this.mn.nominationType == 'manual' ? [...this.mn.creatorNominations] : null,
-        voteStatus: this.mn.nominationType == 'manual' ? 'vote' : 'nominate', // nominate, vote, selected
+        nominationType: this.nominationType,
+        allNominations: this.nominationType == 'manual' ? [...this.allNominations] : null,
+        voteStatus: this.voteStatus, // nominate, vote, selected
       };
       set(ref(db, `/mn/${mnId}`), movieNight);
+
       // step 2: add new movieNight to creator's list of createdMN's
       let newCreatedByCreator = [mnId];
       get(ref(db, `/users/${this.creatorId}/created`))
       .then(snapshot => {
         if (snapshot.exists()) {
           const currentCreated = snapshot.val();
-          newCreatedByCreator = [...newCreatedByCreator, ...currentCreated]
-          set(ref(db, `users/${this.creatorId}/created`), newCreatedByCreator);
-        } 
+          newCreatedByCreator = [...newCreatedByCreator, ...currentCreated];
+        }
+        set(ref(db, `users/${this.creatorId}/created`), newCreatedByCreator);
       }).then(() => {
-        // step 3: send creator to MovieNightView
-        this.$router.push(`/mn/${mnId}`);
+        
+        // step 3: update $store.view to 6 (where creator can send invites)
+        this.$store.dispatch('create/view', {view: 6});
       }).catch(error => {
         console.log(error);
       });

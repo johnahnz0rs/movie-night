@@ -48,12 +48,6 @@ export default {
   created() {
     this.nominationType = this.$store.getters['create/nominationType'];
     this.allNominations = this.$store.getters['create/allNominations'] ? this.$store.getters['create/allNominations'] : [];
-    const nomsPerGuest = this.$store.getters['create/nomsPerGuest'];
-    if (nomsPerGuest) {
-      this.nPG = nomsPerGuest-1;
-    } else {
-      this.nPG = 0; // the watcher will update $store
-    }
   },
   data() {
     return {
@@ -72,7 +66,9 @@ export default {
   methods: {
     useNomType(choice) {
       this.nominationType = choice;
+      const voteStatus = choice == 'manual' ? 'vote' : 'nominate';
       this.$store.dispatch('create/nominationType', {nominationType: choice});
+      this.$store.dispatch('create/voteStatus', {voteStatus});
     },
     addNomination(data) {
       this.allNominations.push(data);

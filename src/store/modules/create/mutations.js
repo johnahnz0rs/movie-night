@@ -21,21 +21,14 @@ export default {
   allGuests(state, payload) {
     state.allGuests = payload;
   },
-  nomsPerGuest(state, payload) {
-    state.nomsPerGuest = payload;
+  nominationType(state, payload) {
+    state.nominationType = payload;
+  },
+  allNominations(state, payload) {
+    state.allNominations = payload;
   },
   voteStatus(state, payload) {
     state.voteStatus = payload;
   },
-  nominationType(state, payload) {
-    state.nominationType = payload;
-  },
-  nominations(state, payload) {
-    state.nominations = payload;
-  },
-  creatorNominations(state, payload) {
-    state.creatorNominations = payload;
-  },
-
 
 };

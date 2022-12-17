@@ -1,4 +1,5 @@
 export default {
+  
   view(context, data) {
     context.commit('view', data.view);
   },
@@ -20,20 +21,14 @@ export default {
   allGuests(context, data) {
     context.commit('allGuests', data.allGuests);
   },
-  nomsPerGuest(context, data) {
-    context.commit('nomsPerGuest', data.nomsPerGuest);
-  },
-  voteStatus(context, data) {
-    context.commit('voteStatus', data.voteStatus);
-  },
   nominationType(context, data) {
     context.commit('nominationType', data.nominationType);
   },
-  nominations(context, data) {
-    context.commit('nominations', data.nominations);
+  allNominations(context, data) {
+    context.commit('allNominations', data.allNominations);
   },
-  creatorNominations(context, data) {
-    context.commit('creatorNominations', data.creatorNominations);
+  voteStatus(context, data) {
+    context.commit('voteStatus', data.voteStatus);
   },
   
 };
