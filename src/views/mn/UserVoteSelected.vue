@@ -5,7 +5,7 @@
     <v-row v-if="(!votes || Object.keys(votes).length == 0)">
       <v-col>
         <p>
-          There are no nominations for you to vote for.<br/>
+          No votes were cast.<br/>
           So you get nothing. You lose. Good day, sir.<br/>&nbsp;<br/>
           PS - jk plz ask {{ mn.creatorName }} to fix this.
         </p>

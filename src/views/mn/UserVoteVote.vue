@@ -3,7 +3,7 @@
 
 
     <!-- err: there are no noms -->
-    <div v-if="(!mn.nominations || Object.keys(mn.nominations).length == 0)">
+    <div v-if="(!allNominations || Object.keys(allNominations).length == 0)">
       <!-- <div> -->
       <v-row><v-col>
         <p>
