@@ -1,32 +1,32 @@
 <template>
   <div id="nominate">
 
+    
+
     <!-- if myNoms were already submitted -->
     <div v-if="userHasAlreadySubmittedNoms">
       <v-row><v-col>
-        <h4>Thank you. You have submitted your nomination. Waiting on {{ slowpokes }} other guest{{ (slowpokes > 1) ? 's' : '' }}.</h4>
+        <p class="text-h5 bg-green-lighten-1 pa-2">You have submitted your nomination.<br/>Waiting on {{ slowpokes }} other guest{{ slowpokesPlural}} to submit theirs.</p>
       </v-col></v-row>
-      <DisplayMyPicks :sectionTitle="displayMyPicksSectionTitle" :myPicks="myNoms" :editable="false" />
+      <DisplayMyPicks :myPicks="myNoms" editable="false" />
     </div>
     
-
 
     <!-- if user can still nominate movies -->
     <div v-if="!userHasAlreadySubmittedNoms">
 
       <!-- btn: submit myNoms -->
       <v-row><v-col>
-        <v-btn v-if="canSubmitMyNoms" @click.prevent="submitMyNoms" class="mb-5" color="green">submit my nominations</v-btn>
-        <h2>you can nominate up to {{nPG}} movie{{ (nPG > 1) ? 's' : '' }}</h2>
+        <h2>Next Step: nominate a movie</h2>
+        <p>(the ranked choice <em>voting</em> is coming soon)</p>
+        <v-btn v-if="canSubmitMyNoms" @click.prevent="submitMyNoms" class="my-5" color="green">submit my nomination</v-btn>
       </v-col></v-row>
 
-      <!-- see my nominations -->
-      <DisplayMyPicks :sectionTitle="displayMyPicksSectionTitle" :myPicks="myNoms" :editable="canSubmitMyNoms" @removeMovie="removeNom" />
+      <!-- see myNoms -->
+      <DisplayMyPicks :myPicks="myNoms" :editable="!userHasAlreadySubmittedNoms" @removeMovie="removeNom" />
 
       <!-- search for/add new noms -->
-      <div v-if="(!userHasAlreadySubmittedNoms && myNoms.length < nPG)">
-        <SelectMyPicks :nominations="myNoms" :canStillNominate="!userHasAlreadySubmittedNoms" :editable="canSubmitMyNoms" :headerMsg="headerMsg" @addMovie="addNom" @removeMovie="removeNom" />
-      </div>
+      <SelectMyPicks v-if="(!userHasAlreadySubmittedNoms && myNoms.length < 1)" :nominations="myNoms" :canStillNominate="!userHasAlreadySubmittedNoms" @addMovie="addNom" @removeMovie="removeNom" />
 
     </div>
 
@@ -79,34 +79,13 @@ export default {
     nominations() {
       return this.mn.nominations ? this.mn.nominations : {};
     },
-    nPG() { return this.mn.nomsPerGuest },
     totalGuestCount() { return this.mn.allGuests.length },
-    guestsWhoHaveNominated() { return Object.keys(this.nominations) },
+    guestsWhoHaveNominated() { return this.nominations ? Object.keys(this.nominations) : [] },
     userHasAlreadySubmittedNoms() { return this.guestsWhoHaveNominated.includes(this.userId.toString()) },
-    canSubmitMyNoms() {
-      let can = true;
-      if (this.mn.nominations && this.mn.nominations[this.userId]) {
-        can = false;
-      }
-      if (this.myNoms.length < 1) {
-        can = false;
-      }
-      return can;
-    },
-    canStillNominate() { 
-      // return this.canSubmitMyNoms && this.nPG > this.myNoms.length;
-      let can = false;
-      if (!this.guestsWhoHaveNominated.includes(this.userId)) {
-        if (this.nPG > this.myNoms.length) {
-          can = true;
-        }  
-      }
-      return can;
-    },
+    canSubmitMyNoms() { return !this.guestsWhoHaveNominated.includes(this.userId) && this.myNoms.length > 0 },
+    canStillNominate() { return this.guestsWhoHaveNominated.includes(this.userId) ? false : true },
     slowpokes() { return parseInt(this.totalGuestCount) - this.guestsWhoHaveNominated.length },
-    displayMyPicksSectionTitle() {
-      return `your nomination${ (this.myNoms.length > 1) ? 's' : '' }`;
-    }
+    slowpokesPlural() { return this.slowpokes > 1 ? 's' : '' },
   },
   methods: {
     addNom(data) {
@@ -144,9 +123,8 @@ export default {
 
 <style lang="scss" scoped>
 #nominate {
-  // background-color: purple;
-  // color: white;
-  margin: 24px 0;
+  // margin: 24px 0;
+  // padding-bottom: 400px;
 }
 </style>
 

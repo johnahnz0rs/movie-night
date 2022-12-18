@@ -13,16 +13,6 @@ const routes = [
     component: HomeView
   },
   {
-    path: '/steve',
-    name: 'steve',
-    component: SteveHarvey
-  },
-  {
-    path: '/dash',
-    name: 'dash',
-    component: DashView
-  },
-  {
     path: '/create',
     name: 'create',
     component: CreateEventView
@@ -31,6 +21,18 @@ const routes = [
     path: '/mn/:mnId',
     name: 'mn',
     component: MovieNightView,
+  },
+
+  // dev
+  {
+    path: '/dash',
+    name: 'dash',
+    component: DashView
+  },
+  {
+    path: '/steve',
+    name: 'steve',
+    component: SteveHarvey
   },
 ];
 

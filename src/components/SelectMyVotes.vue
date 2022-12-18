@@ -38,16 +38,18 @@ export default {
       }
       return list;
     },
-    nthChoice() {
-      let text = '';
-      if (this.myVotes.length == 0) {
-        text = '1st choice';
-      } else if (this.myVotes.length == 1) {
-        text = '2nd choice';
-      } else if (this.myVotes.length == 2) {
-        text = '3rd choice';
+    nthChoice() {let t = this.myVotes.length + 1;
+      if (t % 10 == 1) {
+        t += 'st';
+      } else if (t % 10 == 2) {
+        t += 'nd';
+      } else if (t % 10 == 3) {
+        t += 'rd';
+      } else {
+        t += 'th';
       }
-      return text;
+      t += ' choice';
+      return t;
     }
   },
   methods: {

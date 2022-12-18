@@ -1,5 +1,5 @@
 <template>
-  <v-app>
+  <v-app class="loljohn">
     <HeaderNav />
     <v-main class="p-8">
       <router-view />
@@ -17,4 +17,11 @@ export default {
   },
 }
 </script>
+
+
+<style lang="scss">
+#app {
+  padding-top: 56px;
+}
+</style>
 

@@ -7,6 +7,10 @@ export default {
   state() {
     return {
       mn: null,
+      userId: null,
+      userName: null,
+      userAllowed: null,
+      userIsAdmin: null,
     };
   },
   getters, 

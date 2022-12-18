@@ -1,5 +1,5 @@
 <template>
-  <div id="create-footer" class="bg-purple px-1">
+  <div id="create-footer" class="bg-purple px-1 w-100">
     <v-row class="d-flex justify-space-between py-auto">
       <v-col class="d-flex align-center justify-start">
         <v-btn v-if="(view > 1)" @click.prevent="prevScreen" variant="outlined" class="ml-3">prev</v-btn>
@@ -50,13 +50,10 @@ export default {
 
 <style lang="scss" scoped>
 #create-footer {
-  // position: absolute;
-  // position: sticky;
   position: fixed;
   bottom: 0;
+  left: 0;
   height: 148px;
-  width: 100%;
-  margin: 0 -8px;
   .v-row, .v-col {
     height: 100%;
   }

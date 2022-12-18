@@ -1,45 +1,48 @@
 <template>
   <div id="homepage">
-    <v-container>
+    <v-container fluid>
 
 
       <!-- hero -->
-      <v-row id="hero-row">
-        <v-col>            
-            <h1 class="text-center">Movie Night</h1>
-
-            <div id="hero-blurb" class="">
-              <ul>
-                <li>get together, watch a movie, easy peasy. right?</li>
-                <li>WRONG. spend 40 minutes deciding, waste a bunch of time.</li>
-                <li>cut the crap. let's put it to a vote.</li>
+      <v-row id="hero-row" class="text-white">
+        <v-col class="d-flex flex-column justify-space-between align-center">            
+            <h1 class="text-h3">Movie Night</h1>
+            <div id="hero-blurb" class="pb-5">
+              <ul class="ml-5 font-weight-bold text-h6">
+                <li>Come out to the couch, we'll watch a movie, have a few laughs.</li>
+                <li>Right?? Wrong!! 40 minutes of analysis paralysis.</li>
+                <li>Cut the bologna. Let's settle this right now, using democracy.</li>
               </ul>
-              <div class="w-100 text-center d-static mt-3">
+              <div class="d-flex justify-center my-5">
                 <v-btn @click="createNew" variant="outlined" color="white">Get Started</v-btn>
               </div>
             </div>
-
         </v-col>
       </v-row>
 
 
 
-      <v-row id="more-info">
-        <v-col>
-          <!-- <div id="list"> -->
-          <div class="d-flex justify-space-around my-5 py-5">
-            <ol>
-              <li>Plan a movie night</li>
-              <li>Invite your friends</li>
-              <li>Vote on what to watch</li>
-              <li>Get the popcorn</li>
-            </ol>
+      <v-row id="more-info" >
+        <v-col class="d-none d-sm-block">&nbsp;</v-col>
+
+        <v-col :cols="moreInfoColSize" class="d-flex flex-column justify-space-around align-center">
+          <div class="text-center">
+            <p class="text-h3 font-weight-bold">movieNight uses a form of <a href="https://www.rcvresources.org/faq" target="_blank">ranked choice voting</a></p>
+            <p class="text-h4 mt-3">so you can<br/><span class="font-italic">Keep It Simple, Señor</span></p>
           </div>
-          <div class="d-flex justify-space-around">
-            <router-link to="/create" class="mb-5 pb-5 text-body-2">Plan your movie night now.</router-link>
-          </div>
-          <p class="mb-5 pb-5 text-caption">movieNight uses a form of <a href="https://time.com/5718941/ranked-choice-voting/#inline-ad-1" target="_blank">ranked choice voting</a> to cut the bs and get right to the movie</p>
+          
+          <ol>
+            <li>Plan a movie night</li>
+            <li>Invite your friends</li>
+            <li>Vote on what to watch</li>
+            <li>Get the popcorn</li>
+          </ol>
+        
+          
+          <v-btn to="/create" color="blue">Plan your movie night now</v-btn>
         </v-col>
+
+        <v-col class="d-none d-sm-block">&nbsp;</v-col>
       </v-row>
 
 
@@ -49,6 +52,20 @@
 <script>
 export default {
   name: 'HomeView',
+  computed: {
+    moreInfoColSize() {
+      let cols = '12';
+      if (this.$vuetify.display.smAndUp) {
+        cols = '10';
+      } else if (this.$vuetify.display.mdAndUp) {
+        cols = '7';
+      }
+      return cols;
+    },
+    mdAndUp() {
+      return this.$vuetify.display.mdAndUp;
+    },
+  },
   methods: {
     createNew() {
       this.$router.push('/create');
@@ -59,35 +76,38 @@ export default {
 <style lang="scss" scoped>
 main #homepage .v-container {
 
+  padding-bottom: 69px;
+
   #hero-row {
     background-image: url('../../assets/opt-vladimir-fedotov--w-V5GRG9-0-unsplash.jpg');
     background-position: center;
     background-size: cover;
     background-repeat: no-repeat;
-    height: 82vh;
+    min-height: 82vh;
     margin: -16px;
-    h1 { color: white; }
     .v-col {
-      background-color: rgba(0,0,0,0.33);
+      background-color: rgba(0,0,0,0.23);
       position: relative;
+
       #hero-blurb {
-        position: absolute;
-        bottom: 36px;
-        ul {
-          list-style: circle;
-          padding-left: 24px;
-          color: white;
-          font-weight: bold;
-          li {padding-bottom: 14px;}
+        ul li {
+          padding-bottom: 14px;
+          list-style: none;
+          text-shadow: 2px 2px black;
         }
       }
     }
   }
 
   #more-info {
-    p a {
+    min-height: 82vh;
+    a {
       color: rgba(0,0,0,0.87);
     }
+    ol li {
+      padding-bottom: 14px;
+    }
+
   }
 
 }

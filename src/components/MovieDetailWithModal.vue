@@ -61,3 +61,9 @@ export default {
   },
 };
 </script>
+
+<style lang="scss" scoped>
+.v-card-text div {
+  padding-top: 24px;
+}
+</style>

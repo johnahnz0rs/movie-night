@@ -3,11 +3,11 @@
       
     <!-- section title -->
     <v-col cols="12">
-      <h4>{{sectionTitle}}</h4>
+      <h4>{{customTitle ? customTitle : 'your nomination'}}</h4>
     </v-col>
 
     <!-- movie -->
-    <v-col v-for="movie in myPicks" :key="movie.id" cols="4" md="2" class="text-center">
+    <v-col v-for="movie in myPicks" :key="movie.id" cols="4" class="text-center">
       
       <!-- poster & title -->
       <img :src="`https://image.tmdb.org/t/p/w154/${movie.poster_path}`" style="max-width: 110px;">
@@ -22,24 +22,33 @@
 
 <script>
 export default {
-  props: [ 'sectionTitle', 'myPicks', 'editable' ],
+  props: [ 'myPicks', 'editable', 'customTitle' ],
   emits: [ 'removeMovie' ],
-  // data() { return {} },
+  data() { 
+    return {
+      canEdit: null,
+    };
+  },
   computed: {
-    canEdit() {
-      let can = false;
-      // const canIEditMyPicks = (this.editable.toString().trim().toLowerCase() === 'true');
-      if (this.editable.toString().trim().toLowerCase() === 'true') {
-        can = true;
-      }
-      return can;
-    },
+    // canEdit() {
+    //   let can = false;
+    //   // const canIEditMyPicks = (this.editable.toString().trim().toLowerCase() === 'true');
+    //   if (this.editable.toString().trim().toLowerCase() === 'true') {
+    //     can = true;
+    //   }
+    //   return can;
+    // },
+  },
+  watch: {
+    // editable() {
+    //   this.canEdit = (this.editable.toString().toLowerCase() === 'true') ? true : false;  
+    // }
   },
   created() {
-    const canIEditMyPicks = (this.editable.toString().toLowerCase() === 'true');
-    if (canIEditMyPicks) {
+    if (this.editable.toString().toLowerCase() === 'true') {
       this.canEdit = true;
     }
+    this.canEdit = (this.editable.toString().toLowerCase() === 'true') ? true : false;
   },
 };
 </script>

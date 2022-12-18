@@ -17,41 +17,36 @@
 
     <!-- if user has already voted -->
     <div v-if="userHasAlreadyVoted">
-      <v-row>
-        <v-col>
-          <p class="mb-5">Thank you. You have already submitted your vote{{ (myVotes.length > 1) ? 's' : '' }}. Waiting on {{ slowpokes }} other guest{{ (slowpokes > 1) ? 's' : '' }}.</p>
-          <DisplayMyVotes sectionTitle="your votes" :votes="myVotes" editable="false" />
-        </v-col>
-      </v-row>
+      <v-row><v-col>
+        <p class="text-h5 bg-green-lighten-1 pa-2">You have already submitted your vote{{ (myVotes.length > 1) ? 's' : '' }}. Waiting on {{ slowpokes }} other guest{{ slowpokesPlural }}.</p>
+      </v-col></v-row>
+      <DisplayMyVotes :votes="myVotes" editable="false" />
     </div>
 
 
     <!-- if user has not yet voted -->
     <div v-if="!userHasAlreadyVoted">
 
-      <!-- display myVotes --><!-- submit myVotes -->
-      <div v-if="myVotes">
-        <v-row v-if="(!userHasAlreadyVoted && myVotes.length > 0)">
-          <v-col><v-btn @click="submitMyVotes" color="green" :disabled="(userHasAlreadyVoted || myVotes.length == 0)">submit my votes</v-btn></v-col>
-        </v-row>
-        <DisplayMyVotes sectionTitle="your votes" :votes="myVotes" :editable="!userHasAlreadyVoted" @removeMovie="removeVote" />
-      </div>
-
-
-      <!-- instructions -->
+      <!-- btn: submit myVotes -->
       <v-row><v-col>
-        <h2 v-if="(votableNominations.length > 0 && myVotes.length < 3)">please select your {{movieChoiceText}} movie preference</h2>
+        <h2>Next Step: voting — rank movies in order of your preference</h2>
+        <p class="text-subtitle-2 mb-5">Note: You do <em>not</em> have to rank every single choice, but if you don't, then your vote <em>may not</em> count <em>if</em> there are ties.</p>
       </v-col></v-row>
 
+      <!-- see myVotes / ranked choices -->
+      <div v-if="(myVotes.length > 0)" id="my-votes">
+        <v-btn @click="submitMyVotes" color="green" :disabled="(userHasAlreadyVoted || myVotes.length == 0)" class="mb-5">submit my votes</v-btn>
+        <DisplayMyVotes sectionTitle="your votes" :votes="myVotes" :editable="!userHasAlreadyVoted" @removeMovie="removeVote" />
+      </div>
+      
 
-      <!-- select my votes -->
-      <div v-if="(myVotes.length < 3 && votableNominations.length > 0)">
+      <!-- rank my choices -->      
+      <div v-if="(votableNominations.length > 0)">
+        <p v-if="(myVotes.length < allNominations.length)" class="text-h6 font-weight-bold mt-5 pt-3 mb-1">please select your {{movieChoiceText}} choice</p>
         <SelectMyVotes :allNominations="votableNominations" :myVotes="myVotes" @addMovie="addVote" @removeMovie="removeVote" />
       </div>
-
+      
     </div>
-
-
 
   </div>
 </template>
@@ -127,17 +122,20 @@ export default {
     totalGuestCount() { return this.mn.allGuests.length },
     userHasAlreadyVoted() { return this.guestsWhoHaveVoted.includes(this.userId.toString())  },
     movieChoiceText() {
-      let t = '';
-      if (this.myVotes.length == 0) {
-        t = '1st';
-      } else if (this.myVotes.length == 1) {
-        t = '2nd';
-      } else if (this.myVotes.length == 2) {
-        t = '3rd';
+      let t = this.myVotes.length + 1;
+      if (t % 10 == 1) {
+        t += 'st';
+      } else if (t % 10 == 2) {
+        t += 'nd';
+      } else if (t % 10 == 3) {
+        t += 'rd';
+      } else {
+        t += 'th';
       }
       return t;
     },
     slowpokes() { return this.totalGuestCount - this.guestsWhoHaveVoted.length },
+    slowpokesPlural() { return (this.slowpokes > 1) ? 's' : '' },
   },
   methods: {
     updateDbaseAndStore(mnNew) {
@@ -177,6 +175,12 @@ export default {
 <style lang="scss" scoped>
 #vote {
   margin-bottom: 36px;
+
+
+  #my-votes {
+    border: 1px solid black;
+    padding: 8px;
+  }
 }
 </style>
 

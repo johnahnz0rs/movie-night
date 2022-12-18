@@ -1,36 +1,31 @@
 <template>
   <v-container id="movie-night-view">
 
+    <v-row class="d-flex justify-center">
+      <v-col :cols="movieNightViewColSize">
 
-    <!-- header -->
-    <v-row class="mb-5"><v-col>
-      <h1 class="text-h2">Movie Night</h1>
-    </v-col></v-row>
+        <!-- no such movieNight -->
+        <v-row><v-col v-if="errNoMN">
+          <p class="mb-3">this movieNight does not exist. plz check your link and try again.</p>
+          <p class="text-center"><router-link to="/" class="text-black">start over</router-link></p>
+        </v-col></v-row>
 
+        <!-- no user yet, "log in"/"authorize" -->
+        <v-row><v-col v-if="(mn && (!userId || !userAllowed))">
+          <h3>enter your phone number to begin</h3>
+          <v-text-field label="phone number" placeholder="zip code + phone # (no hyphens)" type="number" clearable v-model="userId" @keyup.enter="checkUserId"></v-text-field>
+          <v-btn @click.prevent="checkUserId" color="green">continue</v-btn>
+        </v-col></v-row>
 
-    <!-- no such movieNight -->
-    <v-row v-if="errNoMN"><v-col>
-      <p class="mb-3">this movieNight does not exist. plz check your link and try again.</p>
-      <p class="text-center"><router-link to="/" class="text-black">start over</router-link></p>
-    </v-col></v-row>
+        <!-- user is admin, show adminPanel -->
+        <AdminPanel v-if="(mn && userAllowed & userIsAdmin)" />
 
+        <!-- user is allowed, show userPanel -->
+        <UserPanel v-if="mn && userId && userName && userAllowed" :userId="userId" :userName="userName" />
 
-    <!-- no user yet, "log in"/"authorize" -->
-    <v-row v-if="(mn && (!userId || !userAllowed))"><v-col>
-      <h3>enter your phone number to begin</h3>
-      <v-text-field label="phone number" placeholder="zip code + phone # (no hyphens)" type="number" clearable v-model="userId" @keyup.enter="checkUserId"></v-text-field>
-      <v-btn @click.prevent="checkUserId" color="green">continue</v-btn>
-    </v-col></v-row>
+      </v-col>
+    </v-row>
 
-
-    <!-- user is admin, show adminPanel -->
-    <AdminPanel v-if="(mn && userAllowed & userIsAdmin)" />
-
-
-    <!-- user is allowed, show userPanel -->
-    <UserPanel v-if="mn && userId && userName && userAllowed" :userId="userId" :userName="userName" />
-
-    
   </v-container>
 </template>
 
@@ -48,19 +43,34 @@ export default {
   },
   created() {
     this.getMovieNightFromDbase();
+    this.userId = this.$store.getters['mn/userId'];
+    this.userName = this.$store.getters['mn/userName'];
+    this.userAllowed = this.$store.getters['mn/userAllowed'];
+    this.userIsAdmin = this.$store.getters['mn/userIsAdmin'];
   },
   data() {
     return {
       // ui/ux
       errNoMN: null,
-      userId: null,
-      userName: null,
-      userAllowed: false,
-      userIsAdmin: false,
+      userId: null, //
+      userName: null, //
+      userAllowed: false, //
+      userIsAdmin: false, //
     };
   },
   computed: {
     mn() { return this.$store.getters['mn/mn'] },
+    movieNightViewColSize() {
+      let c = '12';
+      if (this.$vuetify.display.lgAndUp) {
+        c = '4';
+      } else if (this.$vuetify.display.mdAndUp) {
+        c = '6';
+      } else if (this.$vuetify.display.smAndUp) {
+        c = '8';
+      }
+      return c;
+    },
   },
   methods: {
     getMovieNightFromDbase() {
@@ -125,3 +135,11 @@ export default {
   },
 };
 </script>
+
+
+<style lang="scss" scoped>
+#movie-night-view {
+  padding-bottom: 82px;
+  padding-top: 46px;
+}
+</style>

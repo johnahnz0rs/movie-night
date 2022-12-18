@@ -1,82 +1,76 @@
 <template>
   <div id="review-create">
   
-    <v-row>
-      <v-col>
-        <h2>Review & Create</h2>
-      </v-col>
-    </v-row>
+    <!-- header -->
+    <v-row><v-col>
+      <h2>Review & Create</h2>
+    </v-col></v-row>
 
-    <v-row>
+    <!-- btn: createMovieNight() -->
+    <v-row class="mt-2 mb-5">
       <v-col class="text-center">
         <v-btn @click.prevent="createMovieNight" color="green" size="large" :disabled="!canCreateMovieNight">create movie night & send invites</v-btn>
       </v-col>
     </v-row>
 
-    <v-row>
-      <v-col>
-        <v-card>
-          <v-card-title class="text-decoration-underline">When & Where</v-card-title>
-          <v-card-text>
-            <p>
-              {{date.monthName}} {{date.day}}, {{date.year}}<br />
-              <em>{{time.hour}}:{{time.min}} {{time.meridian}}</em>
-            </p>
-            <p>Location: {{location}}</p>
-            <v-alert v-if="(!date.monthName || !date.day || !date.year || !time.hour || !time.min || !time.meridian || !location)" type="error" density="compact">Please enter all date, time, and location info.</v-alert>
-          </v-card-text>
-        </v-card>
+    <!-- when & where -->
+    <v-row><v-col><v-card>
+      <v-card-title class="text-decoration-underline">When & Where</v-card-title>
+      <v-card-text>
+        <p>
+          {{date.monthName}} {{date.day}}, {{date.year}}<br />
+          <em>{{time.hour}}:{{time.min}} {{time.meridian}}</em>
+        </p>
+        <p>Location: {{location}}</p>
+        <v-alert v-if="(!date.monthName || !date.day || !date.year || !time.hour || !time.min || !time.meridian || !location)" type="error" density="compact">Please enter all date, time, and location info.</v-alert>
+      </v-card-text>
+    </v-card></v-col></v-row>
+
+    <!-- guests -->
+    <v-row><v-col><v-card>
+      <v-card-title class="text-decoration-underline">Guests</v-card-title>
+      <v-card-text>
+        <ul class="ml-5">
+          <li>{{creatorName}} {{creatorId}} <strong>(organizer)</strong></li>
+          <li v-for="guest in allGuests" :key="guest.number"> {{guest.name}} {{guest.number}}</li>
+        </ul>
+        <v-alert v-if="(!allGuests || allGuests.length < 1)" type="error" density="compact">Please invite at least 1 guest.</v-alert>
+      </v-card-text>
+    </v-card></v-col></v-row>
+
+    <!-- nominationType [&& allNominations] -->
+    <v-row><v-col><v-card>
+      <v-card-title class="text-decoration-underline">Movie Nominations</v-card-title>
+      <v-card-text>
+
+        <div v-if="(nominationType == 'manual')">
+          <h3 class="mb-1">Guests can choose from the following:</h3>
+          <!-- display nominations -->
+          <v-row v-if="allNominations" class="pb-5">
+            <v-col v-for="nom in allNominations" :key="nom.id" cols="4" class="text-center">
+              <!-- movie poster & title -->
+              <img :src="`https://image.tmdb.org/t/p/w154/${nom.poster_path}`" style="max-width: 110px;">
+              <p><strong>{{nom.title}}</strong></p>
+            </v-col>
+          </v-row>
+          <v-alert v-if="(!allNominations || allNominations.length < 2)" type="error" density="compact">Please select at least 2 movies to choose from.</v-alert>
+        </div>
+
+        <div v-else-if="(nominationType == 'nPG')">
+          <h3>Guests can nominate a movie to watch.</h3>
+        </div>
+
+        <v-alert v-if="(!nominationType)" type="error" density="compact">Please select a setting for movie nominations.</v-alert>
+
+      </v-card-text>
+    </v-card></v-col></v-row>
+
+    <!-- btn: createMovieNight() -->
+    <v-row class="mt-5">
+      <v-col class="text-center">
+        <v-btn @click.prevent="createMovieNight" color="green" size="large" :disabled="!canCreateMovieNight">create movie night & send invites</v-btn>
       </v-col>
     </v-row>
-
-    <v-row>
-      <v-col>
-        <v-card>
-          <v-card-title class="text-decoration-underline">Guests</v-card-title>
-          <v-card-text>
-            <ul class="ml-5">
-              <li>{{creatorName}} {{creatorId}} <strong>(organizer)</strong></li>
-              <li v-for="guest in allGuests" :key="guest.number"> {{guest.name}} {{guest.number}}</li>
-            </ul>
-            <v-alert v-if="(!allGuests || allGuests.length < 1)" type="error" density="compact">Please invite at least 1 guest.</v-alert>
-          </v-card-text>
-        </v-card>
-      </v-col>
-    </v-row>
-
-    <v-row>
-      <v-col>
-        <v-card>
-          <v-card-title class="text-decoration-underline">Movie Nominations</v-card-title>
-          <v-card-text>
-
-            <div v-if="(nominationType == 'manual')">
-              <h3 class="mb-1">Guests can choose from the following:</h3>
-              <!-- display nominations -->
-              <v-row v-if="allNominations" class="pb-5">
-                <v-col v-for="nom in allNominations" :key="nom.id" cols="4" md="2" class="text-center">
-                  <!-- movie poster & title -->
-                  <img :src="`https://image.tmdb.org/t/p/w154/${nom.poster_path}`" style="max-width: 110px;">
-                  <p><strong>{{nom.title}}</strong></p>
-                </v-col>
-              </v-row>
-              <v-alert v-if="(!allNominations || allNominations.length < 2)" type="error" density="compact">Please select at least 2 movies to choose from.</v-alert>
-            </div>
-
-            <div v-else-if="(nominationType == 'nPG')">
-              <h3>Guests can nominate a movie to watch</h3>
-            </div>
-
-            <v-alert v-if="(!nominationType)" type="error" density="compact">Please select a setting for movie nominations.</v-alert>
-
-          </v-card-text>
-        </v-card>
-      </v-col>
-    </v-row>
-  
-  <!-- red yellow blue -->
-  
-  
   
   </div>
 </template>
@@ -98,7 +92,17 @@ export default {
     date() { return this.$store.getters['create/date'] },
     time() { return this.$store.getters['create/time'] },
     location() { return this.$store.getters['create/location'] },
-    allGuests() { return this.$store.getters['create/allGuests'] },
+    allGuests() { 
+      const guests = [...this.$store.getters['create/allGuests']];
+      let cleanedGuests = [];
+      for (let i in guests) {
+        const guest = guests[i];
+        if (guest.name.trim().length > 0 && guest.number) {
+          cleanedGuests.push(guest);
+        }
+      }
+      return cleanedGuests;
+    },
     nominationType() { return this.$store.getters['create/nominationType'] },
     allNominations() { return this.$store.getters['create/allNominations'] },
     voteStatus() { return this.$store.getters['create/voteStatus'] },
@@ -152,9 +156,12 @@ export default {
         }
         set(ref(db, `users/${this.creatorId}/created`), newCreatedByCreator);
       }).then(() => {
-        
-        // step 3: update $store.view to 6 (where creator can send invites)
-        this.$store.dispatch('create/view', {view: 6});
+        // step 3: set admin role in store, then send creator to /mn/:mnId
+        this.$store.dispatch('mn/userId', {userId: this.creatorId}); 
+        this.$store.dispatch('mn/userName', {userName: this.creatorName});
+        this.$store.dispatch('mn/userAllowed', {userAllowed: true});
+        this.$store.dispatch('mn/userIsAdmin', {userIsAdmin: true});
+        this.$router.push(`/mn/${mnId}`);
       }).catch(error => {
         console.log(error);
       });

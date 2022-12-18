@@ -1,38 +1,31 @@
 <template>
   <v-container id="page-create">
 
-    <!-- <TestComponent :db="db" /> -->
+    <v-row class="d-flex justify-center">
+      <v-col :cols="pageCreateColSize">
 
-    <!-- header -->
-    <v-row>
-      <v-col class="">
-        <h1 class="text-h2">Create a new Movie Night</h1>
+        <!-- header -->
+        <v-row><v-col>
+          <h1 class="text-h2">Create a new Movie Night</h1>
+        </v-col></v-row>
+
+        <!-- step 1 | get User info -->
+        <GetUser v-if="(view==1)" />
+
+        <!-- step 2 | event info -->
+        <EventInfo v-if="(view==2)" />
+
+        <!-- step 3 | add guests -->
+        <AddGuests v-if="(view==3)" />
+
+        <!-- step 4 | noms per guest -->
+        <NominationType v-if="(view==4)" />
+
+        <!-- step 5 | review & create -->
+        <ReviewCreate v-if="(view==5)" />
+
       </v-col>
     </v-row>
-
-    <!-- step 1 | get User info -->
-    <GetUser v-if="(view==1)" />
-    
-
-    <!-- step 2 | event info -->
-    <EventInfo v-if="(view==2)" />
-
-
-    <!-- step 3 | add guests -->
-    <AddGuests v-if="(view==3)" />
-
-
-    <!-- step 4 | noms per guest -->
-    <NominationType v-if="(view==4)" />
-
-
-    <!-- step 5 | review & create -->
-    <ReviewCreate v-if="(view==5)" />
-
-
-    <!-- step 6 | send invites -->
-    <SendInvites v-if="(view==6)" />
-
     
     <!-- footer -->
     <CreateFooter />
@@ -46,10 +39,7 @@ import EventInfo from './EventInfo.vue';
 import AddGuests from './AddGuests.vue';
 import NominationType from './NominationType.vue';
 import ReviewCreate from './ReviewCreate.vue';
-import SendInvites from './SendInvites.vue';
 import CreateFooter from './CreateFooter.vue';
-// import { db } from '../../assets/db.js';
-// import TestComponent from './TestComponent.vue';
 export default {
   name: 'CreateEvent',
   components: {
@@ -58,19 +48,34 @@ export default {
     AddGuests,
     NominationType,
     ReviewCreate,
-    SendInvites,
     CreateFooter,
-    // TestComponent,
   },
   props: ['mn'],
   data() {
     return {
       readyToCreate: false,
-      // db: db,
     };
   },
   computed: {
     view() { return this.$store.getters['create/view'] },
+    pageCreateColSize() {
+      let c = '12';
+      if (this.$vuetify.display.lgAndUp) {
+        c = '4';
+      } else if (this.$vuetify.display.mdAndUp) {
+        c = '6';
+      } else if (this.$vuetify.display.smAndUp) {
+        c = '8';
+      }
+
+      // let c = 'screen-phone';
+      // if (this.$vuetify.display.mdAndUp) {
+      //   c = 'screen-laptop';
+      // } else if (this.$vuetify.display.smAndUp) {
+      //   c = 'screen-tablet';
+      // }
+      return c;
+    },
   },
   created() {
     if (localStorage.creatorId && localStorage.creatorName) {
@@ -88,7 +93,7 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 #page-create {
   padding-bottom: 160px;
 }
