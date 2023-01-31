@@ -33,6 +33,7 @@
 
   </v-container>
 </template>
+
 <script>
 import GetUser from './GetUser.vue';
 import EventInfo from './EventInfo.vue';

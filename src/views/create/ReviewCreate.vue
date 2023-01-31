@@ -115,7 +115,7 @@ export default {
     && this.time.hour && this.time.min && this.time.meridian 
     && this.location 
     && (this.allGuests && this.allGuests.length > 0) 
-    && this.nominationType && ( (this.nominationType == 'manual' && this.allNominations && this.allNominations.length > 1) || (this.nominationType == 'nPG') ) 
+    && this.nominationType && ( (this.nominationType == 'manual' && this.allNominations && this.allNominations.length > 1) || (this.nominationType == 'nPG') )  
     && this.voteStatus) {
       this.canCreateMovieNight = true;
     }
@@ -169,6 +169,8 @@ export default {
   },
 };
 </script>
+
+
 <style lang="scss" scoped>
 #review-create {
   padding-bottom: 164px;

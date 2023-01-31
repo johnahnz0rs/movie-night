@@ -2,6 +2,12 @@
   <div id="event-info">
 
     <v-row>
+      <v-col>
+        <h2 class="mb-3">Step 2: when & where is the movie night?</h2>
+      </v-col>
+    </v-row>
+
+    <v-row>
       <v-col cols="12" class="text-h6">Date</v-col>
       <v-col>
         <v-select variant="outlined" :items="months" label="Month" v-model="monthName"></v-select>
